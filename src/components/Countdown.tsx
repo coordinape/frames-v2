@@ -118,12 +118,14 @@ const CoSoulsDisplay = () => {
 
 const CountdownContent = () => {
   const [timeLeft, setTimeLeft] = useState(0);
-  const [stars, setStars] = useState<Star[]>([]);
-  const [quote, setQuote] = useState("");
+  const [stars, setStars] = useState<Star[]>(() => generateStars());
+  const [quote, setQuote] = useState(
+    QUOTES[Math.floor(Math.random() * QUOTES.length)]
+  );
 
+  // Update stars and quote periodically if needed
   useEffect(() => {
-    setStars(generateStars());
-    setQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
+    // Any additional star or quote updates can go here
   }, []);
 
   // Update countdown based on current time
