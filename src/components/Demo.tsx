@@ -189,7 +189,7 @@ export default function Demo(
           ? `Added, got notificaton token ${result.notificationDetails.token} and url ${result.notificationDetails.url}`
           : "Added, got no notification details"
       );
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof AddFrame.RejectedByUser) {
         setAddFrameResult(`Not added: ${error.message}`);
       }
