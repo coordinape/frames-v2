@@ -68,12 +68,19 @@ const CO_SOULS_QUERY = gql`
   }
 `;
 
-const generateStars = () => {
-  return Array.from({ length: STAR_COUNT }, () => ({
-    id: Math.random(),
-    x: Math.random() * 100, // Random x position
-    delay: Math.random() * FALL_DURATION, // Random delay for falling
-    color: COLORS[Math.floor(Math.random() * COLORS.length)], // Random color
+interface Star {
+  id: number;
+  x: number;
+  delay: number;
+  color: string;
+}
+
+const generateStars = (): Star[] => {
+  return Array.from({ length: STAR_COUNT }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    delay: Math.random() * FALL_DURATION,
+    color: COLORS[Math.floor(Math.random() * COLORS.length)],
   }));
 };
 
@@ -111,7 +118,7 @@ const CoSoulsDisplay = () => {
 
 const CountdownContent = () => {
   const [timeLeft, setTimeLeft] = useState(0);
-  const [stars, setStars] = useState([]);
+  const [stars, setStars] = useState<Star[]>([]);
   const [quote, setQuote] = useState("");
 
   useEffect(() => {
