@@ -204,15 +204,17 @@ const CountdownContent = () => {
       {/* Countdown Display */}
       <div className="relative z-10 flex justify-center items-center h-full">
         <div className="text-center">
-          <h1 className="mb-5 text-xl font-bold text-white text-shadow-lg opacity-0 animate-fadeIn">
+          <h1 className="mb-5 text-base md:text-xl font-bold text-white text-shadow-lg opacity-0 animate-fadeIn px-4">
             {quote}
           </h1>
-          <p className="text-7xl font-mono font-bold text-white text-shadow-lg bg-black/30 p-8 rounded-lg backdrop-blur-sm">
+          <p className="text-4xl md:text-7xl font-mono font-bold text-white text-shadow-lg bg-black/30 p-4 md:p-8 rounded-lg backdrop-blur-sm mx-4">
             <span>{visibleDigits}</span>
             <span className="opacity-50">{fadedDigits}</span>
-            <span className="text-2xl ml-2">ms</span>
+            <span className="text-xl md:text-2xl ml-2">ms</span>
           </p>
-          <CoSoulsDisplay />
+          <div className="mx-4">
+            <CoSoulsDisplay />
+          </div>
         </div>
       </div>
 
