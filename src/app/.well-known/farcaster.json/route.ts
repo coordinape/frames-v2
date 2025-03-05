@@ -11,8 +11,8 @@ export async function GET() {
     },
     frame: {
       version: "1",
-      name: "Frames v2 Demo",
-      iconUrl: `${appUrl}/icon.png`,
+      name: "CoCreator Frame",
+      iconUrl: `${appUrl}/favicon.png`,
       homeUrl: appUrl,
       imageUrl: `${appUrl}/frames/hello/opengraph-image`,
       buttonTitle: "Launch Frame",
