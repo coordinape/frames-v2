@@ -45,7 +45,7 @@ export default function WelcomePage() {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto text-center">
           <div className="mb-8">
-            <h1 className="text-4xl font-bold mb-4">🎉 You're in!</h1>
+            <h1 className="text-4xl font-bold mb-4">🎉 You&apos;re in!</h1>
             <p className="text-xl opacity-90">
               Welcome to the Base Creator Directory
             </p>
