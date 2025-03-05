@@ -97,7 +97,7 @@ export default function Demo(
 
   const handleSwitchChain = useCallback(() => {
     switchChain({ chainId: nextChain.id });
-  }, [switchChain, chainId, nextChain.id]);
+  }, [switchChain, nextChain.id]);
 
   useEffect(() => {
     const load = async () => {
