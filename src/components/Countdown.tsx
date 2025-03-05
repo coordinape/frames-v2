@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import gql from "graphql-tag";
 import { ApolloClient, InMemoryCache, HttpLink } from "apollo-boost";
 import { Query, ApolloProvider } from "react-apollo";
+import sdk, { type Context } from "@farcaster/frame-sdk";
 
 const STAR_COUNT = 100;
 const FALL_DURATION = 5000; // Duration for stars to fall in milliseconds
@@ -99,12 +100,14 @@ const CoSoulsDisplay = () => {
             <div className="mt-4 bg-black/50 p-4 rounded-lg overflow-auto max-h-48">
               <h2 className="text-white font-bold mb-2">CoSouls Data</h2>
               <div className="text-xs text-white">
-                {data.cosouls.map((soul: {id: string; token_id: string; address: string}) => (
-                  <div key={soul.id} className="mb-1">
-                    ID: {soul.token_id} - Address:{" "}
-                    {soul.address.substring(0, 8)}...
-                  </div>
-                ))}
+                {data.cosouls.map(
+                  (soul: { id: string; token_id: string; address: string }) => (
+                    <div key={soul.id} className="mb-1">
+                      ID: {soul.token_id} - Address:{" "}
+                      {soul.address.substring(0, 8)}...
+                    </div>
+                  )
+                )}
               </div>
             </div>
           );
@@ -117,16 +120,33 @@ const CoSoulsDisplay = () => {
 };
 
 const CountdownContent = () => {
+  const [isSDKLoaded, setIsSDKLoaded] = useState(false);
+  const [context, setContext] = useState<Context.FrameContext>();
   const [timeLeft, setTimeLeft] = useState(0);
   const [stars] = useState<Star[]>(() => generateStars());
-  const [quote] = useState(
-    QUOTES[Math.floor(Math.random() * QUOTES.length)]
-  );
+  const [quote] = useState(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
 
-  // Update stars and quote periodically if needed
+  // Add SDK initialization
   useEffect(() => {
-    // Any additional star or quote updates can go here
-  }, []);
+    const load = async () => {
+      const context = await sdk.context;
+      setContext(context);
+
+      // Set up any frame-specific event listeners here if needed
+
+      console.log("Calling ready");
+      sdk.actions.ready({});
+    };
+
+    if (sdk && !isSDKLoaded) {
+      console.log("Calling load");
+      setIsSDKLoaded(true);
+      load();
+      return () => {
+        sdk.removeAllListeners();
+      };
+    }
+  }, [isSDKLoaded]);
 
   // Update countdown based on current time
   useEffect(() => {
@@ -146,7 +166,15 @@ const CountdownContent = () => {
   const fadedDigits = timeLeftString.slice(-3);
 
   return (
-    <div className="relative h-screen overflow-hidden bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">
+    <div
+      className="relative h-screen overflow-hidden bg-gradient-to-r from-purple-400 via-pink-500 to-red-500"
+      style={{
+        paddingTop: context?.client.safeAreaInsets?.top ?? 0,
+        paddingBottom: context?.client.safeAreaInsets?.bottom ?? 0,
+        paddingLeft: context?.client.safeAreaInsets?.left ?? 0,
+        paddingRight: context?.client.safeAreaInsets?.right ?? 0,
+      }}
+    >
       {/* Starry Background */}
       <div className="absolute inset-0">
         {stars.map((star) => (
