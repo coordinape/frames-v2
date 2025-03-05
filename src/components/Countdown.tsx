@@ -1,9 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import gql from "graphql-tag";
-import { ApolloClient, InMemoryCache, HttpLink } from "apollo-boost";
-import { Query, ApolloProvider } from "react-apollo";
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  useQuery,
+  gql,
+} from "@apollo/client";
+import { createHttpLink } from "@apollo/client";
 import sdk, { type Context } from "@farcaster/frame-sdk";
 
 const STAR_COUNT = 100;
@@ -49,14 +54,24 @@ const QUOTES = [
 ];
 
 // Apollo client setup
+const httpLink = createHttpLink({
+  uri: "https://coordinape-prod.hasura.app/v1/graphql",
+  headers: {
+    Authorization: "anon",
+  },
+});
+
 const apolloClient = new ApolloClient({
+  link: httpLink,
   cache: new InMemoryCache(),
-  link: new HttpLink({
-    uri: "https://coordinape-prod.hasura.app/v1/graphql",
-    headers: {
-      Authorization: "anon",
+  defaultOptions: {
+    watchQuery: {
+      fetchPolicy: "network-only",
     },
-  }),
+    query: {
+      fetchPolicy: "network-only",
+    },
+  },
 });
 
 const CO_SOULS_QUERY = gql`
@@ -87,35 +102,28 @@ const generateStars = (): Star[] => {
 
 // GraphQL query component
 const CoSoulsDisplay = () => {
+  const { loading, error, data } = useQuery(CO_SOULS_QUERY, {
+    fetchPolicy: "network-only",
+  });
+
+  if (loading) return <div className="text-white">Loading CoSouls data...</div>;
+  if (error)
+    return <div className="text-white">Error loading CoSouls data</div>;
+  if (!data?.cosouls) return null;
+
   return (
-    <Query query={CO_SOULS_QUERY}>
-      {({ loading, error, data }) => {
-        if (loading)
-          return <div className="text-white">Loading CoSouls data...</div>;
-        if (error)
-          return <div className="text-white">Error loading CoSouls data</div>;
-
-        if (data) {
-          return (
-            <div className="mt-4 bg-black/50 p-4 rounded-lg overflow-auto max-h-48">
-              <h2 className="text-white font-bold mb-2">CoSouls Data</h2>
-              <div className="text-xs text-white">
-                {data.cosouls.map(
-                  (soul: { id: string; token_id: string; address: string }) => (
-                    <div key={soul.id} className="mb-1">
-                      ID: {soul.token_id} - Address:{" "}
-                      {soul.address.substring(0, 8)}...
-                    </div>
-                  )
-                )}
-              </div>
+    <div className="mt-4 bg-black/50 p-4 rounded-lg overflow-auto max-h-48">
+      <h2 className="text-white font-bold mb-2">CoSouls Data</h2>
+      <div className="text-xs text-white">
+        {data.cosouls.map(
+          (soul: { id: string; token_id: string; address: string }) => (
+            <div key={soul.id} className="mb-1">
+              ID: {soul.token_id} - Address: {soul.address.substring(0, 8)}...
             </div>
-          );
-        }
-
-        return null;
-      }}
-    </Query>
+          )
+        )}
+      </div>
+    </div>
   );
 };
 
