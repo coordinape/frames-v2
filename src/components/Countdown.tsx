@@ -99,7 +99,7 @@ const CoSoulsDisplay = () => {
             <div className="mt-4 bg-black/50 p-4 rounded-lg overflow-auto max-h-48">
               <h2 className="text-white font-bold mb-2">CoSouls Data</h2>
               <div className="text-xs text-white">
-                {data.cosouls.map((soul: any) => (
+                {data.cosouls.map((soul: {id: string; token_id: string; address: string}) => (
                   <div key={soul.id} className="mb-1">
                     ID: {soul.token_id} - Address:{" "}
                     {soul.address.substring(0, 8)}...
@@ -118,8 +118,8 @@ const CoSoulsDisplay = () => {
 
 const CountdownContent = () => {
   const [timeLeft, setTimeLeft] = useState(0);
-  const [stars, setStars] = useState<Star[]>(() => generateStars());
-  const [quote, setQuote] = useState(
+  const [stars] = useState<Star[]>(() => generateStars());
+  const [quote] = useState(
     QUOTES[Math.floor(Math.random() * QUOTES.length)]
   );
 
