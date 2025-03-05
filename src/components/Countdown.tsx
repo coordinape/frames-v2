@@ -1,9 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import gql from "graphql-tag";
-import { ApolloClient, InMemoryCache, HttpLink } from "apollo-boost";
-import { Query, ApolloProvider } from "react-apollo";
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  useQuery,
+  gql,
+} from "@apollo/client";
+import { createHttpLink } from "@apollo/client";
+import sdk, { type Context } from "@farcaster/frame-sdk";
 
 const STAR_COUNT = 100;
 const FALL_DURATION = 5000; // Duration for stars to fall in milliseconds
@@ -48,14 +54,24 @@ const QUOTES = [
 ];
 
 // Apollo client setup
+const httpLink = createHttpLink({
+  uri: "https://coordinape-prod.hasura.app/v1/graphql",
+  headers: {
+    Authorization: "anon",
+  },
+});
+
 const apolloClient = new ApolloClient({
+  link: httpLink,
   cache: new InMemoryCache(),
-  link: new HttpLink({
-    uri: "https://coordinape-prod.hasura.app/v1/graphql",
-    headers: {
-      Authorization: "anon",
+  defaultOptions: {
+    watchQuery: {
+      fetchPolicy: "network-only",
     },
-  }),
+    query: {
+      fetchPolicy: "network-only",
+    },
+  },
 });
 
 const CO_SOULS_QUERY = gql`
@@ -68,56 +84,77 @@ const CO_SOULS_QUERY = gql`
   }
 `;
 
-const generateStars = () => {
-  return Array.from({ length: STAR_COUNT }, () => ({
-    id: Math.random(),
-    x: Math.random() * 100, // Random x position
-    delay: Math.random() * FALL_DURATION, // Random delay for falling
-    color: COLORS[Math.floor(Math.random() * COLORS.length)], // Random color
+interface Star {
+  id: number;
+  x: number;
+  delay: number;
+  color: string;
+}
+
+const generateStars = (): Star[] => {
+  return Array.from({ length: STAR_COUNT }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    delay: Math.random() * FALL_DURATION,
+    color: COLORS[Math.floor(Math.random() * COLORS.length)],
   }));
 };
 
 // GraphQL query component
 const CoSoulsDisplay = () => {
+  const { loading, error, data } = useQuery(CO_SOULS_QUERY, {
+    fetchPolicy: "network-only",
+  });
+
+  if (loading) return <div className="text-white">Loading CoSouls data...</div>;
+  if (error)
+    return <div className="text-white">Error loading CoSouls data</div>;
+  if (!data?.cosouls) return null;
+
   return (
-    <Query query={CO_SOULS_QUERY}>
-      {({ loading, error, data }) => {
-        if (loading)
-          return <div className="text-white">Loading CoSouls data...</div>;
-        if (error)
-          return <div className="text-white">Error loading CoSouls data</div>;
-
-        if (data) {
-          return (
-            <div className="mt-4 bg-black/50 p-4 rounded-lg overflow-auto max-h-48">
-              <h2 className="text-white font-bold mb-2">CoSouls Data</h2>
-              <div className="text-xs text-white">
-                {data.cosouls.map((soul: any) => (
-                  <div key={soul.id} className="mb-1">
-                    ID: {soul.token_id} - Address:{" "}
-                    {soul.address.substring(0, 8)}...
-                  </div>
-                ))}
-              </div>
+    <div className="mt-4 bg-black/50 p-4 rounded-lg overflow-auto max-h-48">
+      <h2 className="text-white font-bold mb-2">CoSouls Data</h2>
+      <div className="text-xs text-white">
+        {data.cosouls.map(
+          (soul: { id: string; token_id: string; address: string }) => (
+            <div key={soul.id} className="mb-1">
+              ID: {soul.token_id} - Address: {soul.address.substring(0, 8)}...
             </div>
-          );
-        }
-
-        return null;
-      }}
-    </Query>
+          )
+        )}
+      </div>
+    </div>
   );
 };
 
 const CountdownContent = () => {
+  const [isSDKLoaded, setIsSDKLoaded] = useState(false);
+  const [context, setContext] = useState<Context.FrameContext>();
   const [timeLeft, setTimeLeft] = useState(0);
-  const [stars, setStars] = useState([]);
-  const [quote, setQuote] = useState("");
+  const [stars] = useState<Star[]>(() => generateStars());
+  const [quote] = useState(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
 
+  // Add SDK initialization
   useEffect(() => {
-    setStars(generateStars());
-    setQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
-  }, []);
+    const load = async () => {
+      const context = await sdk.context;
+      setContext(context);
+
+      // Set up any frame-specific event listeners here if needed
+
+      console.log("Calling ready");
+      sdk.actions.ready({});
+    };
+
+    if (sdk && !isSDKLoaded) {
+      console.log("Calling load");
+      setIsSDKLoaded(true);
+      load();
+      return () => {
+        sdk.removeAllListeners();
+      };
+    }
+  }, [isSDKLoaded]);
 
   // Update countdown based on current time
   useEffect(() => {
@@ -137,7 +174,15 @@ const CountdownContent = () => {
   const fadedDigits = timeLeftString.slice(-3);
 
   return (
-    <div className="relative h-screen overflow-hidden bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">
+    <div
+      className="relative h-screen overflow-hidden bg-gradient-to-r from-purple-400 via-pink-500 to-red-500"
+      style={{
+        paddingTop: context?.client.safeAreaInsets?.top ?? 0,
+        paddingBottom: context?.client.safeAreaInsets?.bottom ?? 0,
+        paddingLeft: context?.client.safeAreaInsets?.left ?? 0,
+        paddingRight: context?.client.safeAreaInsets?.right ?? 0,
+      }}
+    >
       {/* Starry Background */}
       <div className="absolute inset-0">
         {stars.map((star) => (
@@ -159,15 +204,17 @@ const CountdownContent = () => {
       {/* Countdown Display */}
       <div className="relative z-10 flex justify-center items-center h-full">
         <div className="text-center">
-          <h1 className="mb-5 text-xl font-bold text-white text-shadow-lg opacity-0 animate-fadeIn">
+          <h1 className="mb-5 text-base md:text-xl font-bold text-white text-shadow-lg opacity-0 animate-fadeIn px-4">
             {quote}
           </h1>
-          <p className="text-7xl font-mono font-bold text-white text-shadow-lg bg-black/30 p-8 rounded-lg backdrop-blur-sm">
+          <p className="text-4xl md:text-7xl font-mono font-bold text-white text-shadow-lg bg-black/30 p-4 md:p-8 rounded-lg backdrop-blur-sm mx-4">
             <span>{visibleDigits}</span>
             <span className="opacity-50">{fadedDigits}</span>
-            <span className="text-2xl ml-2">ms</span>
+            <span className="text-xl md:text-2xl ml-2">ms</span>
           </p>
-          <CoSoulsDisplay />
+          <div className="mx-4">
+            <CoSoulsDisplay />
+          </div>
         </div>
       </div>
 
