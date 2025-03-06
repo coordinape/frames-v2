@@ -1,4 +1,5 @@
 import ProfileClient from "./ProfileClient";
+import ENSResolver from "./ENSResolver";
 
 interface Props {
   params: Promise<{
@@ -10,8 +11,9 @@ export default async function ProfilePage({ params }: Props) {
   const { username } = await params;
 
   return (
-    <div>
-      <ProfileClient username={username} />
+    <div className="space-y-6">
+      {/* <ProfileClient username={username} /> */}
+      <ENSResolver initialValue={username} />
     </div>
   );
 }
