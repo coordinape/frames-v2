@@ -13,7 +13,7 @@ export default async function ProfilePage({ params }: Props) {
   return (
     <div className="space-y-6">
       {/* <ProfileClient username={username} /> */}
-      <ENSResolver address={username} />
+      <ENSResolver initialValue={username} />
     </div>
   );
 }

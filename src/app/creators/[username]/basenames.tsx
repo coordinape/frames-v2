@@ -146,3 +146,21 @@ export async function getBasename(address: Address) {
     }
   } catch (error) {}
 }
+
+export async function getAddressFromBasename(basename: Basename) {
+  try {
+    const address = await baseClient.getEnsAddress({
+      name: basename,
+      universalResolverAddress: BASENAME_L2_RESOLVER_ADDRESS,
+    });
+
+    if (!address) {
+      throw new Error(`No address found for basename: ${basename}`);
+    }
+
+    return address;
+  } catch (error) {
+    console.error("Error resolving basename to address:", error);
+    throw error;
+  }
+}

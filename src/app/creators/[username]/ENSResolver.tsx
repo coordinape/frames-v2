@@ -1,22 +1,66 @@
 "use client";
 
-import { useState } from "react";
-import { getAddress } from "viem";
+import { useState, useEffect } from "react";
+import { getAddress, isAddress } from "viem";
 import {
   getBasename,
   getBasenameTextRecords,
   textRecordsKeysEnabled,
+  getAddressFromBasename,
   type Basename,
 } from "./basenames";
 
-export default function ENSResolver({ address }: { address: string }) {
+export default function ENSResolver({
+  initialValue,
+}: {
+  initialValue: string;
+}) {
+  const [inputValue, setInputValue] = useState(initialValue);
+  const [address, setAddress] = useState("");
   const [basename, setBasename] = useState("");
   const [textRecords, setTextRecords] = useState<(string | undefined)[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const resolveAddress = async () => {
-    if (!address) return;
+  useEffect(() => {
+    console.log("inputValue", inputValue);
+    if (inputValue) {
+      if (isAddress(inputValue)) {
+        setAddress(inputValue);
+        resolveAddress(inputValue);
+      } else if (inputValue.endsWith(".base.eth")) {
+        setBasename(inputValue);
+        resolveBasename(inputValue);
+      }
+    }
+  }, [inputValue]);
+
+  const resolveBasename = async (name: string) => {
+    try {
+      setLoading(true);
+      setError("");
+      setTextRecords([]);
+      setBasename(name);
+
+      const resolvedAddress = await getAddressFromBasename(name as Basename);
+      setAddress(resolvedAddress);
+
+      const records = await getBasenameTextRecords(name as Basename);
+      if (records) {
+        setTextRecords(
+          records.map((record) => record.result as string | undefined)
+        );
+      }
+    } catch (err) {
+      setError("Error resolving Base name. Please try again.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resolveAddress = async (addr: string) => {
+    if (!addr) return;
 
     try {
       setLoading(true);
@@ -24,7 +68,8 @@ export default function ENSResolver({ address }: { address: string }) {
       setTextRecords([]);
 
       // Validate and format the address
-      const formattedAddress = getAddress(address);
+      const formattedAddress = getAddress(addr);
+      setAddress(formattedAddress);
 
       const name = await getBasename(formattedAddress);
       setBasename(name || "No Base name found");
@@ -32,7 +77,6 @@ export default function ENSResolver({ address }: { address: string }) {
       // If we found a basename, fetch its text records
       if (name) {
         const records = await getBasenameTextRecords(name as Basename);
-        console.log("records", records);
         if (records) {
           setTextRecords(
             records.map((record) => record.result as string | undefined)
@@ -66,18 +110,23 @@ export default function ENSResolver({ address }: { address: string }) {
         <div>
           <input
             type="text"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            placeholder="Enter Ethereum address"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            placeholder="Enter Ethereum address or Base name"
             className="w-full p-2 border rounded"
           />
         </div>
         <button
-          onClick={resolveAddress}
-          disabled={loading || !address}
+          onClick={() =>
+            inputValue &&
+            (isAddress(inputValue)
+              ? resolveAddress(inputValue)
+              : resolveBasename(inputValue))
+          }
+          disabled={loading || !inputValue}
           className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
         >
-          {loading ? "Resolving..." : "Resolve Base Name"}
+          {loading ? "Resolving..." : "Resolve"}
         </button>
         {error && <p className="text-red-500">{error}</p>}
         {basename && !error && (
@@ -86,6 +135,12 @@ export default function ENSResolver({ address }: { address: string }) {
               <p className="font-semibold">Base Name:</p>
               <p>{basename}</p>
             </div>
+            {address && (
+              <div>
+                <p className="font-semibold">Ethereum Address:</p>
+                <p className="font-mono">{address}</p>
+              </div>
+            )}
             {textRecords.length > 0 && (
               <div>
                 <p className="font-semibold mb-2">Profile Information:</p>
