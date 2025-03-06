@@ -55,7 +55,7 @@ export default function CreateProfilePage() {
 
           {/* Title */}
 
-          <h1 className="text-center font-mono text-4xl font-bold mb-4 base-pixel derp">
+          <h1 className="text-center font-mono text-4xl font-bold mb-4 base-pixel">
             Create
             <br />
             Your Profile
