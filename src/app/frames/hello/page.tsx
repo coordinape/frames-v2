@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import App from "~/app/app";
+import ContractGallery from "./components/ContractGallery";
 
 const appUrl = process.env.NEXT_PUBLIC_URL;
 
@@ -30,6 +31,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function HelloFrame() {
-  return <App title={"Hello, world!"} />;
+export default async function HelloFrame() {
+  const addr = '0x333d0EBc54707c0a9D92caC749B3094c28a0E111'; // TODO: Make this configurable
+  return <ContractGallery address={addr} />;
 }

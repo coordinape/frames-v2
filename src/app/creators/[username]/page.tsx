@@ -1,5 +1,8 @@
 import ProfileClient from "./ProfileClient";
 import ENSResolver from "./ENSResolver";
+import ContractGallery from "~/app/frames/hello/components/ContractGallery";
+import { Metadata } from "next";
+import { resolveBasenameOrAddress } from "~/app/hooks/useBasenameResolver";
 
 interface Props {
   params: Promise<{
@@ -9,16 +12,19 @@ interface Props {
 
 export default async function ProfilePage({ params }: Props) {
   const { username } = await params;
+  
+  // Resolve the basename or address server-side
+  const resolution = await resolveBasenameOrAddress(username);
 
   return (
     <div className="space-y-6">
       {/* <ProfileClient username={username} /> */}
-      <ENSResolver initialValue={username} />
+      <ENSResolver initialValue={username} initialData={resolution} />
+      <ContractGallery address={resolution?.address || ""} />
     </div>
   );
 }
 
-import { Metadata } from "next";
 
 const appUrl = `https://${process.env.VERCEL_URL}`;
 // const appUrl = process.env.NEXT_PUBLIC_URL;
