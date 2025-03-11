@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import sdk, { type Context } from "@farcaster/frame-sdk";
+import Header from "~/app/components/Header";
 
 interface Requirement {
   id: string;
@@ -38,11 +39,15 @@ export default function RequirementsPage() {
   const allRequirementsMet = requirements.every((req) => req.verified);
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-500 to-blue-700 text-white">
+    <div className="min-h-screen bg-base-blue text-white">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
-          <h1 className="text-3xl font-bold mb-8 text-center">
-            Verify Requirements
+          <Header />
+          {/* Title */}
+          <h1 className="text-center font-mono text-5xl font-bold mb-4 base-pixel">
+            Create
+            <br />
+            on Base
           </h1>
 
           <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 mb-8">
@@ -53,18 +58,8 @@ export default function RequirementsPage() {
                   ${req.verified ? "bg-green-500" : "bg-white/20"}`}
                 >
                   {req.verified && (
-                    <svg
-                      className="w-4 h-4 text-white"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
+                    <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                   )}
                 </div>
@@ -73,11 +68,7 @@ export default function RequirementsPage() {
                   className="ml-4 px-4 py-2 bg-blue-600 rounded hover:bg-blue-700 transition-colors"
                   onClick={() => {
                     // Add verification logic here
-                    setRequirements((reqs) =>
-                      reqs.map((r) =>
-                        r.id === req.id ? { ...r, verified: true } : r
-                      )
-                    );
+                    setRequirements((reqs) => reqs.map((r) => (r.id === req.id ? { ...r, verified: true } : r)));
                   }}
                 >
                   Verify
@@ -89,15 +80,9 @@ export default function RequirementsPage() {
           <div className="text-center">
             <button
               className={`px-8 py-3 rounded-full font-semibold transition-colors
-                ${
-                  allRequirementsMet
-                    ? "bg-white text-blue-700 hover:bg-blue-50"
-                    : "bg-white/20 cursor-not-allowed"
-                }`}
+                ${allRequirementsMet ? "bg-white text-blue-700 hover:bg-blue-50" : "bg-white/20 cursor-not-allowed"}`}
               disabled={!allRequirementsMet}
-              onClick={() =>
-                allRequirementsMet && (window.location.href = "/join/create")
-              }
+              onClick={() => allRequirementsMet && (window.location.href = "/join/create")}
             >
               Create your profile
             </button>
