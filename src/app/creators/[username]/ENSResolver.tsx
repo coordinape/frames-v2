@@ -1,95 +1,59 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { getAddress, isAddress } from "viem";
-import {
-  getBasename,
-  getBasenameTextRecords,
-  textRecordsKeysEnabled,
-  getAddressFromBasename,
-  type Basename,
-} from "./basenames";
+import { useState } from "react";
+import { isAddress } from "viem";
+import { resolveBasenameOrAddress } from "~/app/hooks/useBasenameResolver";
+import type { BasenameTextRecordKeys } from "./basenames";
+
+interface ENSResolverProps {
+  initialValue: string;
+  initialData?: Awaited<ReturnType<typeof resolveBasenameOrAddress>>;
+}
+
+interface Resolution {
+  basename: string;
+  address: string;
+  textRecords: Record<BasenameTextRecordKeys, string | undefined>;
+  error: string | null;
+}
 
 export default function ENSResolver({
   initialValue,
-}: {
-  initialValue: string;
-}) {
+  initialData,
+}: ENSResolverProps) {
   const [inputValue, setInputValue] = useState(initialValue);
-  const [address, setAddress] = useState("");
-  const [basename, setBasename] = useState("");
-  const [textRecords, setTextRecords] = useState<(string | undefined)[]>([]);
+  const [resolution, setResolution] = useState<Resolution>(initialData || {
+    basename: "",
+    address: "",
+    textRecords: {} as Record<BasenameTextRecordKeys, string | undefined>,
+    error: null
+  });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  useEffect(() => {
-    console.log("inputValue", inputValue);
-    if (inputValue) {
-      if (isAddress(inputValue)) {
-        setAddress(inputValue);
-        resolveAddress(inputValue);
-      } else if (inputValue.endsWith(".base.eth")) {
-        setBasename(inputValue);
-        resolveBasename(inputValue);
-      }
-    }
-  }, [inputValue]);
-
-  const resolveBasename = async (name: string) => {
-    try {
-      setLoading(true);
-      setError("");
-      setTextRecords([]);
-      setBasename(name);
-
-      const resolvedAddress = await getAddressFromBasename(name as Basename);
-      setAddress(resolvedAddress);
-
-      const records = await getBasenameTextRecords(name as Basename);
-      if (records) {
-        setTextRecords(
-          records.map((record) => record.result as string | undefined)
-        );
-      }
-    } catch (err) {
-      setError("Error resolving Base name. Please try again.");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const resolveAddress = async (addr: string) => {
-    if (!addr) return;
+  const handleResolve = async () => {
+    if (!inputValue) return;
 
     try {
       setLoading(true);
-      setError("");
-      setTextRecords([]);
-
-      // Validate and format the address
-      const formattedAddress = getAddress(addr);
-      setAddress(formattedAddress);
-
-      const name = await getBasename(formattedAddress);
-      setBasename(name || "No Base name found");
-
-      // If we found a basename, fetch its text records
-      if (name) {
-        const records = await getBasenameTextRecords(name as Basename);
-        if (records) {
-          setTextRecords(
-            records.map((record) => record.result as string | undefined)
-          );
-        }
+      const result = await resolveBasenameOrAddress(inputValue);
+      if (!result) {
+        setResolution({
+          basename: "",
+          address: "",
+          textRecords: {} as Record<BasenameTextRecordKeys, string | undefined>,
+          error: "No resolution found"
+        });
+        return;
       }
+      setResolution({
+        ...result,
+        error: null
+      });
     } catch (err) {
-      if (err instanceof Error && err.message.includes("invalid address")) {
-        setError("Please enter a valid Ethereum address");
-      } else {
-        setError("Error resolving Base name. Please try again.");
-      }
-      console.error(err);
+      setResolution(prev => ({
+        ...prev,
+        error: err instanceof Error ? err.message : "An unknown error occurred"
+      }));
     } finally {
       setLoading(false);
     }
@@ -117,45 +81,40 @@ export default function ENSResolver({
           />
         </div>
         <button
-          onClick={() =>
-            inputValue &&
-            (isAddress(inputValue)
-              ? resolveAddress(inputValue)
-              : resolveBasename(inputValue))
-          }
+          onClick={handleResolve}
           disabled={loading || !inputValue}
           className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
         >
           {loading ? "Resolving..." : "Resolve"}
         </button>
-        {error && <p className="text-red-500">{error}</p>}
-        {basename && !error && (
+        {resolution.error && <p className="text-red-500">{resolution.error}</p>}
+        {resolution.basename && !resolution.error && (
           <div className="mt-4 space-y-4">
             <div>
               <p className="font-semibold">Base Name:</p>
-              <p>{basename}</p>
+              <p>{resolution.basename}</p>
             </div>
-            {address && (
+            {resolution.address && (
               <div>
                 <p className="font-semibold">Ethereum Address:</p>
-                <p className="font-mono">{address}</p>
+                <p className="font-mono">{resolution.address}</p>
               </div>
             )}
-            {textRecords.length > 0 && (
+            {resolution.textRecords && Object.keys(resolution.textRecords).length > 0 && (
               <div>
                 <p className="font-semibold mb-2">Profile Information:</p>
                 <div className="grid gap-2">
-                  {textRecords.map(
-                    (record, index) =>
-                      record && (
+                  {Object.entries(resolution.textRecords).map(
+                    ([key, value]) =>
+                      value && (
                         <div
-                          key={textRecordsKeysEnabled[index]}
+                          key={key}
                           className="flex"
                         >
                           <span className="font-medium w-24">
-                            {formatKey(textRecordsKeysEnabled[index])}:
+                            {formatKey(key)}:
                           </span>
-                          <span className="flex-1">{record}</span>
+                          <span className="flex-1">{value}</span>
                         </div>
                       )
                   )}
