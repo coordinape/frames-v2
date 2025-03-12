@@ -24,7 +24,7 @@ import {
 import { config } from "~/components/providers/WagmiProvider";
 import { Button } from "~/components/ui/Button";
 import { truncateAddress } from "~/lib/truncateAddress";
-import { base, degen, mainnet, optimism } from "wagmi/chains";
+import { base, degen, mainnet, optimism, unichain } from "wagmi/chains";
 import { BaseError, UserRejectedRequestError } from "viem";
 import { useSession } from "next-auth/react";
 import { createStore } from "mipd";
@@ -90,6 +90,8 @@ export default function Demo(
       return degen;
     } else if (chainId === degen.id) {
       return mainnet;
+    } else if (chainId === mainnet.id) {
+      return unichain;
     } else {
       return base;
     }
