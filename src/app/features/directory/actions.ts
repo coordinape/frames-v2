@@ -119,7 +119,7 @@ export async function getCreators(): Promise<CreatorWithOpenSeaData[]> {
     });
 
     // Transform the data to a more convenient format
-    const creators: Creator[] = data.users.map((user: any) => ({
+    const creators: Creator[] = data.users.map((user: { id: string; profile?: { address?: string; name?: string; avatar?: string; bio?: string } }) => ({
       id: user.id,
       address: user.profile?.address || "",
       name: user.profile?.name || "",
