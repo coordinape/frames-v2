@@ -24,6 +24,7 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --primary-blue: #0066FF;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -42,6 +43,9 @@ body {
 * {
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
 }
 
 *::-webkit-scrollbar {
@@ -52,4 +56,24 @@ body {
   :root {
     --radius: 0.5rem;
   }
+}
+
+.font-pixel {
+  font-family: 'PixelFont', monospace;
+  letter-spacing: 0.05em;
+}
+
+/* Fallback pixel-like styling if the custom font isn't available */
+.font-pixel-fallback {
+  font-family: monospace;
+  letter-spacing: 0.1em;
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+  image-rendering: pixelated;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-family: 'Inter', sans-serif;
 }

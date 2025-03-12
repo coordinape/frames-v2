@@ -141,9 +141,16 @@ export async function getCreators(): Promise<CreatorWithOpenSeaData[]> {
           // Resolve basename
           const resolution = await resolveBasenameOrAddress(creator.address);
           
+          // Transform the resolution to match the BasenameResolution interface
+          const formattedResolution = resolution ? {
+            basename: resolution.basename,
+            address: resolution.address,
+            resolved: !!resolution.basename
+          } : null;
+          
           return {
             ...creator,
-            resolution,
+            resolution: formattedResolution,
             openSeaData: {
               collections: contracts.map(contract => ({
                 id: contract.contractAddress,

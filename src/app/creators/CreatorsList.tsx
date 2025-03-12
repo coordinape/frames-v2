@@ -4,12 +4,12 @@ import { useEffect, useState } from "react";
 import sdk, { type Context } from "@farcaster/frame-sdk";
 import { getCreators } from "~/app/features/directory/actions";
 import { CreatorWithOpenSeaData } from "~/app/features/directory/types";
+import Link from "next/link";
 
 export default function CreatorsList() {
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
   const [context, setContext] = useState<Context.FrameContext>();
-  const [selectedRegion, setSelectedRegion] = useState("All");
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
   const [creators, setCreators] = useState<CreatorWithOpenSeaData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -51,133 +51,136 @@ export default function CreatorsList() {
   }, []);
 
   const filteredCreators = creators.filter((creator) => {
-    const matchesRegion =
-      selectedRegion === "All" || creator.address.includes(selectedRegion);
-    const matchesCategory =
-      selectedCategory === "All" || creator.name.includes(selectedCategory);
-    return matchesRegion && matchesCategory;
+    if (!searchQuery) return true;
+    
+    const query = searchQuery.toLowerCase();
+    return (
+      creator.name.toLowerCase().includes(query) ||
+      creator.address.toLowerCase().includes(query) ||
+      creator.resolution?.basename?.toLowerCase().includes(query) ||
+      creator.bio?.toLowerCase().includes(query)
+    );
   });
 
   if (loading) {
-    return <div className="p-4 text-center">Loading creators...</div>;
+    return (
+      <div className="min-h-screen bg-blue-600 flex items-center justify-center">
+        <div className="text-white text-xl">Loading creators...</div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="p-4 text-center text-red-500">{error}</div>;
-  }
-
-  if (creators.length === 0) {
-    return <div className="p-4 text-center">No creators found.</div>;
+    return (
+      <div className="min-h-screen bg-blue-600 flex items-center justify-center">
+        <div className="text-white text-xl">{error}</div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-purple-500 to-pink-500">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold text-white">Creator Directory</h1>
-            <div className="flex space-x-4">
-              <select
-                value={selectedRegion}
-                onChange={(e) => setSelectedRegion(e.target.value)}
-                className="bg-white/10 text-white border border-white/20 rounded px-4 py-2"
-              >
-                <option value="All">All Regions</option>
-                <option value="US">United States</option>
-                <option value="EU">Europe</option>
-                <option value="Asia">Asia</option>
-              </select>
-
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="bg-white/10 text-white border border-white/20 rounded px-4 py-2"
-              >
-                <option value="All">All Categories</option>
-                <option value="Memes">Memes</option>
-                <option value="Art">Art</option>
-                <option value="Music">Music</option>
-              </select>
-            </div>
+    <div className="min-h-screen bg-blue-600">
+      <div className="max-w-md mx-auto px-4 py-6">
+        <div className="flex justify-between items-center mb-10">
+          <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 12H21" stroke="blue" strokeWidth="3" strokeLinecap="round" />
+            </svg>
           </div>
+          <Link href="/join" className="bg-white text-blue-600 font-semibold px-6 py-3 rounded-full">
+            Join the Directory
+          </Link>
+        </div>
 
-          <p className="text-white mb-6">
-            {filteredCreators.length} creators found
-          </p>
+        <div className="text-center mb-10">
+          <h1 className="text-7xl font-bold text-white mb-4 base-pixel">Creators</h1>
+          <p className="text-white text-xl">Explore the top creators on base.</p>
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredCreators.map((creator) => (
-              <div
-                key={creator.id}
-                className="bg-white/10 backdrop-blur-sm rounded-lg p-6 hover:bg-white/20 transition-colors cursor-pointer"
-                onClick={() =>
-                  (window.location.href = `/creators/${creator.address}`)
-                }
-              >
-                <div className="flex items-center mb-4">
-                  {creator.avatar ? (
-                    <img
-                      src={creator.avatar}
-                      alt={creator.name}
-                      className="w-16 h-16 rounded-full mr-4"
-                    />
-                  ) : (
-                    <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
-                      <span className="text-gray-500">{creator.name.charAt(0)}</span>
+        <div className="relative mb-10">
+          <div className="flex items-center bg-white/10 backdrop-blur-sm rounded-full border border-white/20 px-4">
+            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <input
+              type="text"
+              placeholder="Name, Skill, Medium, Location..."
+              className="w-full bg-transparent border-none text-white py-3 px-2 focus:outline-none"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </div>
+        </div>
+
+        <p className="text-white mb-4 font-medium">
+          {filteredCreators.length} CREATORS FOUND
+        </p>
+
+        <div className="space-y-4">
+          {filteredCreators.map((creator) => (
+            <Link 
+              href={`/creators/${creator.address}`}
+              key={creator.id}
+              className="block"
+            >
+              <div className="bg-blue-500 rounded-xl p-4 hover:bg-blue-400 transition-colors">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    {creator.avatar ? (
+                      <img
+                        src={creator.avatar}
+                        alt={creator.name}
+                        className="w-10 h-10 rounded-full mr-3"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-blue-300 flex items-center justify-center mr-3">
+                        <span className="text-blue-700">{creator.name.charAt(0)}</span>
+                      </div>
+                    )}
+                    <div>
+                      <h2 className="text-lg font-bold text-white">
+                        {creator.resolution?.basename || creator.name}
+                      </h2>
                     </div>
-                  )}
-                  <div>
-                    <h2 className="text-xl font-bold text-white">
-                      {creator.name}
-                    </h2>
-                    <p className="text-white/80">{creator.address}</p>
                   </div>
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
                 </div>
 
-                {creator.bio && (
-                  <p className="text-white/80">{creator.bio}</p>
-                )}
-
-                <div className="mt-4">
-                  <p>Basename: {creator.resolution?.basename || 'N/A'}</p>
-                  <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {creator.openSeaData?.collections.slice(0, 3).map((collection) => (
-                      <div 
-                        key={collection.name} 
-                        className="bg-white/20 rounded-lg overflow-hidden shadow hover:shadow-md transition-all"
-                      >
-                        <div className="aspect-[16/9] relative bg-gray-100/20">
-                          {collection.bannerImageUrl ? (
-                            <img
-                              src={collection.bannerImageUrl}
-                              alt={`${collection.name} banner`}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : collection.imageUrl ? (
-                            <img
-                              src={collection.imageUrl}
-                              alt={collection.name}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100/10 to-gray-200/10">
-                              <span className="text-white/60 text-sm">No Image</span>
-                            </div>
-                          )}
-                        </div>
-                        <div className="p-3">
-                          <h4 className="text-lg font-semibold text-white">{collection.name || 'Unnamed Collection'}</h4>
-                          {collection.description && (
-                            <p className="text-white/70 text-sm mt-1 line-clamp-2">{collection.description}</p>
-                          )}
-                        </div>
+                <div className="grid grid-cols-3 gap-2 mt-4">
+                  {creator.openSeaData?.collections && creator.openSeaData.collections.length > 0 ? (
+                    creator.openSeaData.collections.slice(0, 3).map((collection, index) => (
+                      <div key={collection.id || index} className="aspect-square overflow-hidden rounded-lg">
+                        {collection.imageUrl ? (
+                          <img
+                            src={collection.imageUrl}
+                            alt={collection.name || "Collection"}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-blue-400 flex items-center justify-center">
+                            <span className="text-blue-100 text-xs">No Image</span>
+                          </div>
+                        )}
                       </div>
-                    ))}
-                  </div>
+                    ))
+                  ) : (
+                    <>
+                      {[1, 2, 3].map((i) => (
+                        <div key={i} className="aspect-square overflow-hidden rounded-lg bg-blue-400/50 flex items-center justify-center">
+                          <span className="text-white/80 text-xs font-medium">No NFT</span>
+                        </div>
+                      ))}
+                    </>
+                  )}
                 </div>
               </div>
-            ))}
-          </div>
+            </Link>
+          ))}
         </div>
       </div>
     </div>
