@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import sdk, { type Context } from "@farcaster/frame-sdk";
 import { getCreators } from "~/app/features/directory/actions";
 import { CreatorWithOpenSeaData } from "~/app/features/directory/types";
+import Header from "../components/Header";
+import LayoutWrapper from "../components/LayoutWrapper";
 
 export default function CreatorsList() {
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
@@ -51,10 +53,8 @@ export default function CreatorsList() {
   }, []);
 
   const filteredCreators = creators.filter((creator) => {
-    const matchesRegion =
-      selectedRegion === "All" || creator.address.includes(selectedRegion);
-    const matchesCategory =
-      selectedCategory === "All" || creator.name.includes(selectedCategory);
+    const matchesRegion = selectedRegion === "All" || creator.address.includes(selectedRegion);
+    const matchesCategory = selectedCategory === "All" || creator.name.includes(selectedCategory);
     return matchesRegion && matchesCategory;
   });
 
@@ -71,109 +71,80 @@ export default function CreatorsList() {
   }
 
   return (
-    <div className="min-h-screen bg-base-blue">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex justify-between items-start">
-            derp
-          </div>
-          <div className="flex flex-col justify-between items-center mb-8">
-            <h1 className="text-3xl base-pixel text-white">Creators</h1>
-            <p className="opacity-90 text-white">Explore the top creators on Base</p>
-            <div className="flex space-x-4">
-              <select value={selectedRegion} onChange={(e) => setSelectedRegion(e.target.value)} className="bg-white/10 text-white border border-white/20 rounded px-4 py-2">
-                <option value="All">All Regions</option>
-                <option value="US">United States</option>
-                <option value="EU">Europe</option>
-                <option value="Asia">Asia</option>
-              </select>
+    <LayoutWrapper>
+      <Header />
+      <div className="flex flex-col justify-between items-center mb-8">
+        <h1 className="text-3xl base-pixel text-white">Creators</h1>
+        <p className="opacity-90 text-white">Explore the top creators on Base</p>
+        <div className="flex space-x-4">
+          <select value={selectedRegion} onChange={(e) => setSelectedRegion(e.target.value)} className="bg-white/10 text-white border border-white/20 rounded px-4 py-2">
+            <option value="All">All Regions</option>
+            <option value="US">United States</option>
+            <option value="EU">Europe</option>
+            <option value="Asia">Asia</option>
+          </select>
 
-              <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className="bg-white/10 text-white border border-white/20 rounded px-4 py-2">
-                <option value="All">All Categories</option>
-                <option value="Memes">Memes</option>
-                <option value="Art">Art</option>
-                <option value="Music">Music</option>
-              </select>
-            </div>
-          </div>
-
-          <p className="text-white mb-6">{filteredCreators.length} creators found</p>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredCreators.map((creator) => (
-              <div
-                key={creator.id}
-                className="bg-white/10 backdrop-blur-sm rounded-lg p-6 hover:bg-white/20 transition-colors cursor-pointer"
-                onClick={() =>
-                  (window.location.href = `/creators/${creator.address}`)
-                }
-              >
-                <div className="flex items-center mb-4">
-                  {creator.avatar ? (
-                    <img
-                      src={creator.avatar}
-                      alt={creator.name}
-                      className="w-16 h-16 rounded-full mr-4"
-                    />
-                  ) : (
-                    <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
-                      <span className="text-gray-500">{creator.name.charAt(0)}</span>
-                    </div>
-                  )}
-                  <div>
-                    <h2 className="text-xl font-bold text-white">
-                      {creator.name}
-                    </h2>
-                    <p className="text-white/80">{creator.address}</p>
-                  </div>
-                </div>
-
-                {creator.bio && (
-                  <p className="text-white/80">{creator.bio}</p>
-                )}
-
-                <div className="mt-4">
-                  <p>Basename: {creator.resolution?.basename || 'N/A'}</p>
-                  <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {creator.openSeaData?.collections.slice(0, 3).map((collection) => (
-                      <div 
-                        key={collection.name} 
-                        className="bg-white/20 rounded-lg overflow-hidden shadow hover:shadow-md transition-all"
-                      >
-                        <div className="aspect-[16/9] relative bg-gray-100/20">
-                          {collection.bannerImageUrl ? (
-                            <img
-                              src={collection.bannerImageUrl}
-                              alt={`${collection.name} banner`}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : collection.imageUrl ? (
-                            <img
-                              src={collection.imageUrl}
-                              alt={collection.name}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100/10 to-gray-200/10">
-                              <span className="text-white/60 text-sm">No Image</span>
-                            </div>
-                          )}
-                        </div>
-                        <div className="p-3">
-                          <h4 className="text-lg font-semibold text-white">{collection.name || 'Unnamed Collection'}</h4>
-                          {collection.description && (
-                            <p className="text-white/70 text-sm mt-1 line-clamp-2">{collection.description}</p>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className="bg-white/10 text-white border border-white/20 rounded px-4 py-2">
+            <option value="All">All Categories</option>
+            <option value="Memes">Memes</option>
+            <option value="Art">Art</option>
+            <option value="Music">Music</option>
+          </select>
         </div>
       </div>
-    </div>
+
+      <p className="text-white mb-6">{filteredCreators.length} creators found</p>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredCreators.map((creator) => (
+          <div
+            key={creator.id}
+            className="bg-white/10 backdrop-blur-sm rounded-lg p-6 hover:bg-white/20 transition-colors cursor-pointer"
+            onClick={() => (window.location.href = `/creators/${creator.address}`)}
+          >
+            <div className="flex items-center mb-4">
+              {creator.avatar ? (
+                <img src={creator.avatar} alt={creator.name} className="w-16 h-16 rounded-full mr-4" />
+              ) : (
+                <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
+                  <span className="text-gray-500">{creator.name.charAt(0)}</span>
+                </div>
+              )}
+              <div>
+                <h2 className="text-xl font-bold text-white">{creator.name}</h2>
+                <p className="text-white/80">{creator.address}</p>
+              </div>
+            </div>
+
+            {creator.bio && <p className="text-white/80">{creator.bio}</p>}
+
+            <div className="mt-4">
+              <p>Basename: {creator.resolution?.basename || "N/A"}</p>
+              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {creator.openSeaData?.collections.slice(0, 3).map((collection) => (
+                  <div key={collection.name} className="bg-white/20 rounded-lg overflow-hidden shadow hover:shadow-md transition-all">
+                    <div className="aspect-[16/9] relative bg-gray-100/20">
+                      {collection.bannerImageUrl ? (
+                        <img src={collection.bannerImageUrl} alt={`${collection.name} banner`} className="w-full h-full object-cover" />
+                      ) : collection.imageUrl ? (
+                        <img src={collection.imageUrl} alt={collection.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100/10 to-gray-200/10">
+                          <span className="text-white/60 text-sm">No Image</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-3">
+                      <h4 className="text-lg font-semibold text-white">{collection.name || "Unnamed Collection"}</h4>
+                      {collection.description && <p className="text-white/70 text-sm mt-1 line-clamp-2">{collection.description}</p>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </LayoutWrapper>
   );
 }

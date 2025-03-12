@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import sdk, { type Context } from "@farcaster/frame-sdk";
-import Header from "~/app/components/Logo";
+import LayoutWrapper from "~/app/components/LayoutWrapper";
+import Header from "~/app/components/Header";
 
 export default function WelcomePage() {
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
@@ -40,49 +41,34 @@ export default function WelcomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-base-blue text-white">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-2xl mx-auto text-center">
-          <Header />
-          <div className="mb-8">
-            <h1 className="text-center font-mono text-4xl font-bold mb-4 base-pixel">You&apos;re In!</h1>
-            <p className="opacity-90">Welcome to the Base Creator Directory</p>
-          </div>
+    <LayoutWrapper>
+      <Header logoOnly />
+      <div className="mb-8">
+        <h1 className="text-center font-mono text-4xl font-bold mb-4 base-pixel">You&apos;re In!</h1>
+        <p className="text-center opacity-90">Welcome to the Base Creator Directory</p>
+      </div>
 
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-8 mb-8">
-            <div className="mb-6">
-              <img src={profile.profilePicture} alt={profile.username} className="w-24 h-24 rounded-full mx-auto mb-4" />
-              <h2 className="text-2xl font-bold">{profile.username}</h2>
-              <p className="opacity-80">{profile.location}</p>
-            </div>
+      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-8 mb-8">
+        <div className="mb-6">
+          <img src={profile.profilePicture} alt={profile.username} className="w-24 h-24 rounded-full mx-auto mb-4" />
+          <h2 className="text-2xl font-bold">{profile.username}</h2>
+          <p className="opacity-80">{profile.location}</p>
+        </div>
 
-            <div className="space-y-4">
-              <button onClick={shareProfile} className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
-                Share on Social Media
-              </button>
+        <div className="space-y-4">
+          <button onClick={shareProfile} className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+            Share on Social Media
+          </button>
 
-              <button onClick={() => (window.location.href = "/creators")} className="w-full bg-white text-blue-700 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
-                Enter Directory
-              </button>
-            </div>
-          </div>
-
-          <div className="animate-bounce">
-            <span className="text-4xl">✨</span>
-          </div>
+          <button onClick={() => (window.location.href = "/creators")} className="w-full bg-white text-blue-700 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
+            Enter Directory
+          </button>
         </div>
       </div>
 
-      <style jsx>{`
-        @keyframes confetti {
-          0% {
-            transform: translateY(0) rotate(0deg);
-          }
-          100% {
-            transform: translateY(100vh) rotate(360deg);
-          }
-        }
-      `}</style>
-    </div>
+      <div className="animate-bounce">
+        <span className="text-4xl">✨</span>
+      </div>
+    </LayoutWrapper>
   );
 }

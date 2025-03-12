@@ -10,8 +10,8 @@ export default function DirectoryStatus({ hasJoined }: DirectoryStatusProps) {
       {hasJoined ? (
         <span className="text-green-400">✓ Joined</span>
       ) : (
-        <button onClick={() => (window.location.href = "/join")} className="px-4 py-2 bg-[#0052CC] rounded-lg hover:bg-[#0047B3] transition-colors">
-          Join Directory
+        <button onClick={() => (window.location.href = "/join")} className="px-4 py-1 bg-white text-base-blue text-xs rounded-full">
+          Join the Directory
         </button>
       )}
     </div>
