@@ -2,6 +2,9 @@
 
 import { getApolloClient } from "~/lib/apollo-client";
 import { gql } from "@apollo/client";
+import { getNFTContracts } from "~/lib/getNFTContracts";
+import { Creator, OpenSeaCollection, CreatorWithOpenSeaData } from "~/app/features/directory/types";
+import { resolveBasenameOrAddress } from "~/app/hooks/useBasenameResolver";
 
 const CIRCLE_ID = 31712;
 const ENTRANCE = "frames-be";
@@ -91,9 +94,9 @@ export async function joinDirectory(
 
 /**
  * Fetches all creators from the directory
- * @returns Promise<Array<Creator>> Array of creators
+ * @returns Promise<Array<CreatorWithOpenSeaData>> Array of creators with their OpenSea data and basename resolution
  */
-export async function getCreators() {
+export async function getCreators(): Promise<CreatorWithOpenSeaData[]> {
   try {
     const { data } = await getApolloClient().query({
       query: gql`
@@ -116,7 +119,7 @@ export async function getCreators() {
     });
 
     // Transform the data to a more convenient format
-    return data.users.map((user: any) => ({
+    const creators: Creator[] = data.users.map((user: any) => ({
       id: user.id,
       address: user.profile?.address || "",
       name: user.profile?.name || "",
@@ -127,6 +130,42 @@ export async function getCreators() {
         : "",
       bio: user.profile?.bio || "",
     }));
+
+    // Fetch OpenSea data and resolve basenames for each creator on the server side
+    const creatorsWithOpenSeaData: CreatorWithOpenSeaData[] = await Promise.all(
+      creators.map(async (creator: Creator) => {
+        try {
+          // Get NFT contracts
+          const contracts = await getNFTContracts(creator.address);
+          
+          // Resolve basename
+          const resolution = await resolveBasenameOrAddress(creator.address);
+          
+          return {
+            ...creator,
+            resolution,
+            openSeaData: {
+              collections: contracts.map(contract => ({
+                id: contract.contractAddress,
+                name: contract.name,
+                description: contract.description,
+                imageUrl: contract.imageUrl,
+                bannerImageUrl: contract.bannerImageUrl
+              }))
+            }
+          };
+        } catch (error) {
+          console.error(`Failed to fetch data for ${creator.address}:`, error);
+          // Return creator without OpenSea data if there's an error
+          return {
+            ...creator,
+            resolution: null
+          };
+        }
+      })
+    );
+
+    return creatorsWithOpenSeaData;
   } catch (error) {
     console.error("Error fetching creators:", error);
     return [];

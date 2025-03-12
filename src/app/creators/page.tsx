@@ -1,8 +1,8 @@
 import { Metadata } from "next";
-import CreatorsClient from "./CreatorsClient";
+import CreatorsList from "./CreatorsList";
 
 export default function DirectoryPage() {
-  return <CreatorsClient />;
+  return <CreatorsList />;
 }
 
 // const appUrl = process.env.NEXT_PUBLIC_URL;
