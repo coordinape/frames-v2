@@ -1,4 +1,4 @@
-import {createConfig, http, injected, WagmiProvider} from "wagmi";
+import { createConfig, http, injected, WagmiProvider } from "wagmi";
 import { base, degen, mainnet, optimism, unichain } from "wagmi/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { farcasterFrame } from "@farcaster/frame-wagmi-connector";
@@ -12,7 +12,7 @@ export const config = createConfig({
     [degen.id]: http(),
     [unichain.id]: http(),
   },
-  connectors: [injected(),farcasterFrame()],
+  connectors: [injected(), farcasterFrame()],
 });
 
 const queryClient = new QueryClient();
