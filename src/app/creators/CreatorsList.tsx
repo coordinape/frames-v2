@@ -85,8 +85,8 @@ export default function CreatorsList() {
       <Header />
 
       <div className="text-center mb-10">
-        <h1 className="text-7xl font-bold text-white mb-4 base-pixel">Creators</h1>
-        <p className="text-white text-xl">Explore the top creators on base.</p>
+        <h1 className="text-5xl font-bold text-white mb-4 base-pixel">Creators</h1>
+        <p className="text-white">Explore the top creators on base.</p>
       </div>
 
       <div className="relative mb-10">
