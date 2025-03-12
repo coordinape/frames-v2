@@ -7,9 +7,7 @@ interface LayoutWrapperProps {
 export default function LayoutWrapper({ children }: LayoutWrapperProps) {
   return (
     <div className="min-h-screen bg-base-blue text-white">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">{children}</div>
-      </div>
+      <div className="max-w-md mx-auto px-4 py-8">{children}</div>
     </div>
   );
 }
