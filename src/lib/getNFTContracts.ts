@@ -1,19 +1,43 @@
 import fs from "fs";
 import path from "path";
 import { promises as fsPromises } from "fs";
+import { kv } from '@vercel/kv';
 
 // Cache directory setup
 const CACHE_DIR = path.join(process.cwd(), ".cache");
-const CACHE_DURATION = 3600 * 1000; // 1 hour in milliseconds
+const CACHE_DURATION = 3600 * 1000 * 24; // 24 hours in milliseconds
+
+
+const LOCAL_CACHE = false;
 
 // Ensure cache directory exists
 try {
-  if (!fs.existsSync(CACHE_DIR)) {
+  if (LOCAL_CACHE && !fs.existsSync(CACHE_DIR)) {
     fs.mkdirSync(CACHE_DIR, { recursive: true });
   }
 } catch (error) {
   console.error("Failed to create cache directory:", error);
 }
+
+
+async function fetchWithCache<T>(cacheKey: string,
+  fetchFn: () => Promise<T>
+): Promise<T> {
+  if(LOCAL_CACHE) {
+    return fetchWithLocalCache(cacheKey, fetchFn);
+  }
+
+  const cachedData = await kv.get(cacheKey);
+  if (cachedData) {
+    console.log(`Cache hit for ${cacheKey}`);
+    return cachedData as T;
+  }
+
+  console.log(`Cache miss for ${cacheKey}`);
+  const data = await fetchFn();
+  await kv.set(cacheKey, data, { ex: CACHE_DURATION });
+  return data;
+};
 
 // Function to get cached data or fetch new data
 async function fetchWithLocalCache<T>(
@@ -85,7 +109,7 @@ interface ContractDetails {
 async function getOpenSeaUsernameFromAddress(address: string) {
   const cacheKey = `opensea-username-${address}`;
 
-  return fetchWithLocalCache<string | null>(cacheKey, async () => {
+  return fetchWithCache<string | null>(cacheKey, async () => {
     try {
       const response = await fetch(
         `https://api.opensea.io/api/v2/accounts/${address}`,
@@ -119,7 +143,7 @@ async function getOpenSeaUsernameFromAddress(address: string) {
 export async function getNFTContracts(deployerAddress: string) {
   const cacheKey = `opensea-collections-${deployerAddress}`;
 
-  return fetchWithLocalCache<ContractDetails[]>(cacheKey, async () => {
+  return fetchWithCache<ContractDetails[]>(cacheKey, async () => {
     try {
       // First get the username
       const username = await getOpenSeaUsernameFromAddress(deployerAddress);

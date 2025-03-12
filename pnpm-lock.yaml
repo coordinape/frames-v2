@@ -38,6 +38,9 @@ dependencies:
   '@upstash/redis':
     specifier: ^1.34.4
     version: 1.34.4
+  '@vercel/kv':
+    specifier: ^3.0.0
+    version: 3.0.0
   class-variance-authority:
     specifier: ^0.7.1
     version: 0.7.1
@@ -82,7 +85,7 @@ dependencies:
     version: 2.23.5(typescript@5.7.3)(zod@3.24.2)
   wagmi:
     specifier: ^2.14.12
-    version: 2.14.12(@tanstack/react-query@5.66.9)(@types/react@18.3.18)(@upstash/redis@1.34.4)(react@18.3.1)(typescript@5.7.3)(viem@2.23.5)(zod@3.24.2)
+    version: 2.14.12(@tanstack/react-query@5.66.9)(@types/react@18.3.18)(@upstash/redis@1.34.4)(@vercel/kv@3.0.0)(react@18.3.1)(typescript@5.7.3)(viem@2.23.5)(zod@3.24.2)
   zod:
     specifier: ^3.24.2
     version: 3.24.2
@@ -1675,7 +1678,14 @@ packages:
     resolution: {integrity: sha512-ytsG/JLweEjw7DBuZ/0JCN4WAQgM9erfSTdS1NQY778hFQSZ6cfCDEZZ0sgVm4k54uNz6ImKB33AYvSR//fjxw==}
     dev: false
 
-  /@wagmi/connectors@5.7.8(@types/react@18.3.18)(@upstash/redis@1.34.4)(@wagmi/core@2.16.5)(react@18.3.1)(typescript@5.7.3)(viem@2.23.5)(zod@3.24.2):
+  /@vercel/kv@3.0.0:
+    resolution: {integrity: sha512-pKT8fRnfyYk2MgvyB6fn6ipJPCdfZwiKDdw7vB+HL50rjboEBHDVBEcnwfkEpVSp2AjNtoaOUH7zG+bVC/rvSg==}
+    engines: {node: '>=14.6'}
+    dependencies:
+      '@upstash/redis': 1.34.4
+    dev: false
+
+  /@wagmi/connectors@5.7.8(@types/react@18.3.18)(@upstash/redis@1.34.4)(@vercel/kv@3.0.0)(@wagmi/core@2.16.5)(react@18.3.1)(typescript@5.7.3)(viem@2.23.5)(zod@3.24.2):
     resolution: {integrity: sha512-idLCc+GQ/GcGgxakEMC7/NSbpD6r1GB07lfDyEjvI5TMzl18pOZhKiqOTENzNi3hDas6ZMvS1xaGwrWufsb1rA==}
     peerDependencies:
       '@wagmi/core': 2.16.5
@@ -1690,7 +1700,7 @@ packages:
       '@safe-global/safe-apps-provider': 0.18.5(typescript@5.7.3)(zod@3.24.2)
       '@safe-global/safe-apps-sdk': 9.1.0(typescript@5.7.3)(zod@3.24.2)
       '@wagmi/core': 2.16.5(@types/react@18.3.18)(react@18.3.1)(typescript@5.7.3)(use-sync-external-store@1.4.0)(viem@2.23.5)
-      '@walletconnect/ethereum-provider': 2.17.0(@types/react@18.3.18)(@upstash/redis@1.34.4)(react@18.3.1)
+      '@walletconnect/ethereum-provider': 2.17.0(@types/react@18.3.18)(@upstash/redis@1.34.4)(@vercel/kv@3.0.0)(react@18.3.1)
       cbw-sdk: /@coinbase/wallet-sdk@3.9.3
       typescript: 5.7.3
       viem: 2.23.5(typescript@5.7.3)(zod@3.24.2)
@@ -1746,7 +1756,7 @@ packages:
       - use-sync-external-store
     dev: false
 
-  /@walletconnect/core@2.17.0(@upstash/redis@1.34.4):
+  /@walletconnect/core@2.17.0(@upstash/redis@1.34.4)(@vercel/kv@3.0.0):
     resolution: {integrity: sha512-On+uSaCfWdsMIQsECwWHZBmUXfrnqmv6B8SXRRuTJgd8tUpEvBkLQH4X7XkSm3zW6ozEkQTCagZ2ox2YPn3kbw==}
     engines: {node: '>=18'}
     dependencies:
@@ -1755,14 +1765,14 @@ packages:
       '@walletconnect/jsonrpc-types': 1.0.4
       '@walletconnect/jsonrpc-utils': 1.0.8
       '@walletconnect/jsonrpc-ws-connection': 1.0.14
-      '@walletconnect/keyvaluestorage': 1.1.1(@upstash/redis@1.34.4)
+      '@walletconnect/keyvaluestorage': 1.1.1(@upstash/redis@1.34.4)(@vercel/kv@3.0.0)
       '@walletconnect/logger': 2.1.2
       '@walletconnect/relay-api': 1.0.11
       '@walletconnect/relay-auth': 1.0.4
       '@walletconnect/safe-json': 1.0.2
       '@walletconnect/time': 1.0.2
-      '@walletconnect/types': 2.17.0(@upstash/redis@1.34.4)
-      '@walletconnect/utils': 2.17.0(@upstash/redis@1.34.4)
+      '@walletconnect/types': 2.17.0(@upstash/redis@1.34.4)(@vercel/kv@3.0.0)
+      '@walletconnect/utils': 2.17.0(@upstash/redis@1.34.4)(@vercel/kv@3.0.0)
       events: 3.3.0
       lodash.isequal: 4.5.0
       uint8arrays: 3.1.0
@@ -1795,7 +1805,7 @@ packages:
       tslib: 1.14.1
     dev: false
 
-  /@walletconnect/ethereum-provider@2.17.0(@types/react@18.3.18)(@upstash/redis@1.34.4)(react@18.3.1):
+  /@walletconnect/ethereum-provider@2.17.0(@types/react@18.3.18)(@upstash/redis@1.34.4)(@vercel/kv@3.0.0)(react@18.3.1):
     resolution: {integrity: sha512-b+KTAXOb6JjoxkwpgYQQKPUcTwENGmdEdZoIDLeRicUmZTn/IQKfkMoC2frClB4YxkyoVMtj1oMV2JAax+yu9A==}
     dependencies:
       '@walletconnect/jsonrpc-http-connection': 1.0.8
@@ -1803,10 +1813,10 @@ packages:
       '@walletconnect/jsonrpc-types': 1.0.4
       '@walletconnect/jsonrpc-utils': 1.0.8
       '@walletconnect/modal': 2.7.0(@types/react@18.3.18)(react@18.3.1)
-      '@walletconnect/sign-client': 2.17.0(@upstash/redis@1.34.4)
-      '@walletconnect/types': 2.17.0(@upstash/redis@1.34.4)
-      '@walletconnect/universal-provider': 2.17.0(@upstash/redis@1.34.4)
-      '@walletconnect/utils': 2.17.0(@upstash/redis@1.34.4)
+      '@walletconnect/sign-client': 2.17.0(@upstash/redis@1.34.4)(@vercel/kv@3.0.0)
+      '@walletconnect/types': 2.17.0(@upstash/redis@1.34.4)(@vercel/kv@3.0.0)
+      '@walletconnect/universal-provider': 2.17.0(@upstash/redis@1.34.4)(@vercel/kv@3.0.0)
+      '@walletconnect/utils': 2.17.0(@upstash/redis@1.34.4)(@vercel/kv@3.0.0)
       events: 3.3.0
     transitivePeerDependencies:
       - '@azure/app-configuration'
@@ -1895,7 +1905,7 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@walletconnect/keyvaluestorage@1.1.1(@upstash/redis@1.34.4):
+  /@walletconnect/keyvaluestorage@1.1.1(@upstash/redis@1.34.4)(@vercel/kv@3.0.0):
     resolution: {integrity: sha512-V7ZQq2+mSxAq7MrRqDxanTzu2RcElfK1PfNYiaVnJgJ7Q7G7hTVwF8voIBx92qsRyGHZihrwNPHuZd1aKkd0rA==}
     peerDependencies:
       '@react-native-async-storage/async-storage': 1.x
@@ -1905,7 +1915,7 @@ packages:
     dependencies:
       '@walletconnect/safe-json': 1.0.2
       idb-keyval: 6.2.1
-      unstorage: 1.15.0(@upstash/redis@1.34.4)(idb-keyval@6.2.1)
+      unstorage: 1.15.0(@upstash/redis@1.34.4)(@vercel/kv@3.0.0)(idb-keyval@6.2.1)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -1987,17 +1997,17 @@ packages:
       tslib: 1.14.1
     dev: false
 
-  /@walletconnect/sign-client@2.17.0(@upstash/redis@1.34.4):
+  /@walletconnect/sign-client@2.17.0(@upstash/redis@1.34.4)(@vercel/kv@3.0.0):
     resolution: {integrity: sha512-sErYwvSSHQolNXni47L3Bm10ptJc1s1YoJvJd34s5E9h9+d3rj7PrhbiW9X82deN+Dm5oA8X9tC4xty1yIBrVg==}
     dependencies:
-      '@walletconnect/core': 2.17.0(@upstash/redis@1.34.4)
+      '@walletconnect/core': 2.17.0(@upstash/redis@1.34.4)(@vercel/kv@3.0.0)
       '@walletconnect/events': 1.0.1
       '@walletconnect/heartbeat': 1.2.2
       '@walletconnect/jsonrpc-utils': 1.0.8
       '@walletconnect/logger': 2.1.2
       '@walletconnect/time': 1.0.2
-      '@walletconnect/types': 2.17.0(@upstash/redis@1.34.4)
-      '@walletconnect/utils': 2.17.0(@upstash/redis@1.34.4)
+      '@walletconnect/types': 2.17.0(@upstash/redis@1.34.4)(@vercel/kv@3.0.0)
+      '@walletconnect/utils': 2.17.0(@upstash/redis@1.34.4)(@vercel/kv@3.0.0)
       events: 3.3.0
     transitivePeerDependencies:
       - '@azure/app-configuration'
@@ -2028,13 +2038,13 @@ packages:
       tslib: 1.14.1
     dev: false
 
-  /@walletconnect/types@2.17.0(@upstash/redis@1.34.4):
+  /@walletconnect/types@2.17.0(@upstash/redis@1.34.4)(@vercel/kv@3.0.0):
     resolution: {integrity: sha512-i1pn9URpvt9bcjRDkabuAmpA9K7mzyKoLJlbsAujRVX7pfaG7wur7u9Jz0bk1HxvuABL5LHNncTnVKSXKQ5jZA==}
     dependencies:
       '@walletconnect/events': 1.0.1
       '@walletconnect/heartbeat': 1.2.2
       '@walletconnect/jsonrpc-types': 1.0.4
-      '@walletconnect/keyvaluestorage': 1.1.1(@upstash/redis@1.34.4)
+      '@walletconnect/keyvaluestorage': 1.1.1(@upstash/redis@1.34.4)(@vercel/kv@3.0.0)
       '@walletconnect/logger': 2.1.2
       events: 3.3.0
     transitivePeerDependencies:
@@ -2058,7 +2068,7 @@ packages:
       - uploadthing
     dev: false
 
-  /@walletconnect/universal-provider@2.17.0(@upstash/redis@1.34.4):
+  /@walletconnect/universal-provider@2.17.0(@upstash/redis@1.34.4)(@vercel/kv@3.0.0):
     resolution: {integrity: sha512-d3V5Be7AqLrvzcdMZSBS8DmGDRdqnyLk1DWmRKAGgR6ieUWykhhUKlvfeoZtvJrIXrY7rUGYpH1X41UtFkW5Pw==}
     dependencies:
       '@walletconnect/jsonrpc-http-connection': 1.0.8
@@ -2066,9 +2076,9 @@ packages:
       '@walletconnect/jsonrpc-types': 1.0.4
       '@walletconnect/jsonrpc-utils': 1.0.8
       '@walletconnect/logger': 2.1.2
-      '@walletconnect/sign-client': 2.17.0(@upstash/redis@1.34.4)
-      '@walletconnect/types': 2.17.0(@upstash/redis@1.34.4)
-      '@walletconnect/utils': 2.17.0(@upstash/redis@1.34.4)
+      '@walletconnect/sign-client': 2.17.0(@upstash/redis@1.34.4)(@vercel/kv@3.0.0)
+      '@walletconnect/types': 2.17.0(@upstash/redis@1.34.4)(@vercel/kv@3.0.0)
+      '@walletconnect/utils': 2.17.0(@upstash/redis@1.34.4)(@vercel/kv@3.0.0)
       events: 3.3.0
     transitivePeerDependencies:
       - '@azure/app-configuration'
@@ -2094,7 +2104,7 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@walletconnect/utils@2.17.0(@upstash/redis@1.34.4):
+  /@walletconnect/utils@2.17.0(@upstash/redis@1.34.4)(@vercel/kv@3.0.0):
     resolution: {integrity: sha512-1aeQvjwsXy4Yh9G6g2eGmXrEl+BzkNjHRdCrGdMYqFTFa8ROEJfTGsSH3pLsNDlOY94CoBUvJvM55q/PMoN/FQ==}
     dependencies:
       '@stablelib/chacha20poly1305': 1.0.1
@@ -2106,7 +2116,7 @@ packages:
       '@walletconnect/relay-auth': 1.0.4
       '@walletconnect/safe-json': 1.0.2
       '@walletconnect/time': 1.0.2
-      '@walletconnect/types': 2.17.0(@upstash/redis@1.34.4)
+      '@walletconnect/types': 2.17.0(@upstash/redis@1.34.4)(@vercel/kv@3.0.0)
       '@walletconnect/window-getters': 1.0.1
       '@walletconnect/window-metadata': 1.0.1
       detect-browser: 5.3.0
@@ -5635,7 +5645,7 @@ packages:
     resolution: {integrity: sha512-Ny6QZ2Nju20vw1SRHe3d9jVu6gJ+4e3+MMpqu7pqE5HT6WsTSlce++GQmK5UXS8mzV8DSYHrQH+Xrf2jVcuKNg==}
     dev: true
 
-  /unstorage@1.15.0(@upstash/redis@1.34.4)(idb-keyval@6.2.1):
+  /unstorage@1.15.0(@upstash/redis@1.34.4)(@vercel/kv@3.0.0)(idb-keyval@6.2.1):
     resolution: {integrity: sha512-m40eHdGY/gA6xAPqo8eaxqXgBuzQTlAKfmB1iF7oCKXE1HfwHwzDJBywK+qQGn52dta+bPlZluPF7++yR3p/bg==}
     peerDependencies:
       '@azure/app-configuration': ^1.8.0
@@ -5695,6 +5705,7 @@ packages:
         optional: true
     dependencies:
       '@upstash/redis': 1.34.4
+      '@vercel/kv': 3.0.0
       anymatch: 3.1.3
       chokidar: 4.0.3
       destr: 2.0.3
@@ -5835,7 +5846,7 @@ packages:
       - zod
     dev: false
 
-  /wagmi@2.14.12(@tanstack/react-query@5.66.9)(@types/react@18.3.18)(@upstash/redis@1.34.4)(react@18.3.1)(typescript@5.7.3)(viem@2.23.5)(zod@3.24.2):
+  /wagmi@2.14.12(@tanstack/react-query@5.66.9)(@types/react@18.3.18)(@upstash/redis@1.34.4)(@vercel/kv@3.0.0)(react@18.3.1)(typescript@5.7.3)(viem@2.23.5)(zod@3.24.2):
     resolution: {integrity: sha512-HSX7CkwF7YWecV5EqcOQrHUSGqZ+f8GJ8FWRYktVcxitfaAd0YofwfJNJB+zEsV17hV6uZ5Tu1nP32tgz+1eTQ==}
     peerDependencies:
       '@tanstack/react-query': '>=5.0.0'
@@ -5847,7 +5858,7 @@ packages:
         optional: true
     dependencies:
       '@tanstack/react-query': 5.66.9(react@18.3.1)
-      '@wagmi/connectors': 5.7.8(@types/react@18.3.18)(@upstash/redis@1.34.4)(@wagmi/core@2.16.5)(react@18.3.1)(typescript@5.7.3)(viem@2.23.5)(zod@3.24.2)
+      '@wagmi/connectors': 5.7.8(@types/react@18.3.18)(@upstash/redis@1.34.4)(@vercel/kv@3.0.0)(@wagmi/core@2.16.5)(react@18.3.1)(typescript@5.7.3)(viem@2.23.5)(zod@3.24.2)
       '@wagmi/core': 2.16.5(@types/react@18.3.18)(react@18.3.1)(typescript@5.7.3)(use-sync-external-store@1.4.0)(viem@2.23.5)
       react: 18.3.1
       typescript: 5.7.3
