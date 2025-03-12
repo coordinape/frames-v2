@@ -2,34 +2,25 @@
 
 import { useEffect, useState } from "react";
 import sdk, { type Context } from "@farcaster/frame-sdk";
+import { getCreators } from "~/app/features/directory/actions";
 
-interface Creator {
+// Update the Creator type to match what's returned from the API
+type Creator = {
   id: string;
-  username: string;
-  profilePicture: string;
-  location: string;
-  category: string;
-  credentials: string[];
-}
+  address: string;
+  name: string;
+  avatar: string;
+  bio: string;
+};
 
 export default function CreatorsClient() {
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
   const [context, setContext] = useState<Context.FrameContext>();
   const [selectedRegion, setSelectedRegion] = useState("All");
   const [selectedCategory, setSelectedCategory] = useState("All");
-
-  // Mock data - would come from your backend
-  const [creators] = useState<Creator[]>([
-    {
-      id: "1",
-      username: "alice.base",
-      profilePicture: "https://api.samplefaces.com/face?width=200",
-      location: "San Francisco, CA",
-      category: "Memes",
-      credentials: ["verified by grails", "cartoon"],
-    },
-    // Add more mock creators...
-  ]);
+  const [creators, setCreators] = useState<Creator[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const load = async () => {
@@ -49,13 +40,42 @@ export default function CreatorsClient() {
     }
   }, [isSDKLoaded]);
 
+  useEffect(() => {
+    async function fetchCreators() {
+      try {
+        setLoading(true);
+        const data = await getCreators();
+        setCreators(data);
+      } catch (err) {
+        console.error("Failed to fetch creators:", err);
+        setError("Failed to load creators. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchCreators();
+  }, []);
+
   const filteredCreators = creators.filter((creator) => {
     const matchesRegion =
-      selectedRegion === "All" || creator.location.includes(selectedRegion);
+      selectedRegion === "All" || creator.address.includes(selectedRegion);
     const matchesCategory =
-      selectedCategory === "All" || creator.category === selectedCategory;
+      selectedCategory === "All" || creator.name.includes(selectedCategory);
     return matchesRegion && matchesCategory;
   });
+
+  if (loading) {
+    return <div className="p-4 text-center">Loading creators...</div>;
+  }
+
+  if (error) {
+    return <div className="p-4 text-center text-red-500">{error}</div>;
+  }
+
+  if (creators.length === 0) {
+    return <div className="p-4 text-center">No creators found.</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-purple-500 to-pink-500">
@@ -98,33 +118,32 @@ export default function CreatorsClient() {
                 key={creator.id}
                 className="bg-white/10 backdrop-blur-sm rounded-lg p-6 hover:bg-white/20 transition-colors cursor-pointer"
                 onClick={() =>
-                  (window.location.href = `/creators/${creator.username}`)
+                  (window.location.href = `/creators/${creator.address}`)
                 }
               >
                 <div className="flex items-center mb-4">
-                  <img
-                    src={creator.profilePicture}
-                    alt={creator.username}
-                    className="w-16 h-16 rounded-full mr-4"
-                  />
+                  {creator.avatar ? (
+                    <img
+                      src={creator.avatar}
+                      alt={creator.name}
+                      className="w-16 h-16 rounded-full mr-4"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
+                      <span className="text-gray-500">{creator.name.charAt(0)}</span>
+                    </div>
+                  )}
                   <div>
                     <h2 className="text-xl font-bold text-white">
-                      {creator.username}
+                      {creator.name}
                     </h2>
-                    <p className="text-white/80">{creator.location}</p>
+                    <p className="text-white/80">{creator.address}</p>
                   </div>
                 </div>
 
-                <div className="flex flex-wrap gap-2">
-                  {creator.credentials.map((credential, index) => (
-                    <span
-                      key={index}
-                      className="bg-white/20 text-white text-sm px-3 py-1 rounded-full"
-                    >
-                      {credential}
-                    </span>
-                  ))}
-                </div>
+                {creator.bio && (
+                  <p className="text-white/80">{creator.bio}</p>
+                )}
               </div>
             ))}
           </div>

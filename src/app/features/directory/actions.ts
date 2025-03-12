@@ -88,3 +88,47 @@ export async function joinDirectory(
     return false;
   }
 }
+
+/**
+ * Fetches all creators from the directory
+ * @returns Promise<Array<Creator>> Array of creators
+ */
+export async function getCreators() {
+  try {
+    const { data } = await getApolloClient().query({
+      query: gql`
+        query GetCreators($circleId: bigint!) {
+          users(where: { circle_id: { _eq: $circleId } }) {
+            id
+            profile {
+              id
+              address
+              name
+              avatar
+              bio
+            }
+          }
+        }
+      `,
+      variables: {
+        circleId: CIRCLE_ID,
+      },
+    });
+
+    // Transform the data to a more convenient format
+    return data.users.map((user: any) => ({
+      id: user.id,
+      address: user.profile?.address || "",
+      name: user.profile?.name || "",
+      avatar: user.profile?.avatar
+        ? user.profile.avatar.startsWith("http")
+          ? user.profile.avatar
+          : `https://coordinape-prod.s3.amazonaws.com/${user.profile.avatar}`
+        : "",
+      bio: user.profile?.bio || "",
+    }));
+  } catch (error) {
+    console.error("Error fetching creators:", error);
+    return [];
+  }
+}
