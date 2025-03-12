@@ -14,10 +14,10 @@
 }
 
 .bg-base-blue {
-  background-color: #0053ff;
+  background-color: #0053ff !important;
 }
 .text-base-blue {
-  color: #0053ff;
+  color: #0053ff !important;
 }
 
 /* @tailwind base;
