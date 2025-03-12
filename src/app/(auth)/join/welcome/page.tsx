@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import sdk, { type Context } from "@farcaster/frame-sdk";
-import Header from "~/app/components/Header";
+import Header from "~/app/components/Logo";
 
 export default function WelcomePage() {
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
@@ -40,7 +40,7 @@ export default function WelcomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-500 to-blue-700 text-white">
+    <div className="min-h-screen bg-base-blue text-white">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto text-center">
           <Header />

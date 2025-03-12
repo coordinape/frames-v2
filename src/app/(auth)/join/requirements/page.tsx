@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import sdk, { type Context } from "@farcaster/frame-sdk";
-import Header from "~/app/components/Header";
+import Header from "~/app/components/Logo";
 
 interface Requirement {
   id: string;

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import sdk, { type Context } from "@farcaster/frame-sdk";
-import Header from "~/app/components/Header";
+import Header from "~/app/components/Logo";
 
 interface ProfileFormData {
   profilePicture: File | null;
@@ -55,7 +55,7 @@ export default function CreateProfilePage() {
 
           {/* Title */}
 
-          <h1 className="text-center font-mono text-4xl font-bold mb-4 base-pixel derp">
+          <h1 className="text-center font-mono text-4xl font-bold mb-4 base-pixel">
             Create
             <br />
             Your Profile

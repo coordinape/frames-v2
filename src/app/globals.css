@@ -16,6 +16,9 @@
 .bg-base-blue {
   background-color: #0053ff;
 }
+.text-base-blue {
+  color: #0053ff;
+}
 
 /* @tailwind base;
 @tailwind components;
