@@ -1,30 +1,51 @@
-// First, get the username from the address
-async function getOpenSeaUsernameFromAddress(address: string) {
-  try {
-    const response = await fetch(
-      `https://api.opensea.io/api/v2/accounts/${address}`,
-      {
-        method: "GET",
-        headers: {
-          "x-api-key": process.env.OPENSEA_API_KEY!,
-          accept: "application/json",
-        },
-        next: {
-          revalidate: 3600,
-          tags: [`opensea-username-${address}`],
-        },
-      }
-    );
+import fs from "fs";
+import path from "path";
+import { promises as fsPromises } from "fs";
 
-    if (!response.ok) {
-      throw new Error(`OpenSea API error: ${response.status}`);
+// Cache directory setup
+const CACHE_DIR = path.join(process.cwd(), ".cache");
+const CACHE_DURATION = 3600 * 1000; // 1 hour in milliseconds
+
+// Ensure cache directory exists
+try {
+  if (!fs.existsSync(CACHE_DIR)) {
+    fs.mkdirSync(CACHE_DIR, { recursive: true });
+  }
+} catch (error) {
+  console.error("Failed to create cache directory:", error);
+}
+
+// Function to get cached data or fetch new data
+async function fetchWithLocalCache<T>(
+  cacheKey: string,
+  fetchFn: () => Promise<T>
+): Promise<T> {
+  const cacheFile = path.join(CACHE_DIR, `${cacheKey}.json`);
+
+  try {
+    // Check if cache file exists and is not expired
+    if (fs.existsSync(cacheFile)) {
+      const stats = fs.statSync(cacheFile);
+      const fileAge = Date.now() - stats.mtimeMs;
+
+      // If cache is still valid, return cached data
+      if (fileAge < CACHE_DURATION) {
+        const cachedData = await fsPromises.readFile(cacheFile, "utf-8");
+        return JSON.parse(cachedData);
+      }
     }
 
-    const data = await response.json();
-    return data.username || null;
+    // Cache expired or doesn't exist, fetch fresh data
+    const data = await fetchFn();
+
+    // Save to cache
+    await fsPromises.writeFile(cacheFile, JSON.stringify(data), "utf-8");
+
+    return data;
   } catch (error) {
-    console.error("Error fetching account from OpenSea:", error);
-    throw error;
+    console.error(`Cache error for ${cacheKey}:`, error);
+    // If cache operations fail, fall back to direct fetch
+    return fetchFn();
   }
 }
 
@@ -60,59 +81,97 @@ interface ContractDetails {
   twitterUsername: string;
 }
 
+// First, get the username from the address
+async function getOpenSeaUsernameFromAddress(address: string) {
+  const cacheKey = `opensea-username-${address}`;
+
+  return fetchWithLocalCache<string | null>(cacheKey, async () => {
+    try {
+      const response = await fetch(
+        `https://api.opensea.io/api/v2/accounts/${address}`,
+        {
+          method: "GET",
+          headers: {
+            "x-api-key": process.env.OPENSEA_API_KEY!,
+            accept: "application/json",
+          },
+          next: {
+            revalidate: 3600,
+            tags: [`opensea-username-${address}`],
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`OpenSea API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.username || null;
+    } catch (error) {
+      console.error("Error fetching account from OpenSea:", error);
+      throw error;
+    }
+  });
+}
+
 // Then get collections by username
 export async function getNFTContracts(deployerAddress: string) {
-  try {
-    // First get the username
-    const username = await getOpenSeaUsernameFromAddress(deployerAddress);
+  const cacheKey = `opensea-collections-${deployerAddress}`;
 
-    if (!username) {
-      throw new Error("No OpenSea username found for this address");
-    }
+  return fetchWithLocalCache<ContractDetails[]>(cacheKey, async () => {
+    try {
+      // First get the username
+      const username = await getOpenSeaUsernameFromAddress(deployerAddress);
 
-    // Then get the collections
-    const response = await fetch(
-      `https://api.opensea.io/api/v2/collections?creator_username=${username}`,
-      {
-        method: "GET",
-        headers: {
-          "x-api-key": process.env.OPENSEA_API_KEY!,
-          accept: "application/json",
-        },
-        next: {
-          revalidate: 3600,
-          tags: [`opensea-collections-${deployerAddress}`],
-        },
+      if (!username) {
+        throw new Error("No OpenSea username found for this address");
       }
-    );
 
-    if (!response.ok) {
-      throw new Error(`OpenSea API error: ${response.status}`);
+      // Then get the collections
+      const response = await fetch(
+        `https://api.opensea.io/api/v2/collections?creator_username=${username}`,
+        {
+          method: "GET",
+          headers: {
+            "x-api-key": process.env.OPENSEA_API_KEY!,
+            accept: "application/json",
+          },
+          next: {
+            revalidate: 3600,
+            tags: [`opensea-collections-${deployerAddress}`],
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`OpenSea API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      // Extract detailed information from collections
+      const contractDetails: ContractDetails[] = data.collections.map(
+        (collection: OpenSeaCollection): ContractDetails => ({
+          name: collection.name,
+          contractAddress: collection.contract,
+          chainId: collection.chain?.name || "unknown",
+          imageUrl: collection.image_url,
+          bannerImageUrl: collection.banner_image_url,
+          description: collection.description,
+          slug: collection.slug,
+          createdDate: collection.created_date,
+          totalSupply: collection.total_supply,
+          externalUrl: collection.external_url,
+          discordUrl: collection.discord_url,
+          twitterUsername: collection.twitter_username,
+        })
+      );
+
+      return contractDetails;
+    } catch (error) {
+      console.error("Error fetching collection details from OpenSea:", error);
+      throw error;
     }
-
-    const data = await response.json();
-
-    // Extract detailed information from collections
-    const contractDetails: ContractDetails[] = data.collections.map(
-      (collection: OpenSeaCollection): ContractDetails => ({
-        name: collection.name,
-        contractAddress: collection.contract,
-        chainId: collection.chain?.name || "unknown",
-        imageUrl: collection.image_url,
-        bannerImageUrl: collection.banner_image_url,
-        description: collection.description,
-        slug: collection.slug,
-        createdDate: collection.created_date,
-        totalSupply: collection.total_supply,
-        externalUrl: collection.external_url,
-        discordUrl: collection.discord_url,
-        twitterUsername: collection.twitter_username,
-      })
-    );
-
-    return contractDetails;
-  } catch (error) {
-    console.error("Error fetching collection details from OpenSea:", error);
-    throw error;
-  }
+  });
 }

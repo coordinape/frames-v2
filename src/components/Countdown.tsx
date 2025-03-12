@@ -1,15 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  ApolloClient,
-  InMemoryCache,
-  ApolloProvider,
-  useQuery,
-  gql,
-} from "@apollo/client";
-import { createHttpLink } from "@apollo/client";
+import { ApolloProvider, useQuery, gql } from "@apollo/client";
 import sdk, { type Context } from "@farcaster/frame-sdk";
+import { apolloClient, CO_SOULS_QUERY } from "../lib/apollo-client";
 
 const STAR_COUNT = 100;
 const FALL_DURATION = 5000; // Duration for stars to fall in milliseconds
@@ -53,35 +47,9 @@ const QUOTES = [
   "The time is always right to do what is right. - Martin Luther King Jr.",
 ];
 
-// Apollo client setup
-const httpLink = createHttpLink({
-  uri: "https://coordinape-prod.hasura.app/v1/graphql",
-  headers: {
-    Authorization: "anon",
-  },
-});
-
-const apolloClient = new ApolloClient({
-  link: httpLink,
-  cache: new InMemoryCache(),
-  defaultOptions: {
-    watchQuery: {
-      fetchPolicy: "network-only",
-    },
-    query: {
-      fetchPolicy: "network-only",
-    },
-  },
-});
-
-const CO_SOULS_QUERY = gql`
-  query CoSouls {
-    cosouls(limit: 10) {
-      token_id
-      id
-      address
-    }
-  }
+// Convert the query string to a gql query
+const CO_SOULS_GQL = gql`
+  ${CO_SOULS_QUERY}
 `;
 
 interface Star {
@@ -102,7 +70,7 @@ const generateStars = (): Star[] => {
 
 // GraphQL query component
 const CoSoulsDisplay = () => {
-  const { loading, error, data } = useQuery(CO_SOULS_QUERY, {
+  const { loading, error, data } = useQuery(CO_SOULS_GQL, {
     fetchPolicy: "network-only",
   });
 
