@@ -1,6 +1,6 @@
 "use server";
 
-import { apolloClient } from "~/lib/apollo-client";
+import { getApolloClient } from "~/lib/apollo-client";
 import { gql } from "@apollo/client";
 
 const CIRCLE_ID = 31712;
@@ -13,7 +13,7 @@ const ENTRANCE = "frames-be";
  */
 export async function addressIsMember(address: string): Promise<boolean> {
   try {
-    const { data } = await apolloClient.query({
+    const { data } = await getApolloClient().query({
       query: gql`
         query CheckMembership($address: String!, $circleId: bigint!) {
           users(
@@ -55,7 +55,7 @@ export async function joinDirectory(
   name: string
 ): Promise<boolean> {
   try {
-    const { data } = await apolloClient.mutate({
+    const { data } = await getApolloClient().mutate({
       mutation: gql`
         mutation JoinDirectory(
           $circleId: Int!
