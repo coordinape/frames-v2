@@ -22,12 +22,14 @@ export default function ENSResolver({
   initialData,
 }: ENSResolverProps) {
   const [inputValue, setInputValue] = useState(initialValue);
-  const [resolution, setResolution] = useState<Resolution>(initialData || {
-    basename: "",
-    address: "",
-    textRecords: {} as Record<BasenameTextRecordKeys, string | undefined>,
-    error: null
-  });
+  const [resolution, setResolution] = useState<Resolution>(
+    initialData || {
+      basename: "",
+      address: "",
+      textRecords: {} as Record<BasenameTextRecordKeys, string | undefined>,
+      error: null,
+    }
+  );
   const [loading, setLoading] = useState(false);
 
   const handleResolve = async () => {
@@ -41,18 +43,18 @@ export default function ENSResolver({
           basename: "",
           address: "",
           textRecords: {} as Record<BasenameTextRecordKeys, string | undefined>,
-          error: "No resolution found"
+          error: "No resolution found",
         });
         return;
       }
       setResolution({
         ...result,
-        error: null
+        error: null,
       });
     } catch (err) {
-      setResolution(prev => ({
+      setResolution((prev) => ({
         ...prev,
-        error: err instanceof Error ? err.message : "An unknown error occurred"
+        error: err instanceof Error ? err.message : "An unknown error occurred",
       }));
     } finally {
       setLoading(false);
@@ -100,27 +102,25 @@ export default function ENSResolver({
                 <p className="font-mono">{resolution.address}</p>
               </div>
             )}
-            {resolution.textRecords && Object.keys(resolution.textRecords).length > 0 && (
-              <div>
-                <p className="font-semibold mb-2">Profile Information:</p>
-                <div className="grid gap-2">
-                  {Object.entries(resolution.textRecords).map(
-                    ([key, value]) =>
-                      value && (
-                        <div
-                          key={key}
-                          className="flex"
-                        >
-                          <span className="font-medium w-24">
-                            {formatKey(key)}:
-                          </span>
-                          <span className="flex-1">{value}</span>
-                        </div>
-                      )
-                  )}
+            {resolution.textRecords &&
+              Object.keys(resolution.textRecords).length > 0 && (
+                <div>
+                  <p className="font-semibold mb-2">Profile Information:</p>
+                  <div className="grid gap-2">
+                    {Object.entries(resolution.textRecords).map(
+                      ([key, value]) =>
+                        value && (
+                          <div key={key} className="flex">
+                            <span className="font-medium w-24">
+                              {formatKey(key)}:
+                            </span>
+                            <span className="flex-1">{value}</span>
+                          </div>
+                        )
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </div>
         )}
       </div>
