@@ -101,7 +101,10 @@ export async function getCreators(): Promise<CreatorWithOpenSeaData[]> {
     const { data } = await getApolloClient().query({
       query: gql`
         query GetCreators($circleId: bigint!) {
-          users(where: { circle_id: { _eq: $circleId } }) {
+          users(
+            where: { circle_id: { _eq: $circleId } }
+            order_by: { created_at: desc }
+          ) {
             id
             profile {
               id
