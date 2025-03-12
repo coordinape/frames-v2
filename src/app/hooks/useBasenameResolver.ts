@@ -1,4 +1,3 @@
-
 import { getAddress, isAddress, type Address } from "viem";
 import {
   getBasename,
@@ -41,10 +40,14 @@ export async function resolveBasenameOrAddress(input: string) {
     } else if (input.endsWith(".base.eth")) {
       return await resolveBasename(input as Basename);
     } else {
-      throw new Error("Invalid input: must be an Ethereum address or .base.eth name");
+      throw new Error(
+        "Invalid input: must be an Ethereum address or .base.eth name"
+      );
     }
   } catch (err) {
-    throw new Error(err instanceof Error ? err.message : "An unknown error occurred");
+    throw new Error(
+      err instanceof Error ? err.message : "An unknown error occurred"
+    );
   }
 }
 
@@ -66,12 +69,20 @@ async function resolveBasename(name: Basename) {
   try {
     const resolvedAddress = await getAddressFromBasename(name);
     const records = await getBasenameTextRecords(name);
-    
-    const formattedRecords = records?.reduce((acc, record, index) => {
-      const key = Object.keys(BasenameTextRecordKeys)[index] as keyof typeof BasenameTextRecordKeys;
-      acc[BasenameTextRecordKeys[key]] = record.result as string | undefined;
-      return acc;
-    }, { ...emptyTextRecords }) || emptyTextRecords;
+
+    const formattedRecords =
+      records?.reduce(
+        (acc, record, index) => {
+          const key = Object.keys(BasenameTextRecordKeys)[
+            index
+          ] as keyof typeof BasenameTextRecordKeys;
+          acc[BasenameTextRecordKeys[key]] = record.result as
+            | string
+            | undefined;
+          return acc;
+        },
+        { ...emptyTextRecords }
+      ) || emptyTextRecords;
 
     return {
       basename: name,
@@ -89,7 +100,7 @@ async function resolveAddress(addr: Address) {
   try {
     const formattedAddress = getAddress(addr);
     const name = await getBasename(formattedAddress);
-    
+
     if (!name) {
       return {
         basename: "",
@@ -101,12 +112,20 @@ async function resolveAddress(addr: Address) {
     }
 
     const records = await getBasenameTextRecords(name);
-    
-    const formattedRecords = records?.reduce((acc, record, index) => {
-      const key = Object.keys(BasenameTextRecordKeys)[index] as keyof typeof BasenameTextRecordKeys;
-      acc[BasenameTextRecordKeys[key]] = record.result as string | undefined;
-      return acc;
-    }, { ...emptyTextRecords }) || emptyTextRecords;
+
+    const formattedRecords =
+      records?.reduce(
+        (acc, record, index) => {
+          const key = Object.keys(BasenameTextRecordKeys)[
+            index
+          ] as keyof typeof BasenameTextRecordKeys;
+          acc[BasenameTextRecordKeys[key]] = record.result as
+            | string
+            | undefined;
+          return acc;
+        },
+        { ...emptyTextRecords }
+      ) || emptyTextRecords;
 
     return {
       basename: name,
@@ -121,4 +140,4 @@ async function resolveAddress(addr: Address) {
     }
     throw new Error("Error resolving address");
   }
-} 
+}
