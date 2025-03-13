@@ -11,7 +11,7 @@ const appUrl = `https://${process.env.VERCEL_URL}`;
 
 const frame = {
   version: "next",
-  imageUrl: `${appUrl}/ogimage?title=Creators+Directory`,
+  imageUrl: `${appUrl}/creators/ogimage`,
   button: {
     title: "Launch Frame",
     action: {
