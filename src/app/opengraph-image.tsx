@@ -1,5 +1,4 @@
 import { ImageResponse } from "next/og";
-import { headers } from "next/headers";
 
 export const alt = "CoCreator Frames";
 export const size = {
@@ -9,10 +8,8 @@ export const size = {
 
 export const contentType = "image/png";
 
-export default async function Image() {
-  const headersList = await headers();
-  const url = new URL(headersList.get("x-url") || "");
-  const title = url.searchParams.get("title") || "CoCreator Frames";
+export default async function Image({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
+  const title = searchParams.title?.toString() || "CoCreator Frames";
   
   return new ImageResponse(
     (

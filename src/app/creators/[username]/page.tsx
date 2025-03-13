@@ -155,13 +155,10 @@ const frame = ({ username }: { username: string }) => ({
 
 export const revalidate = 300;
 
-export async function generateMetadata(): Promise<Metadata> {
-  const headersList = await headers();
-  const fullUrl = headersList.get('x-url') || '';
-  
-  // Split the URL by '/' and get the last part
-  const urlParts = fullUrl.split('/');
-  const username = urlParts[urlParts.length - 1];
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { username } = await params;
+
+  console.log(username);
   return {
     title: `Creators Profile for ${username}`,
     openGraph: {
