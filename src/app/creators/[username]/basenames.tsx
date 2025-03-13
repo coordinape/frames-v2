@@ -5,6 +5,8 @@ import {
   encodePacked,
   http,
   keccak256,
+  Abi,
+  Hash,
 } from "viem";
 
 import { normalize, namehash } from "viem/ens";
@@ -90,8 +92,14 @@ export async function setText(
   basename: Basename,
   key: BasenameTextRecordKeys,
   value: string,
-  // @ts-ignore FIXME
-  walletClient: any // Accept a wallet client as a parameter
+  walletClient: {
+    writeContract: (params: {
+      abi: Abi;
+      address: Address;
+      functionName: string;
+      args: readonly unknown[];
+    }) => Promise<Hash>;
+  }
 ) {
   try {
     // First normalize the basename to ensure consistent processing
@@ -125,8 +133,14 @@ export async function setText(
 export async function setMultipleTextRecords(
   basename: Basename,
   records: Array<{ key: BasenameTextRecordKeys; value: string }>,
-  // @ts-ignore FIXME
-  walletClient: any
+  walletClient: {
+    writeContract: (params: {
+      abi: Abi;
+      address: Address;
+      functionName: string;
+      args: readonly unknown[];
+    }) => Promise<Hash>;
+  }
 ) {
   try {
     // First normalize the basename to ensure consistent processing
