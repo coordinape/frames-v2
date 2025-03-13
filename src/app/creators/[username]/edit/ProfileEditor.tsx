@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import sdk, { type Context } from "@farcaster/frame-sdk";
+import Image from "next/image";
 
 interface ProfileFormData {
   profilePicture: File | null;
@@ -71,10 +72,12 @@ export default function ProfileEditor({ username }: ProfileEditorProps) {
               <div className="flex items-center space-x-4">
                 <div className="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center">
                   {formData.profilePicture ? (
-                    <img
+                    <Image
                       src={URL.createObjectURL(formData.profilePicture)}
                       alt="Profile"
-                      className="w-full h-full rounded-full object-cover"
+                      width={96}
+                      height={96}
+                      className="rounded-full object-cover w-full h-full"
                     />
                   ) : (
                     <span className="text-3xl">📷</span>

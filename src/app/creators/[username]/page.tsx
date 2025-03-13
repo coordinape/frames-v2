@@ -1,10 +1,9 @@
-import ProfileClient from "./ProfileClient";
 import ENSResolver from "./ENSResolver";
 import ContractGallery from "~/app/frames/hello/components/ContractGallery";
 import { Metadata } from "next";
 import { resolveBasenameOrAddress } from "~/app/hooks/useBasenameResolver";
 import { addressIsMember } from "~/app/features/directory/actions";
-import JoinDirectoryButton from "./JoinDirectoryButton";
+import MembershipStatus from "~/app/creators/[username]/MembershipStatus";
 
 interface Props {
   params: Promise<{
@@ -25,35 +24,14 @@ export default async function ProfilePage({ params }: Props) {
 
   return (
     <div className="space-y-6">
-      {/* <ProfileClient username={username} /> */}
       <ENSResolver initialValue={username} initialData={resolution} />
 
-      {/* Membership Status UI */}
-      <div className="p-4 rounded-lg border border-gray-200 bg-white shadow-sm">
-        <div className="flex items-center space-x-3">
-          <div
-            className={`w-3 h-3 rounded-full ${
-              isMember ? "bg-green-500" : "bg-gray-400"
-            }`}
-          ></div>
-          <h3 className="text-lg font-medium">
-            {isMember ? "Verified Directory Member" : "Not a Directory Member"}
-          </h3>
-        </div>
-        <p className="mt-2 text-sm text-gray-600">
-          {isMember
-            ? "This creator is a verified member of the Creator Directory."
-            : "This creator is not currently part of the Creator Directory."}
-        </p>
-        {!isMember && resolution?.address && (
-          <div className="mt-4">
-            <JoinDirectoryButton
-              address={resolution.address}
-              name={resolution?.basename || username}
-            />
-          </div>
-        )}
-      </div>
+      <MembershipStatus
+        isMember={isMember}
+        address={resolution?.address}
+        username={username}
+        basename={resolution?.basename}
+      />
 
       <ContractGallery address={resolution?.address || ""} />
     </div>
