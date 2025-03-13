@@ -23,36 +23,26 @@ export default async function ProfilePage({ params }: Props) {
   const resolution = await resolveBasenameOrAddress(username);
 
   // Check if the user is a member of the directory
-  const isMember = resolution?.address
-    ? await addressIsMember(resolution.address)
-    : false;
+  const isMember = resolution?.address ? await addressIsMember(resolution.address) : false;
 
   // Fetch creator data using getCreator if we have an address
-  const creator = resolution?.address
-    ? await getCreator(resolution.address)
-    : null;
+  const creator = resolution?.address ? await getCreator(resolution.address) : null;
 
   if (!creator) {
     return (
       <LayoutWrapper>
         <Header />
         <div className="text-center my-10">
-          <h1 className="text-4xl font-bold text-white mb-4">
-            Creator Not Found
-          </h1>
-          <p className="text-white mb-6">
-            We couldn&apos;t find this creator in our directory.
-          </p>
-          <Link
-            href="/creators"
-            className="bg-white text-blue-600 px-6 py-3 rounded-full font-medium hover:bg-opacity-90 transition-all"
-          >
+          <h1 className="text-4xl font-bold text-white mb-4">Creator Not Found</h1>
+          <p className="text-white mb-6">We couldn&apos;t find this creator in our directory.</p>
+          <Link href="/creators" className="bg-white text-blue-600 px-6 py-3 rounded-full font-medium hover:bg-opacity-90 transition-all">
             Back to Creators
           </Link>
         </div>
       </LayoutWrapper>
     );
   }
+  const displayName = creator.resolution?.basename || creator.name;
 
   return (
     <LayoutWrapper>
@@ -62,10 +52,7 @@ export default async function ProfilePage({ params }: Props) {
       <IsItMe address={resolution?.address || ""} />
       <div className="space-y-8">
         <div className="flex justify-start mb-4">
-          <Link
-            href="/creators"
-            className="flex items-center text-white hover:text-blue-300 transition-colors"
-          >
+          <Link href="/creators" className="flex items-center text-white hover:text-blue-300 transition-colors">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -84,56 +71,29 @@ export default async function ProfilePage({ params }: Props) {
           </Link>
         </div>
 
-        <div className="text-center mb-10">
-          <h1 className="text-5xl font-bold text-white mb-4 base-pixel">
-            {creator.resolution?.basename || creator.name}
-          </h1>
-          {creator.bio && (
-            <p className="text-white max-w-2xl mx-auto">{creator.bio}</p>
-          )}
-        </div>
-
-        <div className="bg-blue-500 rounded-xl p-6">
-          <div className="flex items-center mb-6">
-            {creator.avatar ? (
-              <img
-                src={creator.avatar}
-                alt={creator.name}
-                className="w-16 h-16 rounded-full mr-4"
-              />
-            ) : (
-              <div className="w-16 h-16 rounded-full bg-blue-300 flex items-center justify-center mr-4">
-                <span className="text-blue-700 text-xl font-bold">
-                  {creator.name.charAt(0)}
-                </span>
-              </div>
-            )}
-
-            <MembershipStatus
-              isMember={isMember}
-              address={resolution?.address}
-              username={username}
-              basename={resolution?.basename}
-            />
-
-            <div>
-              <h2 className="text-2xl font-bold text-white">
-                {creator.resolution?.basename || creator.name}
-              </h2>
-              <p className="text-white/80 text-sm">{creator.address}</p>
+        <div className="flex flex-col mb-6 gap-2">
+          {creator.avatar ? (
+            <img src={creator.avatar} alt={creator.name} className="w-22 h-22 rounded-full mr-4" />
+          ) : (
+            <div className="w-16 h-16 rounded-full bg-blue-300 flex items-center justify-center mr-4">
+              <span className="text-blue-700 text-xl font-bold">{creator.name.charAt(0)}</span>
             </div>
+          )}
+
+          <div className="flex items-center gap-2">
+            <h2 className={`font-bold text-white base-pixel-display ${displayName.length > 20 ? "text-2xl" : "text-3xl"}`}>{displayName}</h2>
+            <MembershipStatus isMember={isMember} address={resolution?.address} username={username} basename={resolution?.basename} />
           </div>
+
+          {creator.bio && <p className="text-white text-sm">{creator.bio}</p>}
+          <p className="text-white/80 text-sm">{creator.address}</p>
         </div>
 
-        <ContractGallery
-          address={resolution?.address || ""}
-          openSeaCollections={creator.openSeaData?.collections || []}
-        />
+        <ContractGallery address={resolution?.address || ""} openSeaCollections={creator.openSeaData?.collections || []} />
       </div>
     </LayoutWrapper>
   );
 }
-
 const appUrl = `https://${process.env.NEXT_PUBLIC_URL ?? process.env.VERCEL_URL}`;
 // const appUrl = process.env.NEXT_PUBLIC_URL;
 // const appUrl = process.env.VERCEL_URL;

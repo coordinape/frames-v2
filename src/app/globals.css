@@ -1,16 +1,27 @@
 @import "tailwindcss";
 
 @font-face {
-  font-family: "BasePixel";
+  font-family: "BasePixel-Low";
   src: url("./fonts/BasePixel-LowResolution.woff2") format("woff2"), url("./fonts/BasePixel-LowResolution.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "BasePixel-Medium";
+  src: url("./fonts/BasePixel-MediumResolution.woff2") format("woff2"), url("./fonts/BasePixel-MediumResolution.woff") format("woff");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 
 .base-pixel {
-  font-family: "BasePixel", sans-serif;
+  font-family: "BasePixel-Low", sans-serif;
   letter-spacing: 0.02em;
+}
+.base-pixel-display {
+  font-family: "BasePixel-Medium", sans-serif;
+  letter-spacing: 0.025em;
 }
 
 .bg-base-blue {
