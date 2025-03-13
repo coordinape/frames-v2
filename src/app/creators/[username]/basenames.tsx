@@ -7,6 +7,7 @@ import {
   keccak256,
   Abi,
   Hash,
+  encodeFunctionData,
 } from "viem";
 
 import { normalize, namehash } from "viem/ens";
@@ -149,14 +150,21 @@ export async function setMultipleTextRecords(
     // Apply the namehash algorithm to get the node
     const node = namehash(normalizedBasename);
 
-    const keys = records.map((record) => record.key);
-    const values = records.map((record) => record.value);
+    // Create an array of encoded function calls for each text record
+    const encodedCalls = records.map(({ key, value }) =>
+      encodeFunctionData({
+        abi: L2ResolverAbi,
+        functionName: "setText",
+        args: [node, key, value],
+      })
+    );
 
+    // Call multicallWithNodeCheck with the node and encoded function calls
     const hash = await walletClient.writeContract({
       abi: L2ResolverAbi,
       address: BASENAME_L2_RESOLVER_ADDRESS,
       functionName: "multicallWithNodeCheck",
-      args: [node, keys, values],
+      args: [node, encodedCalls],
     });
 
     return hash;
