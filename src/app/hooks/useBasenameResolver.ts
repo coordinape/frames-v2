@@ -29,6 +29,7 @@ const emptyTextRecords: Record<BasenameTextRecordKeys, string | undefined> = {
   [BasenameTextRecordKeys.Discord]: undefined,
   [BasenameTextRecordKeys.Avatar]: undefined,
   [BasenameTextRecordKeys.Frames]: undefined,
+  [BasenameTextRecordKeys.Medium]: undefined,
 };
 
 export async function resolveBasenameOrAddress(input: string) {

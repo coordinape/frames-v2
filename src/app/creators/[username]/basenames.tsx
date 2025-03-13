@@ -11,7 +11,6 @@ import { normalize, namehash } from "viem/ens";
 
 import { base, mainnet } from "viem/chains";
 import L2ResolverAbi from "./L2ResolverAbi";
-import { call } from "viem/actions";
 
 export type Basename = `${string}.base.eth`;
 
@@ -32,6 +31,7 @@ export enum BasenameTextRecordKeys {
   Discord = "com.discord",
   Avatar = "avatar",
   Frames = "frames",
+  Medium = "com.coordinape.creator.medium",
 }
 
 export const textRecordsKeysEnabled = [
@@ -48,11 +48,14 @@ export const textRecordsKeysEnabled = [
   BasenameTextRecordKeys.Discord,
   BasenameTextRecordKeys.Avatar,
   BasenameTextRecordKeys.Frames,
+  BasenameTextRecordKeys.Medium,
 ];
 
 const baseClient = createPublicClient({
   chain: base,
-  transport: http("https://mainnet.base.org"), // TODO: use alchemy
+  transport: http(
+    process.env.NEXT_PUBLIC_ALCHEMY_BASE_URL || "https://mainnet.base.org"
+  ),
 });
 
 export async function getBasenameAvatar(basename: Basename) {
@@ -87,6 +90,7 @@ export async function setText(
   basename: Basename,
   key: BasenameTextRecordKeys,
   value: string,
+  // @ts-ignore FIXME
   walletClient: any // Accept a wallet client as a parameter
 ) {
   try {
@@ -121,6 +125,7 @@ export async function setText(
 export async function setMultipleTextRecords(
   basename: Basename,
   records: Array<{ key: BasenameTextRecordKeys; value: string }>,
+  // @ts-ignore FIXME
   walletClient: any
 ) {
   try {
@@ -130,17 +135,14 @@ export async function setMultipleTextRecords(
     // Apply the namehash algorithm to get the node
     const node = namehash(normalizedBasename);
 
-    // Create multicall data for each text record
-    const calls = records.map(({ key, value }) => ({
-      address: BASENAME_L2_RESOLVER_ADDRESS,
-      abi: L2ResolverAbi,
-      functionName: "setText",
-      args: [node, key, value],
-    }));
+    const keys = records.map((record) => record.key);
+    const values = records.map((record) => record.value);
 
-    // Execute the multicall transaction
-    const hash = await walletClient.multicall({
-      calls,
+    const hash = await walletClient.writeContract({
+      abi: L2ResolverAbi,
+      address: BASENAME_L2_RESOLVER_ADDRESS,
+      functionName: "multicallWithNodeCheck",
+      args: [node, keys, values],
     });
 
     return hash;

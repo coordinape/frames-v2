@@ -71,6 +71,10 @@ const FIELD_CONFIG: Record<
     label: "Frames URL",
     placeholder: "https://example.com/frames",
   },
+  [BasenameTextRecordKeys.Medium]: {
+    label: "Medium",
+    placeholder: "digital animation",
+  },
 };
 
 interface EditBasenameProfileProps {
@@ -188,7 +192,7 @@ export default function EditBasenameProfile({
         .filter((key) => {
           const newValue = textRecords[key] || "";
           const currentValue = currentValues[key] || "";
-          return newValue && newValue !== currentValue;
+          return newValue !== currentValue;
         })
         .map((key) => ({
           key,
