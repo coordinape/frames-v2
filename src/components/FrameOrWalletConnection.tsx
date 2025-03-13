@@ -1,0 +1,75 @@
+"use client"
+
+import { useEffect, useState } from 'react';
+import { useFrame } from '~/hooks/useFrame';
+import { useConnect, useDisconnect, useAccount } from 'wagmi';
+import { config } from '~/components/providers/WagmiProvider';
+
+interface FrameOrWalletConnectionProps {
+  children: (props: {
+    address: string | null;
+    isFrame: boolean;
+    connectWallet: () => Promise<void>;
+    disconnectWallet: () => void;
+    isConnecting: boolean;
+    error: Error | null;
+  }) => React.ReactNode;
+}
+
+// Hook that handles all wallet connection logic
+export function useWalletConnection() {
+  const [error, setError] = useState<Error | null>(null);
+  
+  // Use wagmi hooks
+  const { address } = useAccount();
+  const { connect, isPending: isConnecting } = useConnect();
+  const { disconnect } = useDisconnect();
+  
+  // Connect wallet function
+  const connectWallet = async () => {
+    setError(null);
+    
+    try {
+      // Check if any wallet is available
+      if (typeof window !== 'undefined' && !(window as any).ethereum) {
+        throw new Error('No wallet found. Please install MetaMask or another Ethereum wallet.');
+      }
+      
+      await connect({
+        connector: config.connectors[0]
+      });
+
+    } catch (err) {
+      console.error('Error connecting wallet:', err);
+      // Provide a more user-friendly error message
+      const errorMessage = (window as any).ethereum 
+        ? 'Failed to connect wallet. Please try again.'
+        : 'Please install MetaMask or another Ethereum wallet to connect.';
+      setError(new Error(errorMessage));
+    }
+  };
+  
+  // Disconnect wallet function
+  const disconnectWallet = () => {
+    disconnect();
+  };
+  
+  // Get the effective address
+  const effectiveAddress = address || null;
+  
+  return {
+    address: effectiveAddress,
+    isFrame: false,
+    connectWallet,
+    disconnectWallet,
+    isConnecting,
+    error
+  };
+}
+
+export function FrameOrWalletConnection({ 
+  children 
+}: FrameOrWalletConnectionProps) {
+  const walletConnection = useWalletConnection();
+  return children(walletConnection);
+} 

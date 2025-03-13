@@ -7,6 +7,9 @@ import MembershipStatus from "~/app/creators/[username]/MembershipStatus";
 import Link from "next/link";
 import LayoutWrapper from "~/app/components/LayoutWrapper";
 import Header from "~/app/components/Header";
+import WhoAmI from "~/components/WhoAmI";
+import { useWalletConnection } from "~/components/FrameOrWalletConnection";
+import { IsItMe } from "~/app/components/IsItMe";
 
 interface Props {
   params: Promise<{
@@ -19,6 +22,7 @@ export default async function ProfilePage({ params }: Props) {
 
   // Resolve the basename or address server-side
   const resolution = await resolveBasenameOrAddress(username);
+
 
   // Check if the user is a member of the directory
   const isMember = resolution?.address
@@ -56,37 +60,22 @@ export default async function ProfilePage({ params }: Props) {
     <LayoutWrapper>
       <Header />
 
-      <div className="space-y-8">
-        <div className="flex justify-start mb-4">
-          <Link
-            href="/creators"
-            className="flex items-center text-white hover:text-blue-300 transition-colors"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="mr-2"
-            >
-              <path d="M19 12H5M12 19l-7-7 7-7" />
-            </svg>
-            Back to Creators
-          </Link>
-        </div>
+      <WhoAmI/>
 
-        <div className="text-center mb-10">
-          <h1 className="text-5xl font-bold text-white mb-4 base-pixel">
-            {creator.resolution?.basename || creator.name}
-          </h1>
-          {creator.bio && (
-            <p className="text-white max-w-2xl mx-auto">{creator.bio}</p>
-          )}
+      <IsItMe address={resolution?.address || ""} />
+
+
+      {/* Membership Status UI */}
+      <div className="p-4 rounded-lg border border-gray-200 bg-white shadow-sm">
+        <div className="flex items-center space-x-3">
+          <div
+            className={`w-3 h-3 rounded-full ${
+              isMember ? "bg-green-500" : "bg-gray-400"
+            }`}
+          ></div>
+          <h3 className="text-lg font-medium">
+            {isMember ? "Verified Directory Member" : "Not a Directory Member"}
+          </h3>
         </div>
 
         <div className="bg-blue-500 rounded-xl p-6">
