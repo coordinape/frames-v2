@@ -192,9 +192,9 @@ export default function JoinClient() {
         <div className="flex items-center justify-center gap-2 mb-4 text-sm">
           <span className="opacity-80">Signed in as</span>
           <div className="flex items-center">
-            {context?.user?.pfp && (
+            {context?.user?.pfpUrl && (
               <img
-                src={context.user.pfp}
+                src={context.user.pfpUrl}
                 alt="Profile"
                 className="w-5 h-5 rounded-full mr-2"
               />
