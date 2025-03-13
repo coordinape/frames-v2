@@ -1,12 +1,12 @@
+"use server";
+
 import fs from "fs";
 import path from "path";
-import { promises as fsPromises } from "fs";
-import { kv } from '@vercel/kv';
+import { kv } from "@vercel/kv";
 
 // Cache directory setup
 const CACHE_DIR = path.join(process.cwd(), ".cache");
 const CACHE_DURATION = 3600 * 1000 * 24; // 24 hours in milliseconds
-
 
 const LOCAL_CACHE = false;
 
@@ -19,11 +19,11 @@ try {
   console.error("Failed to create cache directory:", error);
 }
 
-
-async function fetchWithCache<T>(cacheKey: string,
+async function fetchWithCache<T>(
+  cacheKey: string,
   fetchFn: () => Promise<T>
 ): Promise<T> {
-  if(LOCAL_CACHE) {
+  if (LOCAL_CACHE) {
     return fetchWithLocalCache(cacheKey, fetchFn);
   }
 
@@ -37,7 +37,7 @@ async function fetchWithCache<T>(cacheKey: string,
   const data = await fetchFn();
   await kv.set(cacheKey, data, { ex: CACHE_DURATION });
   return data;
-};
+}
 
 // Function to get cached data or fetch new data
 async function fetchWithLocalCache<T>(
@@ -54,7 +54,7 @@ async function fetchWithLocalCache<T>(
 
       // If cache is still valid, return cached data
       if (fileAge < CACHE_DURATION) {
-        const cachedData = await fsPromises.readFile(cacheFile, "utf-8");
+        const cachedData = await fs.promises.readFile(cacheFile, "utf-8");
         return JSON.parse(cachedData);
       }
     }
@@ -63,7 +63,7 @@ async function fetchWithLocalCache<T>(
     const data = await fetchFn();
 
     // Save to cache
-    await fsPromises.writeFile(cacheFile, JSON.stringify(data), "utf-8");
+    await fs.promises.writeFile(cacheFile, JSON.stringify(data), "utf-8");
 
     return data;
   } catch (error) {
