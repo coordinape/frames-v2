@@ -147,11 +147,11 @@ const frame = ({ username }: { username: string }) => ({
   version: "next",
   imageUrl: `${appUrl}/creators/${username}/ogimage`,
   button: {
-    title: "View Creator Profile",
+    title: `${username} Profile`,
     action: {
       type: "launch_frame",
       name: "View Creator Profile",
-      url: `${appUrl}/creators/${username}`,
+      url: `${appUrl}/creators/${username}/edit`,
       splashImageUrl: `${appUrl}/splash.png`,
       splashBackgroundColor: "#f7f7f7",
     },
