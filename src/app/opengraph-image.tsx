@@ -8,11 +8,13 @@ export const size = {
 
 export const contentType = "image/png";
 
-export default async function Image() {
+export default async function Image({ searchParams = {} }: { searchParams?: { [key: string]: string | string[] | undefined } } = {}) {
+  const title = typeof searchParams.title === 'string' ? searchParams.title : "CoCreator Frames";
+  
   return new ImageResponse(
     (
       <div tw="h-full w-full flex flex-col justify-center items-center relative bg-white">
-        <h1 tw="text-6xl">CoCreator Frames</h1>
+        <h1 tw="text-6xl">{title}</h1>
       </div>
     ),
     {

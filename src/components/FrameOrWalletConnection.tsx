@@ -31,6 +31,7 @@ export function useWalletConnection() {
     
     try {
       // Check if any wallet is available
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       if (typeof window !== 'undefined' && !(window as any).ethereum) {
         throw new Error('No wallet found. Please install MetaMask or another Ethereum wallet.');
       }
@@ -42,6 +43,7 @@ export function useWalletConnection() {
     } catch (err) {
       console.error('Error connecting wallet:', err);
       // Provide a more user-friendly error message
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const errorMessage = (window as any).ethereum 
         ? 'Failed to connect wallet. Please try again.'
         : 'Please install MetaMask or another Ethereum wallet to connect.';
