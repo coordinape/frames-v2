@@ -12,6 +12,9 @@ import {
 } from "~/app/creators/[username]/basenames";
 import { useAccount, useConnect, useDisconnect, useWalletClient } from "wagmi";
 import { base } from "viem/chains";
+import LayoutWrapper from "~/app/components/LayoutWrapper";
+import Header from "~/app/components/Header";
+import Link from "next/link";
 
 // Define field configurations in one place
 const FIELD_CONFIG: Record<
@@ -226,117 +229,151 @@ export default function EditBasenameProfile({
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="mb-8 p-6 bg-white rounded-lg shadow-sm">
-        <h2 className="text-2xl font-bold mb-4">Edit Profile</h2>
-        <div className="flex items-center justify-center p-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-700"></div>
-          <span className="ml-2">Loading profile data...</span>
+  return (
+    <LayoutWrapper>
+      <Header />
+
+      <div className="space-y-8">
+        <div className="flex justify-start mb-4">
+          <Link
+            href={`/creators/${basename}`}
+            className="flex items-center text-white hover:text-blue-300 transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="mr-2"
+            >
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+            Back to Profile
+          </Link>
+        </div>
+
+        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
+          <h2 className="text-2xl font-bold mb-4 text-white">Edit Profile</h2>
+          <p className="text-white/80 mb-6">
+            Update your profile information stored on the Base blockchain.
+          </p>
+
+          {isLoading ? (
+            <div className="flex items-center justify-center p-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+              <span className="ml-2 text-white">Loading profile data...</span>
+            </div>
+          ) : (
+            <>
+              {!isConnected ? (
+                <div className="mb-6">
+                  <button
+                    onClick={() => {
+                      const injector = connectors.find(
+                        (c) => c.id === "injected"
+                      );
+                      if (injector) connect({ connector: injector });
+                    }}
+                    className="px-4 py-2 bg-white text-blue-600 rounded-lg font-medium hover:bg-blue-50 transition-all"
+                  >
+                    Connect Wallet
+                  </button>
+                  <p className="mt-2 text-sm text-white/70">
+                    Please connect your wallet to edit your profile.
+                  </p>
+                </div>
+              ) : (
+                <div className="mb-6 p-3 bg-white/20 text-white rounded-lg flex justify-between items-center">
+                  <span>
+                    Connected: {address?.slice(0, 6)}...{address?.slice(-4)}
+                  </span>
+                  <button
+                    onClick={() => disconnect()}
+                    className="text-sm text-red-300 hover:text-red-100"
+                  >
+                    Disconnect
+                  </button>
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit}>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-white mb-1">
+                    Basename
+                  </label>
+                  <div className="w-full px-3 py-2 border border-white/30 rounded-lg bg-white/10 text-white">
+                    {basename}
+                  </div>
+                  <p className="mt-1 text-xs text-white/60">
+                    Your basename cannot be changed here.
+                  </p>
+                </div>
+
+                {textRecordsKeysEnabled.map((key) => (
+                  <div key={key} className="mb-4">
+                    <label
+                      htmlFor={key}
+                      className="block text-sm font-medium text-white mb-1"
+                    >
+                      {FIELD_CONFIG[key].label}
+                    </label>
+                    {FIELD_CONFIG[key].isTextarea ? (
+                      <textarea
+                        id={key}
+                        value={textRecords[key] || ""}
+                        onChange={(e) =>
+                          handleTextRecordChange(key, e.target.value)
+                        }
+                        className="w-full px-3 py-2 border border-white/30 rounded-lg bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-white/50"
+                        placeholder={FIELD_CONFIG[key].placeholder}
+                        rows={3}
+                      />
+                    ) : (
+                      <input
+                        type="text"
+                        id={key}
+                        value={textRecords[key] || ""}
+                        onChange={(e) =>
+                          handleTextRecordChange(key, e.target.value)
+                        }
+                        className="w-full px-3 py-2 border border-white/30 rounded-lg bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-white/50"
+                        placeholder={FIELD_CONFIG[key].placeholder}
+                      />
+                    )}
+                  </div>
+                ))}
+
+                {error && (
+                  <div className="mb-4 p-3 bg-red-500/20 text-red-200 rounded-lg">
+                    {error}
+                  </div>
+                )}
+
+                {success && (
+                  <div className="mb-4 p-3 bg-green-500/20 text-green-200 rounded-lg">
+                    {success}
+                  </div>
+                )}
+
+                <div className="flex justify-end">
+                  <button
+                    type="submit"
+                    disabled={isSubmitting || !isConnected}
+                    className="px-6 py-3 bg-white text-blue-600 rounded-lg font-medium hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-white/50 disabled:opacity-50 transition-all"
+                  >
+                    {isSubmitting ? "Updating..." : "Update Profile"}
+                  </button>
+                </div>
+              </form>
+            </>
+          )}
         </div>
       </div>
-    );
-  }
-
-  return (
-    <div className="mb-8 p-6 bg-white rounded-lg shadow-sm">
-      <h2 className="text-2xl font-bold mb-4">Edit Profile</h2>
-      <p className="text-gray-600 mb-4">
-        Update your profile information stored on the Base blockchain.
-      </p>
-
-      {!isConnected ? (
-        <div className="mb-4">
-          <button
-            onClick={() => {
-              const injector = connectors.find((c) => c.id === "injected");
-              if (injector) connect({ connector: injector });
-            }}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          >
-            Connect Wallet
-          </button>
-          <p className="mt-2 text-sm text-gray-500">
-            Please connect your wallet to edit your profile.
-          </p>
-        </div>
-      ) : (
-        <div className="mb-4 p-3 bg-green-50 text-green-700 rounded-md flex justify-between items-center">
-          <span>
-            Connected: {address?.slice(0, 6)}...{address?.slice(-4)}
-          </span>
-          <button
-            onClick={() => disconnect()}
-            className="text-sm text-red-600 hover:text-red-800"
-          >
-            Disconnect
-          </button>
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Basename
-          </label>
-          <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-700">
-            {basename}
-          </div>
-          <p className="mt-1 text-xs text-gray-500">
-            Your basename cannot be changed here.
-          </p>
-        </div>
-
-        {textRecordsKeysEnabled.map((key) => (
-          <div key={key} className="mb-4">
-            <label
-              htmlFor={key}
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              {FIELD_CONFIG[key].label}
-            </label>
-            {FIELD_CONFIG[key].isTextarea ? (
-              <textarea
-                id={key}
-                value={textRecords[key] || ""}
-                onChange={(e) => handleTextRecordChange(key, e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder={FIELD_CONFIG[key].placeholder}
-                rows={3}
-              />
-            ) : (
-              <input
-                type="text"
-                id={key}
-                value={textRecords[key] || ""}
-                onChange={(e) => handleTextRecordChange(key, e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder={FIELD_CONFIG[key].placeholder}
-              />
-            )}
-          </div>
-        ))}
-
-        {error && (
-          <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-md">
-            {error}
-          </div>
-        )}
-
-        {success && (
-          <div className="mb-4 p-3 bg-green-50 text-green-700 rounded-md">
-            {success}
-          </div>
-        )}
-
-        <button
-          type="submit"
-          disabled={isSubmitting || !isConnected}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
-        >
-          {isSubmitting ? "Updating..." : "Update Profile"}
-        </button>
-      </form>
-    </div>
+    </LayoutWrapper>
   );
 }

@@ -9,9 +9,5 @@ interface Props {
 export default async function EditProfilePage({ params }: Props) {
   const { username } = await params;
 
-  return (
-    <div>
-      <EditBasenameProfile username={username} />
-    </div>
-  );
+  return <EditBasenameProfile username={username} />;
 }
