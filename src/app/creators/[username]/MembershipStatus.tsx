@@ -14,25 +14,22 @@ export default function MembershipStatus({
   basename,
 }: MembershipStatusProps) {
   return (
-    <div className="p-4 rounded-lg border border-gray-200 bg-white shadow-sm">
-      <div className="flex items-center space-x-3">
-        <div
-          className={`w-3 h-3 rounded-full ${
-            isMember ? "bg-green-500" : "bg-gray-400"
-          }`}
-        ></div>
-        <h3 className="text-lg font-medium">
-          {isMember ? "Verified Directory Member" : "Not a Directory Member"}
-        </h3>
-      </div>
-      <p className="mt-2 text-sm text-gray-600">
-        {isMember
-          ? "This creator is a verified member of the Creator Directory."
-          : "This creator is not currently part of the Creator Directory."}
-      </p>
-      {!isMember && address && (
-        <div className="mt-4">
-          <JoinDirectoryButton address={address} name={basename || username} />
+    <div className="p-4">
+      {isMember && (
+        <div className="flex items-center font-medium">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5 mr-1.5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clipRule="evenodd"
+            />
+          </svg>
+          Verified
         </div>
       )}
     </div>

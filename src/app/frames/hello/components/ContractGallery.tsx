@@ -1,43 +1,57 @@
 import { getNFTContracts } from "~/lib/getNFTContracts";
 
-interface ContractGalleryProps {
-  address: string;
+interface OpenSeaCollection {
+  id?: string;
+  name?: string;
+  imageUrl?: string;
 }
 
-export default async function ContractGallery({ address }: ContractGalleryProps) {
+interface ContractGalleryProps {
+  address: string;
+  openSeaCollections?: OpenSeaCollection[];
+}
+
+export default async function ContractGallery({
+  address,
+  openSeaCollections = [],
+}: ContractGalleryProps) {
   const contracts = await getNFTContracts(address);
-  
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6 bg-gray-50">
-      {contracts.map((contract, index) => (
-        <div 
-          key={`${contract.contractAddress}-${index}`}
-          className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
-        >
-          <div className="aspect-[16/9] relative bg-gray-100">
-            {contract.bannerImageUrl ? (
-              <img
-                src={contract.bannerImageUrl}
-                alt={`${contract.name} banner`}
-                className="w-full h-full object-cover"
-              />
-            ) : contract.imageUrl ? (
-              <img
-                src={contract.imageUrl}
-                alt={contract.name}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
-                <span className="text-gray-400 text-lg">No Image</span>
+    <div className="space-y-8">
+      {/* OpenSea Collections */}
+      {openSeaCollections && openSeaCollections.length > 0 && (
+        <div className="bg-blue-500 rounded-xl p-6">
+          <h3 className="text-xl font-bold text-white mb-4">NFT Collections</h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {openSeaCollections.map((collection, index) => (
+              <div
+                key={collection.id || index}
+                className="bg-blue-400/50 rounded-lg overflow-hidden"
+              >
+                <div className="aspect-square overflow-hidden">
+                  {collection.imageUrl ? (
+                    <img
+                      src={collection.imageUrl}
+                      alt={collection.name || "Collection"}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-blue-400 flex items-center justify-center">
+                      <span className="text-blue-100 text-sm">No Image</span>
+                    </div>
+                  )}
+                </div>
+                <div className="p-3">
+                  <h4 className="text-white font-medium">
+                    {collection.name || "Unnamed Collection"}
+                  </h4>
+                </div>
               </div>
-            )}
-          </div>
-          <div className="p-6">
-            <h2 className="text-2xl font-bold mb-3 text-gray-800">{contract.name || 'Unnamed Contract'}</h2>
+            ))}
           </div>
         </div>
-      ))}
+      )}
     </div>
   );
-} 
+}
