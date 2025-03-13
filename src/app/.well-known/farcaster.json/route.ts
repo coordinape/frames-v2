@@ -14,7 +14,7 @@ export async function GET() {
       name: "CoCreator Frame",
       iconUrl: `${appUrl}/favicon.png`,
       homeUrl: appUrl,
-      imageUrl: `${appUrl}/frames/hello/opengraph-image`,
+      imageUrl: `${appUrl}/ogimage?title=CoCreator+Frames`,
       buttonTitle: "Launch Frame",
       splashImageUrl: `${appUrl}/splash.png`,
       splashBackgroundColor: "#f7f7f7",

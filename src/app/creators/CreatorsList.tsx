@@ -66,15 +66,15 @@ export default function CreatorsList() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-blue-600 flex items-center justify-center">
-        <div className="text-white text-xl">Loading creators...</div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-white text-xl base-pixel">Loading creators...</div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-blue-600 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-white text-xl">{error}</div>
       </div>
     );
@@ -131,9 +131,7 @@ export default function CreatorsList() {
         </div>
       </div>
 
-      <p className="text-white mb-4 font-medium">
-        {filteredCreators.length} CREATORS FOUND
-      </p>
+      <p className="text-white mb-4 font-medium text-sm">{filteredCreators.length} CREATORS FOUND</p>
 
       <div className="space-y-4">
         {filteredCreators.map((creator) => (
@@ -144,7 +142,7 @@ export default function CreatorsList() {
             key={creator.id}
             className="block"
           >
-            <div className="bg-blue-500 rounded-xl p-4 hover:bg-blue-400 transition-colors">
+            <div className="border-2 border-white/20 rounded-xl p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   {creator.avatar ? (
@@ -154,69 +152,39 @@ export default function CreatorsList() {
                       className="w-10 h-10 rounded-full mr-3"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-blue-300 flex items-center justify-center mr-3">
-                      <span className="text-blue-700">
-                        {creator.name.charAt(0)}
-                      </span>
+                    <div className="bg-white/70 w-10 h-10 rounded-full flex items-center justify-center mr-3">
+                      <span className="text-blue-700">{creator.name.charAt(0)}</span>
                     </div>
                   )}
                   <div>
-                    <h2 className="text-lg font-bold text-white">
-                      {creator.resolution?.basename || creator.name}
-                    </h2>
+                    <h2 className="text-white">{creator.resolution?.basename || creator.name}</h2>
                   </div>
                 </div>
-                <svg
-                  className="w-6 h-6 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M9 5l7 7-7 7"
-                  ></path>
-                </svg>
+                <div className="opacity-40">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
+                </div>
               </div>
 
               <div className="grid grid-cols-3 gap-2 mt-4">
-                {creator.openSeaData?.collections &&
-                creator.openSeaData.collections.length > 0 ? (
-                  creator.openSeaData.collections
-                    .slice(0, 3)
-                    .map((collection, index) => (
-                      <div
-                        key={collection.id || index}
-                        className="aspect-square overflow-hidden rounded-lg"
-                      >
-                        {collection.imageUrl ? (
-                          <img
-                            src={collection.imageUrl}
-                            alt={collection.name || "Collection"}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-blue-400 flex items-center justify-center">
-                            <span className="text-blue-100 text-xs">
-                              No Image
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    ))
+                {creator.openSeaData?.collections && creator.openSeaData.collections.length > 0 ? (
+                  creator.openSeaData.collections.slice(0, 3).map((collection, index) => (
+                    <div key={collection.id || index} className="aspect-square overflow-hidden rounded-lg">
+                      {collection.imageUrl ? (
+                        <img src={collection.imageUrl} alt={collection.name || "Collection"} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <span className="text-blue-100 text-xs">No Image</span>
+                        </div>
+                      )}
+                    </div>
+                  ))
                 ) : (
                   <>
                     {[1, 2, 3].map((i) => (
-                      <div
-                        key={i}
-                        className="aspect-square overflow-hidden rounded-lg bg-blue-400/50 flex items-center justify-center"
-                      >
-                        <span className="text-white/80 text-xs font-medium">
-                          No NFT
-                        </span>
+                      <div key={i} className="bg-white/10 aspect-square overflow-hidden rounded-lg flex items-center justify-center">
+                        <span className="text-white/80 text-xs font-medium">No NFT</span>
                       </div>
                     ))}
                   </>
