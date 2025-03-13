@@ -145,7 +145,7 @@ const appUrl = `https://${
 
 const frame = ({ username }: { username: string }) => ({
   version: "next",
-  imageUrl: `${appUrl}/ogimage?title=${username}`,
+  imageUrl: `${appUrl}/creators/${username}/ogimage`,
   button: {
     title: "View Creator Profile",
     action: {
