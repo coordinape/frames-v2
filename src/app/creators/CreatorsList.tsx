@@ -118,7 +118,7 @@ export default function CreatorsList() {
                   {creator.avatar ? (
                     <img src={creator.avatar} alt={creator.name} className="w-10 h-10 rounded-full mr-3" />
                   ) : (
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center mr-3">
+                    <div className="bg-white/70 w-10 h-10 rounded-full flex items-center justify-center mr-3">
                       <span className="text-blue-700">{creator.name.charAt(0)}</span>
                     </div>
                   )}
@@ -149,7 +149,7 @@ export default function CreatorsList() {
                 ) : (
                   <>
                     {[1, 2, 3].map((i) => (
-                      <div key={i} className="aspect-square overflow-hidden rounded-lg/50 flex items-center justify-center">
+                      <div key={i} className="bg-white/10 aspect-square overflow-hidden rounded-lg flex items-center justify-center">
                         <span className="text-white/80 text-xs font-medium">No NFT</span>
                       </div>
                     ))}
