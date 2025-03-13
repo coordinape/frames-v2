@@ -2,14 +2,11 @@ import { ImageResponse } from 'next/og';
 import { NextRequest } from 'next/server';
 
 // export const runtime = 'edge'; // Add this line to use the Edge runtime
-
-export const alt = "CoCreator Frames";
-export const size = {
+const size = {
   width: 600,
   height: 400,
 };
 
-export const contentType = "image/png";
 
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
@@ -25,6 +22,9 @@ export async function GET(request: NextRequest) {
     ),
     {
       ...size,
+      headers: {
+        'Content-Type': 'image/png',
+      },
     }
   );
 }
