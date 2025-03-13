@@ -1,4 +1,4 @@
-import ProfileEditor from "./ProfileEditor";
+import EditBasenameProfile from "~/app/creators/[username]/edit/EditBasenameProfile";
 
 interface Props {
   params: Promise<{
@@ -9,9 +9,5 @@ interface Props {
 export default async function EditProfilePage({ params }: Props) {
   const { username } = await params;
 
-  return (
-    <div>
-      <ProfileEditor username={username} />
-    </div>
-  );
+  return <EditBasenameProfile username={username} />;
 }

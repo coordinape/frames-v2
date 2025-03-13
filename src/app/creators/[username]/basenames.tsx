@@ -5,8 +5,13 @@ import {
   encodePacked,
   http,
   keccak256,
-  namehash,
+  Abi,
+  Hash,
+  encodeFunctionData,
 } from "viem";
+
+import { normalize, namehash } from "viem/ens";
+
 import { base, mainnet } from "viem/chains";
 import L2ResolverAbi from "./L2ResolverAbi";
 
@@ -29,6 +34,7 @@ export enum BasenameTextRecordKeys {
   Discord = "com.discord",
   Avatar = "avatar",
   Frames = "frames",
+  Medium = "com.coordinape.creator.medium",
 }
 
 export const textRecordsKeysEnabled = [
@@ -45,11 +51,14 @@ export const textRecordsKeysEnabled = [
   BasenameTextRecordKeys.Discord,
   BasenameTextRecordKeys.Avatar,
   BasenameTextRecordKeys.Frames,
+  BasenameTextRecordKeys.Medium,
 ];
 
 const baseClient = createPublicClient({
   chain: base,
-  transport: http("https://mainnet.base.org"), // TODO: use alchemy
+  transport: http(
+    process.env.NEXT_PUBLIC_ALCHEMY_BASE_URL || "https://mainnet.base.org"
+  ),
 });
 
 export async function getBasenameAvatar(basename: Basename) {
@@ -71,6 +80,101 @@ export function buildBasenameTextRecordContract(
     args: [namehash(basename), key],
     functionName: "text",
   };
+}
+
+/**
+ * Sets a text record for a basename on the Base chain ENS resolver
+ * @param basename The basename to set the text record for
+ * @param key The text record key
+ * @param value The value to set for the text record
+ * @returns The transaction hash if successful
+ */
+export async function setText(
+  basename: Basename,
+  key: BasenameTextRecordKeys,
+  value: string,
+  walletClient: {
+    writeContract: (params: {
+      abi: Abi;
+      address: Address;
+      functionName: string;
+      args: readonly unknown[];
+    }) => Promise<Hash>;
+  }
+) {
+  try {
+    // First normalize the basename to ensure consistent processing
+    const normalizedBasename = normalize(basename);
+
+    // Apply the namehash algorithm to get the node
+    const node = namehash(normalizedBasename);
+
+    // Create the transaction to set the text record
+    const hash = await walletClient.writeContract({
+      abi: L2ResolverAbi,
+      address: BASENAME_L2_RESOLVER_ADDRESS,
+      functionName: "setText",
+      args: [node, key, value],
+    });
+
+    return hash;
+  } catch (error) {
+    console.error(`Error setting text record for ${basename}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Sets multiple text records for a basename on the Base chain ENS resolver in a single transaction
+ * @param basename The basename to set the text records for
+ * @param records An array of objects containing the key and value for each text record
+ * @param walletClient The wallet client to use for the transaction
+ * @returns The transaction hash if successful
+ */
+export async function setMultipleTextRecords(
+  basename: Basename,
+  records: Array<{ key: BasenameTextRecordKeys; value: string }>,
+  walletClient: {
+    writeContract: (params: {
+      abi: Abi;
+      address: Address;
+      functionName: string;
+      args: readonly unknown[];
+    }) => Promise<Hash>;
+  }
+) {
+  try {
+    // First normalize the basename to ensure consistent processing
+    const normalizedBasename = normalize(basename);
+
+    // Apply the namehash algorithm to get the node
+    const node = namehash(normalizedBasename);
+
+    // Create an array of encoded function calls for each text record
+    const encodedCalls = records.map(({ key, value }) =>
+      encodeFunctionData({
+        abi: L2ResolverAbi,
+        functionName: "setText",
+        args: [node, key, value],
+      })
+    );
+
+    // Call multicallWithNodeCheck with the node and encoded function calls
+    const hash = await walletClient.writeContract({
+      abi: L2ResolverAbi,
+      address: BASENAME_L2_RESOLVER_ADDRESS,
+      functionName: "multicallWithNodeCheck",
+      args: [node, encodedCalls],
+    });
+
+    return hash;
+  } catch (error) {
+    console.error(
+      `Error setting multiple text records for ${basename}:`,
+      error
+    );
+    throw error;
+  }
 }
 
 // Get a single TextRecord
