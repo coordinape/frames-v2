@@ -9,6 +9,7 @@ import LayoutWrapper from "~/app/components/LayoutWrapper";
 import Header from "~/app/components/Header";
 import WhoAmI from "~/components/WhoAmI";
 import { IsItMe } from "~/app/components/IsItMe";
+import { headers } from "next/headers";
 interface Props {
   params: Promise<{
     username: string;
@@ -133,36 +134,42 @@ export default async function ProfilePage({ params }: Props) {
   );
 }
 
-const appUrl = `https://${process.env.VERCEL_URL}`;
+const appUrl = `https://${process.env.NEXT_PUBLIC_URL ?? process.env.VERCEL_URL}`;
 // const appUrl = process.env.NEXT_PUBLIC_URL;
 // const appUrl = process.env.VERCEL_URL;
 
-const frame = {
+const frame = ({ username }: { username: string }) => ({
   version: "next",
   imageUrl: `${appUrl}/opengraph-image`,
   button: {
-    title: "Launch Frame",
+    title: "View Creator Profile",
     action: {
       type: "launch_frame",
-      name: "Join Frame",
-      url: `${appUrl}/join`,
+      name: "View Creator Profile",
+      url: `${appUrl}/creators/${username}`,
       splashImageUrl: `${appUrl}/splash.png`,
       splashBackgroundColor: "#f7f7f7",
     },
   },
-};
+});
 
 export const revalidate = 300;
 
 export async function generateMetadata(): Promise<Metadata> {
+  const headersList = await headers();
+  const fullUrl = headersList.get('x-url') || '';
+  
+  // Split the URL by '/' and get the last part
+  const urlParts = fullUrl.split('/');
+  const username = urlParts[urlParts.length - 1];
   return {
-    title: "Join Frame",
+    title: `Creators Profile for ${username}`,
     openGraph: {
-      title: "Join Frame",
-      description: "Join the creatordirectory.",
+      title: `Creators Profile for ${username}`,
+      description: `Creators Directory Profile for ${username}.`,
     },
     other: {
-      "fc:frame": JSON.stringify(frame),
+      "fc:frame": JSON.stringify(frame({ username })),
     },
   };
 }
