@@ -100,7 +100,7 @@ const appUrl = `https://${process.env.NEXT_PUBLIC_URL ?? process.env.VERCEL_URL}
 
 const frame = ({ username }: { username: string }) => ({
   version: "next",
-  imageUrl: `${appUrl}/opengraph-image?title=${username}`,
+  imageUrl: `${appUrl}/ogimage?title=${username}`,
   button: {
     title: "View Creator Profile",
     action: {

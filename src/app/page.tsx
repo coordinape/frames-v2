@@ -6,7 +6,7 @@ const appUrl = process.env.VERCEL_URL;
 
 const frame = {
   version: "next",
-  imageUrl: `https://${appUrl}/opengraph-image`,
+  imageUrl: `https://${appUrl}/ogimage?title=Creators`,
   button: {
     title: "Launch Frame",
     action: {
