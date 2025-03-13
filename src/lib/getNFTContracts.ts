@@ -126,6 +126,10 @@ async function getOpenSeaUsernameFromAddress(address: string) {
         }
       );
 
+      if (response.status === 404 || response.status === 400) {
+        return null;
+      }
+
       if (!response.ok) {
         throw new Error(`OpenSea API error: ${response.status}`);
       }
@@ -149,7 +153,8 @@ export async function getNFTContracts(deployerAddress: string) {
       const username = await getOpenSeaUsernameFromAddress(deployerAddress);
 
       if (!username) {
-        throw new Error("No OpenSea username found for this address");
+        return [];
+        // throw new Error("No OpenSea username found for this address");
       }
 
       // Then get the collections

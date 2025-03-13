@@ -1,15 +1,16 @@
 import React from "react";
+import Logo from "./Logo";
+import DirectoryStatus from "./DirectoryStatus";
 
 interface HeaderProps {
-  logoSrc?: string;
-  altText?: string;
-  className?: string;
+  logoOnly?: boolean;
 }
 
-export default function Header({ logoSrc = "/Base_Symbol_White.png", altText = "Base Logo", className = "text-center mb-2" }: HeaderProps) {
+export default function Header({ logoOnly = false }: HeaderProps) {
   return (
-    <div className={className}>
-      <img src={logoSrc} alt={altText} className="w-6 h-6 mx-auto mb-4" />
+    <div className={`flex ${logoOnly ? "justify-center" : "justify-between"} items-start mb-8`}>
+      <Logo />
+      {!logoOnly && <DirectoryStatus hasJoined={false} />}
     </div>
   );
 }
