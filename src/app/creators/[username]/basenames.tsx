@@ -111,6 +111,48 @@ export async function setText(
   }
 }
 
+/**
+ * Sets multiple text records for a basename on the Base chain ENS resolver in a single transaction
+ * @param basename The basename to set the text records for
+ * @param records An array of objects containing the key and value for each text record
+ * @param walletClient The wallet client to use for the transaction
+ * @returns The transaction hash if successful
+ */
+export async function setMultipleTextRecords(
+  basename: Basename,
+  records: Array<{ key: BasenameTextRecordKeys; value: string }>,
+  walletClient: any
+) {
+  try {
+    // First normalize the basename to ensure consistent processing
+    const normalizedBasename = normalize(basename);
+
+    // Apply the namehash algorithm to get the node
+    const node = namehash(normalizedBasename);
+
+    // Create multicall data for each text record
+    const calls = records.map(({ key, value }) => ({
+      address: BASENAME_L2_RESOLVER_ADDRESS,
+      abi: L2ResolverAbi,
+      functionName: "setText",
+      args: [node, key, value],
+    }));
+
+    // Execute the multicall transaction
+    const hash = await walletClient.multicall({
+      calls,
+    });
+
+    return hash;
+  } catch (error) {
+    console.error(
+      `Error setting multiple text records for ${basename}:`,
+      error
+    );
+    throw error;
+  }
+}
+
 // Get a single TextRecord
 export async function getBasenameTextRecord(
   basename: Basename,

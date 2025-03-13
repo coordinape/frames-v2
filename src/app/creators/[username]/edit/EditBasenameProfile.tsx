@@ -7,6 +7,7 @@ import {
   BasenameTextRecordKeys,
   getBasenameTextRecords,
   setText,
+  setMultipleTextRecords,
   textRecordsKeysEnabled,
 } from "~/app/creators/[username]/basenames";
 import { useAccount, useConnect, useDisconnect, useWalletClient } from "wagmi";
@@ -171,9 +172,6 @@ export default function EditBasenameProfile({
     setSuccess(null);
 
     try {
-      let successCount = 0;
-      const totalUpdates = Object.keys(textRecords).length;
-
       // Fetch current text records to compare with new values
       const currentRecords = await getBasenameTextRecords(basename);
       const currentValues = {} as Record<BasenameTextRecordKeys, string>;
@@ -185,20 +183,35 @@ export default function EditBasenameProfile({
         });
       }
 
-      for (const key of textRecordsKeysEnabled) {
-        const newValue = textRecords[key] || "";
-        const currentValue = currentValues[key] || "";
+      // Collect all changed fields
+      const changedRecords = textRecordsKeysEnabled
+        .filter((key) => {
+          const newValue = textRecords[key] || "";
+          const currentValue = currentValues[key] || "";
+          return newValue && newValue !== currentValue;
+        })
+        .map((key) => ({
+          key,
+          value: textRecords[key] || "",
+        }));
 
-        // Only update if the value has changed
-        if (newValue && newValue !== currentValue) {
-          await setText(basename, key, newValue, walletClient);
-          successCount++;
+      const successCount = changedRecords.length;
+
+      if (successCount > 0) {
+        if (successCount === 1) {
+          // If only one field changed, use the single setText method
+          const { key, value } = changedRecords[0];
+          await setText(basename, key, value, walletClient);
+        } else {
+          // If multiple fields changed, use the multicall method
+          await setMultipleTextRecords(basename, changedRecords, walletClient);
         }
+
+        router.refresh();
+        setSuccess(`Successfully updated ${successCount} profile fields.`);
+      } else {
+        setSuccess("No changes detected.");
       }
-
-      router.refresh();
-
-      setSuccess(`Successfully updated ${successCount} profile fields.`);
     } catch (err) {
       console.error("Failed to update profile:", err);
       setError(
