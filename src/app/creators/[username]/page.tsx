@@ -9,6 +9,8 @@ import LayoutWrapper from "~/app/components/LayoutWrapper";
 import Header from "~/app/components/Header";
 import WhoAmI from "~/components/WhoAmI";
 import { IsItMe } from "~/app/components/IsItMe";
+import { EditProfile } from "~/app/components/EditProfile";
+
 interface Props {
   params: Promise<{
     username: string;
@@ -81,6 +83,13 @@ export default async function ProfilePage({ params }: Props) {
             </svg>
             Back to Creators
           </Link>
+        </div>
+
+        <div className="mt-4 flex justify-end">
+          <EditProfile
+            address={resolution?.address || ""}
+            basename={creator.resolution?.basename || ""}
+          />
         </div>
 
         <div className="text-center mb-10">

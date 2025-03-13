@@ -5,10 +5,13 @@ import {
   encodePacked,
   http,
   keccak256,
-  namehash,
 } from "viem";
+
+import { normalize, namehash } from "viem/ens";
+
 import { base, mainnet } from "viem/chains";
 import L2ResolverAbi from "./L2ResolverAbi";
+import { call } from "viem/actions";
 
 export type Basename = `${string}.base.eth`;
 
@@ -71,6 +74,41 @@ export function buildBasenameTextRecordContract(
     args: [namehash(basename), key],
     functionName: "text",
   };
+}
+
+/**
+ * Sets a text record for a basename on the Base chain ENS resolver
+ * @param basename The basename to set the text record for
+ * @param key The text record key
+ * @param value The value to set for the text record
+ * @returns The transaction hash if successful
+ */
+export async function setText(
+  basename: Basename,
+  key: BasenameTextRecordKeys,
+  value: string,
+  walletClient: any // Accept a wallet client as a parameter
+) {
+  try {
+    // First normalize the basename to ensure consistent processing
+    const normalizedBasename = normalize(basename);
+
+    // Apply the namehash algorithm to get the node
+    const node = namehash(normalizedBasename);
+
+    // Create the transaction to set the text record
+    const hash = await walletClient.writeContract({
+      abi: L2ResolverAbi,
+      address: BASENAME_L2_RESOLVER_ADDRESS,
+      functionName: "setText",
+      args: [node, key, value],
+    });
+
+    return hash;
+  } catch (error) {
+    console.error(`Error setting text record for ${basename}:`, error);
+    throw error;
+  }
 }
 
 // Get a single TextRecord
