@@ -39,7 +39,7 @@ export default async function ProfilePage({ params }: Props) {
             Creator Not Found
           </h1>
           <p className="text-white mb-6">
-            We couldn't find this creator in our directory.
+            We couldn&apos;t find this creator in our directory.
           </p>
           <Link
             href="/creators"
