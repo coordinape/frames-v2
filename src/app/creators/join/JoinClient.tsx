@@ -99,7 +99,8 @@ export default function JoinClient() {
   }, [isSDKLoaded]);
 
   // Get user info from context or wallet
-  const userAddress = address || context?.user?.address;
+  // Fix: Use optional chaining for context.user.address which might not exist in UserContext
+  const userAddress = address || context?.user?.fid?.toString();
   const userName =
     context?.user?.username ||
     (eligibility.hasBasename
@@ -191,9 +192,9 @@ export default function JoinClient() {
         <div className="flex items-center justify-center gap-2 mb-4 text-sm">
           <span className="opacity-80">Signed in as</span>
           <div className="flex items-center">
-            {context?.user?.avatarUrl && (
+            {context?.user?.pfp && (
               <img
-                src={context.user.avatarUrl}
+                src={context.user.pfp}
                 alt="Profile"
                 className="w-5 h-5 rounded-full mr-2"
               />
@@ -222,7 +223,7 @@ export default function JoinClient() {
               }`}
               onClick={() =>
                 allRequirementsMet &&
-                (window.location.href = "/join/requirements")
+                (window.location.href = "/creators/join/requirements")
               }
               disabled={!allRequirementsMet}
             >

@@ -17,7 +17,7 @@ const frame = {
     action: {
       type: "launch_frame",
       name: "Join Frame",
-      url: `${appUrl}/join`,
+      url: `${appUrl}/creators/join`,
       splashImageUrl: `${appUrl}/splash.png`,
       splashBackgroundColor: "#f7f7f7",
     },
@@ -28,10 +28,10 @@ export const revalidate = 300;
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "Join Frame",
+    title: "Join Creator Directory",
     openGraph: {
-      title: "Join Frame",
-      description: "Join the creatordirectory.",
+      title: "Join Creator Directory",
+      description: "Join the creator directory.",
     },
     other: {
       "fc:frame": JSON.stringify(frame),
