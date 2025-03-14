@@ -5,9 +5,10 @@ export default function DirectoryPage() {
   return <CreatorsList />;
 }
 
-// const appUrl = process.env.NEXT_PUBLIC_URL;
-// const appUrl = process.env.VERCEL_URL;
-const appUrl = `https://${process.env.VERCEL_URL}`;
+// Use a consistent approach for appUrl across all pages
+const appUrl = `https://${
+  process.env.NEXT_PUBLIC_URL || process.env.VERCEL_URL
+}`;
 
 const frame = {
   version: "next",

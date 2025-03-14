@@ -137,9 +137,10 @@ export default async function ProfilePage({ params }: Props) {
     </LayoutWrapper>
   );
 }
-const appUrl = `https://${
-  process.env.NEXT_PUBLIC_URL ?? process.env.VERCEL_URL
-}`;
+const appUrl = `https://${process.env.VERCEL_URL}`;
+// const appUrl = `https://${
+//   process.env.NEXT_PUBLIC_URL ?? process.env.VERCEL_URL
+// }`;
 // const appUrl = process.env.NEXT_PUBLIC_URL;
 // const appUrl = process.env.VERCEL_URL;
 
