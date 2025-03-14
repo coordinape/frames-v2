@@ -16,13 +16,13 @@ const appUrl = `https://${process.env.VERCEL_URL}`;
 
 const frame = ({ username }: { username: string }) => ({
   version: "next",
-  imageUrl: `${appUrl}/creators/donkey/${username}/ogimage`,
+  imageUrl: `${appUrl}/donkey/${username}/ogimage`,
   button: {
     title: `${username} Profile`,
     action: {
       type: "launch_frame",
       name: "View Creator Profile",
-      url: `${appUrl}/creators/donkey/${username}/edit`,
+      url: `${appUrl}/donkey/${username}`,
       splashImageUrl: `${appUrl}/splash.png`,
       splashBackgroundColor: "#f7f7f7",
     },
