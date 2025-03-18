@@ -1,12 +1,15 @@
 "use server";
 
-import { getApolloClient } from "~/lib/apollo-client";
+import { getApolloClient, getApolloClientAuthed } from "~/lib/apollo-client";
 import { gql } from "@apollo/client";
 import { getNFTContracts } from "~/lib/getNFTContracts";
 import {
   Creator,
   OpenSeaCollection,
   CreatorWithOpenSeaData,
+  Give,
+  GroupedGives,
+  SortedGiveGroup,
 } from "~/app/features/directory/types";
 import { resolveBasenameOrAddress } from "~/app/hooks/useBasenameResolver";
 
@@ -20,7 +23,7 @@ const ENTRANCE = "frames-be";
  */
 export async function addressIsMember(address: string): Promise<boolean> {
   try {
-    const { data } = await getApolloClient().query({
+    const { data } = await getApolloClientAuthed().query({
       query: gql`
         query CheckMembership($address: String!, $circleId: bigint!) {
           users(
@@ -62,7 +65,7 @@ export async function joinDirectory(
   name: string
 ): Promise<boolean> {
   try {
-    const { data } = await getApolloClient().mutate({
+    const { data } = await getApolloClientAuthed().mutate({
       mutation: gql`
         mutation JoinDirectory(
           $circleId: Int!
@@ -105,7 +108,7 @@ export async function getCreator(
   address: string
 ): Promise<CreatorWithOpenSeaData | null> {
   try {
-    const { data } = await getApolloClient().query({
+    const { data } = await getApolloClientAuthed().query({
       query: gql`
         query GetCreator($circleId: bigint!, $address: String!) {
           users(
@@ -199,7 +202,7 @@ export async function getCreator(
  */
 export async function getCreators(): Promise<CreatorWithOpenSeaData[]> {
   try {
-    const { data } = await getApolloClient().query({
+    const { data } = await getApolloClientAuthed().query({
       query: gql`
         query GetCreators($circleId: bigint!) {
           users(
@@ -291,6 +294,80 @@ export async function getCreators(): Promise<CreatorWithOpenSeaData[]> {
     return creatorsWithOpenSeaData;
   } catch (error) {
     console.error("Error fetching creators:", error);
+    return [];
+  }
+}
+
+const groupedGives = (gives: Give[]): GroupedGives => {
+  return gives.reduce((acc, give) => {
+    if (give.skill) {
+      if (!acc[give.skill]) {
+        acc[give.skill] = [];
+      }
+      acc[give.skill].push(give);
+    } else {
+      if (!acc[""]) {
+        acc[""] = [];
+      }
+      acc[""].push(give);
+    }
+    return acc;
+  }, {} as GroupedGives);
+};
+
+const sortedGives = (groupedGives: GroupedGives): SortedGiveGroup[] => {
+  return Object.entries(groupedGives)
+    .map(([skill, gives]) => ({
+      count: gives.length,
+      gives: gives,
+      skill: skill,
+    }))
+    .sort((a, b) => {
+      const diff = b.count - a.count;
+      if (diff === 0) {
+        return a.skill.localeCompare(b.skill);
+      }
+      return diff;
+    });
+};
+
+const groupAndSortGives = (gives: Give[]): SortedGiveGroup[] => {
+  return sortedGives(groupedGives(gives));
+};
+
+/**
+ * Fetches all gives for a specific creator address
+ * @param address Ethereum address of the creator
+ * @returns Promise<SortedGiveGroup[]> Array of sorted and grouped gives for the creator
+ */
+export async function getGivesForCreator(
+  address: string
+): Promise<SortedGiveGroup[]> {
+  try {
+    const { data } = await getApolloClient().query({
+      query: gql`
+        query GivesForAddress($address: String!) {
+          colinks_gives(
+            where: {
+              target_profile_public: { address: { _ilike: $address } }
+              skill: { _is_null: false }
+            }
+          ) {
+            id
+            skill
+            created_at
+          }
+        }
+      `,
+      variables: {
+        address: address,
+      },
+    });
+
+    console.log("data for gives", JSON.stringify(data, null, 2));
+    return groupAndSortGives(data.colinks_gives);
+  } catch (error) {
+    console.error(`Error fetching gives for address ${address}:`, error);
     return [];
   }
 }

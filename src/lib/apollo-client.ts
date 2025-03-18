@@ -1,22 +1,10 @@
-import {
-  ApolloClient,
-  InMemoryCache,
-  createHttpLink,
-  gql,
-} from "@apollo/client";
+import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
 
-// Create a function to get the Apollo client
-export function getApolloClient() {
-  // Apollo client setup
+// Common Apollo client configuration
+function createApolloClient(headers?: Record<string, string>) {
   const httpLink = createHttpLink({
     uri: "https://coordinape-prod.hasura.app/v1/graphql",
-    headers: {
-      Authorization:
-        process.env.HASURA_AUTH ??
-        (() => {
-          throw new Error("HASURA_AUTH environment variable not found");
-        })(),
-    },
+    headers,
   });
 
   return new ApolloClient({
@@ -30,6 +18,24 @@ export function getApolloClient() {
         fetchPolicy: "network-only",
       },
     },
+  });
+}
+
+// Create a function to get the authenticated Apollo client
+export function getApolloClientAuthed() {
+  return createApolloClient({
+    Authorization:
+      process.env.HASURA_AUTH ??
+      (() => {
+        throw new Error("HASURA_AUTH environment variable not found");
+      })(),
+  });
+}
+
+// Create a function to get an unauthed Apollo client
+export function getApolloClient() {
+  return createApolloClient({
+    Authorization: "anon",
   });
 }
 

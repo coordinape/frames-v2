@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { ApolloProvider, useQuery, gql } from "@apollo/client";
 import sdk, { type Context } from "@farcaster/frame-sdk";
-import { getApolloClient, CO_SOULS_QUERY } from "../lib/apollo-client";
+import { getApolloClientAuthed, CO_SOULS_QUERY } from "../lib/apollo-client";
 
 const STAR_COUNT = 100;
 const FALL_DURATION = 5000; // Duration for stars to fall in milliseconds
@@ -214,7 +214,7 @@ const CountdownContent = () => {
 // Wrap the component with ApolloProvider
 export default function Countdown() {
   return (
-    <ApolloProvider client={getApolloClient()}>
+    <ApolloProvider client={getApolloClientAuthed()}>
       <CountdownContent />
     </ApolloProvider>
   );

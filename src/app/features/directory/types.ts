@@ -31,4 +31,18 @@ export interface OpenSeaData {
 export interface CreatorWithOpenSeaData extends Creator {
   openSeaData?: OpenSeaData;
   resolution?: BasenameResolution | null;
-} 
+}
+
+export interface Give {
+  skill: string;
+  created_at: string;
+  warpcast_url: string;
+}
+
+export type GroupedGives = Record<string, Give[]>;
+
+export interface SortedGiveGroup {
+  count: number;
+  gives: Give[];
+  skill: string;
+}
