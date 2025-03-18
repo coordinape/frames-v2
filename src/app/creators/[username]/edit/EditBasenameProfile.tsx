@@ -16,67 +16,165 @@ import LayoutWrapper from "~/app/components/LayoutWrapper";
 import Header from "~/app/components/Header";
 import Link from "next/link";
 
+interface TagInputProps {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+}
+
+function TagInput({ value, onChange, placeholder }: TagInputProps) {
+  const [inputValue, setInputValue] = useState("");
+  const tags = value
+    ? value
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter(Boolean)
+    : [];
+
+  const addTag = (newTag: string) => {
+    if (newTag && !tags.includes(newTag)) {
+      const newTags = [...tags, newTag];
+      onChange(newTags.join(", "));
+      setInputValue("");
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      addTag(inputValue.trim());
+    } else if (e.key === "Backspace" && !inputValue && tags.length > 0) {
+      const newTags = tags.slice(0, -1);
+      onChange(newTags.join(", "));
+    }
+  };
+
+  const handleBlur = () => {
+    if (inputValue.trim()) {
+      addTag(inputValue.trim());
+    }
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    const newTags = tags.filter((tag) => tag !== tagToRemove);
+    onChange(newTags.join(", "));
+  };
+
+  return (
+    <div className="flex flex-wrap gap-2 p-2 border border-white/30 rounded-lg bg-white/10">
+      {tags.map((tag, index) => (
+        <div
+          key={index}
+          className="flex items-center gap-1 px-2 py-1 bg-white/20 rounded-md"
+        >
+          <span className="text-white text-sm">{tag}</span>
+          <button
+            type="button"
+            onClick={() => removeTag(tag)}
+            className="text-white/60 hover:text-white"
+          >
+            ×
+          </button>
+        </div>
+      ))}
+      <input
+        type="text"
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+        onKeyDown={handleKeyDown}
+        onBlur={handleBlur}
+        className="flex-1 min-w-[100px] bg-transparent text-white outline-none placeholder:text-white/50"
+        placeholder={tags.length === 0 ? placeholder : "Add more tags..."}
+      />
+    </div>
+  );
+}
+
 // Define field configurations in one place
 const FIELD_CONFIG: Record<
   BasenameTextRecordKeys,
-  { label: string; placeholder: string; isTextarea?: boolean }
+  {
+    label: string;
+    placeholder: string;
+    isTextarea?: boolean;
+    type?: "text" | "boolean" | "tags"; // Add tags type
+  }
 > = {
   [BasenameTextRecordKeys.Description]: {
     label: "Bio/Description",
     placeholder: "Tell us about yourself...",
     isTextarea: true,
+    type: "text",
   },
   [BasenameTextRecordKeys.Keywords]: {
     label: "Keywords",
     placeholder: "Comma-separated keywords",
+    type: "text",
   },
   [BasenameTextRecordKeys.Url]: {
     label: "Website URL",
     placeholder: "https://yourwebsite.com",
+    type: "text",
   },
   [BasenameTextRecordKeys.Email]: {
     label: "Email",
     placeholder: "your@email.com",
+    type: "text",
   },
   [BasenameTextRecordKeys.Phone]: {
     label: "Phone",
     placeholder: "+1 123 456 7890",
+    type: "text",
   },
   [BasenameTextRecordKeys.Github]: {
     label: "GitHub Username",
     placeholder: "yourusername",
+    type: "text",
   },
   [BasenameTextRecordKeys.Twitter]: {
     label: "Twitter Username",
     placeholder: "yourusername",
+    type: "text",
   },
   [BasenameTextRecordKeys.Farcaster]: {
     label: "Farcaster",
     placeholder: "yourfarcasterhandle",
+    type: "text",
   },
   [BasenameTextRecordKeys.Lens]: {
     label: "Lens Handle",
     placeholder: "yourlenshandle",
+    type: "text",
   },
   [BasenameTextRecordKeys.Telegram]: {
     label: "Telegram",
     placeholder: "yourtelegramusername",
+    type: "text",
   },
   [BasenameTextRecordKeys.Discord]: {
     label: "Discord",
     placeholder: "yourdiscordusername",
+    type: "text",
   },
   [BasenameTextRecordKeys.Avatar]: {
     label: "Avatar URL",
     placeholder: "https://example.com/avatar.jpg",
+    type: "text",
   },
   [BasenameTextRecordKeys.Frames]: {
     label: "Frames URL",
     placeholder: "https://example.com/frames",
+    type: "text",
   },
   [BasenameTextRecordKeys.Medium]: {
     label: "Medium",
-    placeholder: "digital animation",
+    placeholder: "digital-animation, painting, sculpture",
+    type: "tags",
+  },
+  [BasenameTextRecordKeys.AvailableForHire]: {
+    label: "Available for Hire",
+    placeholder: "",
+    type: "boolean",
   },
 };
 
@@ -322,7 +420,41 @@ export default function EditBasenameProfile({
                     >
                       {FIELD_CONFIG[key].label}
                     </label>
-                    {FIELD_CONFIG[key].isTextarea ? (
+                    {FIELD_CONFIG[key].type === "boolean" ? (
+                      <div className="flex items-center">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleTextRecordChange(
+                              key,
+                              textRecords[key] === "true" ? "false" : "true"
+                            )
+                          }
+                          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-white/50 ${
+                            textRecords[key] === "true"
+                              ? "bg-blue-600"
+                              : "bg-gray-600"
+                          }`}
+                        >
+                          <span
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                              textRecords[key] === "true"
+                                ? "translate-x-6"
+                                : "translate-x-1"
+                            }`}
+                          />
+                        </button>
+                        <span className="ml-2 text-sm text-white/80">
+                          {textRecords[key] === "true" ? "Yes" : "No"}
+                        </span>
+                      </div>
+                    ) : FIELD_CONFIG[key].type === "tags" ? (
+                      <TagInput
+                        value={textRecords[key] || ""}
+                        onChange={(value) => handleTextRecordChange(key, value)}
+                        placeholder={FIELD_CONFIG[key].placeholder}
+                      />
+                    ) : FIELD_CONFIG[key].isTextarea ? (
                       <textarea
                         id={key}
                         value={textRecords[key] || ""}
