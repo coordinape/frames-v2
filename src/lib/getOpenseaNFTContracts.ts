@@ -27,6 +27,7 @@ async function fetchWithCache<T>(cacheKey: string, fetchFn: () => Promise<T>): P
   const cachedData = await kv.get(cacheKey);
   if (cachedData) {
     console.log(`Cache hit for ${cacheKey}`);
+    console.log({ cachedData });
     return cachedData as T;
   }
 
@@ -152,10 +153,6 @@ export async function getOpenseaNFTContracts(deployerAddress: string, chain?: st
         headers: {
           "x-api-key": process.env.OPENSEA_API_KEY!,
           accept: "application/json",
-        },
-        next: {
-          revalidate: 3600,
-          tags: [`opensea-collections-${deployerAddress}`],
         },
       });
 

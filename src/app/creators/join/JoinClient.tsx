@@ -10,6 +10,7 @@ import { getOpenseaNFTContracts } from "~/lib/getOpenseaNFTContracts";
 import { refreshRequirementsCache } from "./actions";
 import { truncateAddress } from "~/app/utils/address";
 import { useRouter } from "next/navigation";
+import { joinDirectory } from "~/app/features/directory/actions";
 
 interface EligibilityStatus {
   hasBasename: boolean;
@@ -32,6 +33,8 @@ export default function JoinClient() {
   const [context, setContext] = useState<Context.FrameContext>();
   const [eligibility, setEligibility] = useState<EligibilityStatus>(initialEligibility);
   const [refreshError, setRefreshError] = useState<string | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
+  const [createStatus, setCreateStatus] = useState<"idle" | "success" | "error">("idle");
 
   // Get wallet connection info
   const { address, isConnected } = useAccount();
@@ -140,6 +143,33 @@ export default function JoinClient() {
     }
   };
 
+  const handleProfileCreation = async () => {
+    if (!allRequirementsMet) return;
+
+    if (!address) return;
+    const resolution = await resolveBasenameOrAddress(address);
+    const basename = resolution?.basename || "";
+    if (basename == "") return;
+    try {
+      setIsCreating(true);
+      setCreateStatus("idle");
+
+      const success = await joinDirectory(address, basename);
+
+      if (success) {
+        setCreateStatus("success");
+        router.push(`/creators/${userName}`);
+      } else {
+        setCreateStatus("error");
+      }
+    } catch (error) {
+      console.error("Error joining directory:", error);
+      setCreateStatus("error");
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
   if (!mounted) {
     return null;
   }
@@ -214,13 +244,31 @@ export default function JoinClient() {
             <>
               <button
                 className={`w-full py-3 rounded-full transition-colors ${
-                  allRequirementsMet ? "bg-white text-base-blue hover:bg-white/90 cursor-pointer" : "bg-black/10 text-white cursor-not-allowed"
-                }`}
-                onClick={() => allRequirementsMet && router.push("/creators/join/requirements")}
-                disabled={!allRequirementsMet}
+                  allRequirementsMet
+                    ? createStatus === "success"
+                      ? "bg-white text-base-blue"
+                      : createStatus === "error"
+                      ? "bg-red-100 text-red-700 hover:bg-red-200"
+                      : "bg-white text-base-blue hover:bg-white/90"
+                    : "bg-black/10 text-white"
+                } ${isCreating ? "opacity-70 cursor-not-allowed" : allRequirementsMet ? "cursor-pointer" : "cursor-not-allowed"}`}
+                onClick={handleProfileCreation}
+                disabled={!allRequirementsMet || isCreating || createStatus === "success"}
               >
-                {eligibility.isLoading ? "Checking requirements..." : allRequirementsMet ? "Continue to profile creation" : "Requirements not met"}
+                {isCreating
+                  ? "Preparing Profile..."
+                  : createStatus === "success"
+                  ? "Redirecting to Profile..."
+                  : createStatus === "error"
+                  ? "Failed to proceed - Try Again"
+                  : eligibility.isLoading
+                  ? "Checking requirements..."
+                  : allRequirementsMet
+                  ? "Continue to Profile"
+                  : "Requirements not met"}
               </button>
+
+              {createStatus === "error" && <p className="text-sm text-red-600 text-center mt-2">There was an error proceeding to profile creation. Please try again.</p>}
 
               <div className="space-y-2">
                 <button
