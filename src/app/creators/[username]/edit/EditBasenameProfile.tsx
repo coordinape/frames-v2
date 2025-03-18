@@ -328,7 +328,7 @@ export default function EditBasenameProfile({
   };
 
   return (
-    <LayoutWrapper>
+    <>
       <Header />
 
       <div className="space-y-8">
@@ -506,6 +506,6 @@ export default function EditBasenameProfile({
           )}
         </div>
       </div>
-    </LayoutWrapper>
+    </>
   );
 }

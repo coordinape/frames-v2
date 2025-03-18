@@ -81,7 +81,7 @@ export default function CreatorsList() {
   }
 
   return (
-    <LayoutWrapper>
+    <>
       <Header />
 
       <div className="text-center mb-10">
@@ -194,6 +194,6 @@ export default function CreatorsList() {
           </Link>
         ))}
       </div>
-    </LayoutWrapper>
+    </>
   );
 }

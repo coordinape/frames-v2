@@ -12,6 +12,7 @@ import { EditProfile } from "~/app/components/EditProfile";
 import Gives from "./Gives";
 
 import { headers } from "next/headers";
+import {FrameSDK} from "~/app/components/FrameSDK";
 interface Props {
   params: Promise<{
     username: string;
@@ -36,7 +37,7 @@ export default async function ProfilePage({ params }: Props) {
 
   if (!creator) {
     return (
-      <LayoutWrapper>
+      <>
         <Header />
         <div className="text-center my-10">
           <h1 className="text-4xl font-bold text-white mb-4">
@@ -52,13 +53,14 @@ export default async function ProfilePage({ params }: Props) {
             Back to Creators
           </Link>
         </div>
-      </LayoutWrapper>
+      </>
     );
   }
   const displayName = creator.resolution?.basename || creator.name;
 
   return (
-    <LayoutWrapper>
+    <>
+      <FrameSDK/>
       <Header />
       <IsItMe address={resolution?.address || ""} />
       <div className="space-y-8">
@@ -134,7 +136,7 @@ export default async function ProfilePage({ params }: Props) {
           openSeaCollections={creator.openSeaData?.collections || []}
         />
       </div>
-    </LayoutWrapper>
+    </>
   );
 }
 const appUrl = `https://${
