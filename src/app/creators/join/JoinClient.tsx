@@ -7,7 +7,8 @@ import Header from "~/app/components/Header";
 import { useAccount, useDisconnect, useConnect } from "wagmi";
 import { config } from "~/components/providers/WagmiProvider";
 import { resolveBasenameOrAddress } from "~/app/hooks/useBasenameResolver";
-import { getNFTContracts } from "~/lib/getNFTContracts";
+import { getOpenseaNFTContracts } from "~/lib/getOpenseaNFTContracts";
+import { refreshRequirementsCache } from "./actions";
 
 interface EligibilityStatus {
   hasBasename: boolean;
@@ -25,6 +26,8 @@ export default function JoinClient() {
     hasNFTsOnBase: false,
     isLoading: true,
   });
+
+  const [refreshError, setRefreshError] = useState<string | null>(null);
 
   // Get wallet connection info
   const { address, isConnected } = useAccount();
@@ -45,7 +48,7 @@ export default function JoinClient() {
         const basename = resolution?.basename || "";
 
         // Check NFT releases on Base
-        const contracts = await getNFTContracts(address);
+        const contracts = await getOpenseaNFTContracts(address);
         const hasNFTsOnBase = contracts.some(
           (contract) => contract.chainId.toLowerCase() === "base"
         );
@@ -112,6 +115,39 @@ export default function JoinClient() {
   // Check if all requirements are met
   const allRequirementsMet =
     eligibility.hasBasename && eligibility.hasNFTsOnBase;
+
+  const handleRefresh = async () => {
+    if (!address) return;
+
+    setEligibility((prev) => ({ ...prev, isLoading: true }));
+    setRefreshError(null);
+
+    // Call the server action
+    const result = await refreshRequirementsCache(address);
+
+    if (!result.success) {
+      setRefreshError(result.error ?? "An error occurred while refreshing");
+      setEligibility((prev) => ({ ...prev, isLoading: false }));
+      return;
+    }
+
+    // Re-run the eligibility check
+    const resolution = await resolveBasenameOrAddress(address);
+    const hasBasename = !!resolution?.basename;
+    const basename = resolution?.basename || "";
+
+    const contracts = await getOpenseaNFTContracts(address);
+    const hasNFTsOnBase = contracts.some(
+      (contract) => contract.chainId.toLowerCase() === "base"
+    );
+
+    setEligibility({
+      hasBasename,
+      basename,
+      hasNFTsOnBase,
+      isLoading: false,
+    });
+  };
 
   return (
     <LayoutWrapper>
@@ -203,6 +239,12 @@ export default function JoinClient() {
           </div>
         </div>
       )}
+      <button
+        className="w-full text-center py-3 text-sm opacity-80 hover:opacity-100"
+        onClick={() => disconnect()}
+      >
+        Disconnect
+      </button>
 
       {/* Buttons */}
       <div className="space-y-3">
@@ -234,12 +276,23 @@ export default function JoinClient() {
                 : "Requirements not met"}
             </button>
 
-            <button
-              className="w-full text-center py-3 text-sm opacity-80 hover:opacity-100"
-              onClick={() => disconnect()}
-            >
-              Log out
-            </button>
+            <div className="space-y-2">
+              <button
+                className="w-full bg-white/10 text-white py-3 rounded-xl font-medium hover:bg-white/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleRefresh}
+                disabled={eligibility.isLoading || !!refreshError}
+              >
+                {eligibility.isLoading
+                  ? "Refreshing..."
+                  : "Refresh Requirements"}
+              </button>
+
+              {refreshError && (
+                <p className="text-sm text-amber-400 text-center">
+                  {refreshError}
+                </p>
+              )}
+            </div>
           </>
         )}
       </div>
