@@ -7,7 +7,7 @@ import Header from "~/app/components/Header";
 import { useAccount, useDisconnect, useConnect } from "wagmi";
 import { config } from "~/components/providers/WagmiProvider";
 import { resolveBasenameOrAddress } from "~/app/hooks/useBasenameResolver";
-import { getOpenseaNFTContracts } from "~/lib/getNFTContracts";
+import { getOpenseaNFTContracts } from "~/lib/getOpenseaNFTContracts";
 import { refreshRequirementsCache } from "./actions";
 
 interface EligibilityStatus {

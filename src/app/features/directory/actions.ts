@@ -2,7 +2,7 @@
 
 import { getApolloClient, getApolloClientAuthed } from "~/lib/apollo-client";
 import { gql } from "@apollo/client";
-import { getOpenseaNFTContracts } from "~/lib/getNFTContracts";
+import { getOpenseaNFTContracts } from "~/lib/getOpenseaNFTContracts";
 import {
   Creator,
   OpenSeaCollection,

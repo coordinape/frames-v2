@@ -1,4 +1,4 @@
-import { getOpenseaNFTContracts } from "~/lib/getNFTContracts";
+import { getOpenseaNFTContracts } from "~/lib/getOpenseaNFTContracts";
 import { OpenSeaCollection } from "~/app/features/directory/types";
 
 interface ContractGalleryProps {

@@ -1,6 +1,6 @@
 "use server";
 
-import { bustAllOpenSeaCaches } from "~/lib/getNFTContracts";
+import { bustAllOpenSeaCaches } from "~/lib/getOpenseaNFTContracts";
 import { kv } from "@vercel/kv";
 
 const REFRESH_COOLDOWN = 60; // 1 minute cooldown in seconds
