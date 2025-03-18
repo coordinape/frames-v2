@@ -30,6 +30,7 @@ const emptyTextRecords: Record<BasenameTextRecordKeys, string | undefined> = {
   [BasenameTextRecordKeys.Avatar]: undefined,
   [BasenameTextRecordKeys.Frames]: undefined,
   [BasenameTextRecordKeys.Medium]: undefined,
+  [BasenameTextRecordKeys.AvailableForHire]: undefined,
 };
 
 export async function resolveBasenameOrAddress(input: string) {

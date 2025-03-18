@@ -35,6 +35,7 @@ export enum BasenameTextRecordKeys {
   Avatar = "avatar",
   Frames = "frames",
   Medium = "com.coordinape.creator.medium",
+  AvailableForHire = "com.coordinape.creator.availableForHire",
 }
 
 export const textRecordsKeysEnabled = [
@@ -52,6 +53,7 @@ export const textRecordsKeysEnabled = [
   BasenameTextRecordKeys.Avatar,
   BasenameTextRecordKeys.Frames,
   BasenameTextRecordKeys.Medium,
+  BasenameTextRecordKeys.AvailableForHire,
 ];
 
 const baseClient = createPublicClient({

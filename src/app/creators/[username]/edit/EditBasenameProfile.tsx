@@ -19,64 +19,88 @@ import Link from "next/link";
 // Define field configurations in one place
 const FIELD_CONFIG: Record<
   BasenameTextRecordKeys,
-  { label: string; placeholder: string; isTextarea?: boolean }
+  {
+    label: string;
+    placeholder: string;
+    isTextarea?: boolean;
+    type?: "text" | "boolean"; // Add type field
+  }
 > = {
   [BasenameTextRecordKeys.Description]: {
     label: "Bio/Description",
     placeholder: "Tell us about yourself...",
     isTextarea: true,
+    type: "text",
   },
   [BasenameTextRecordKeys.Keywords]: {
     label: "Keywords",
     placeholder: "Comma-separated keywords",
+    type: "text",
   },
   [BasenameTextRecordKeys.Url]: {
     label: "Website URL",
     placeholder: "https://yourwebsite.com",
+    type: "text",
   },
   [BasenameTextRecordKeys.Email]: {
     label: "Email",
     placeholder: "your@email.com",
+    type: "text",
   },
   [BasenameTextRecordKeys.Phone]: {
     label: "Phone",
     placeholder: "+1 123 456 7890",
+    type: "text",
   },
   [BasenameTextRecordKeys.Github]: {
     label: "GitHub Username",
     placeholder: "yourusername",
+    type: "text",
   },
   [BasenameTextRecordKeys.Twitter]: {
     label: "Twitter Username",
     placeholder: "yourusername",
+    type: "text",
   },
   [BasenameTextRecordKeys.Farcaster]: {
     label: "Farcaster",
     placeholder: "yourfarcasterhandle",
+    type: "text",
   },
   [BasenameTextRecordKeys.Lens]: {
     label: "Lens Handle",
     placeholder: "yourlenshandle",
+    type: "text",
   },
   [BasenameTextRecordKeys.Telegram]: {
     label: "Telegram",
     placeholder: "yourtelegramusername",
+    type: "text",
   },
   [BasenameTextRecordKeys.Discord]: {
     label: "Discord",
     placeholder: "yourdiscordusername",
+    type: "text",
   },
   [BasenameTextRecordKeys.Avatar]: {
     label: "Avatar URL",
     placeholder: "https://example.com/avatar.jpg",
+    type: "text",
   },
   [BasenameTextRecordKeys.Frames]: {
     label: "Frames URL",
     placeholder: "https://example.com/frames",
+    type: "text",
   },
   [BasenameTextRecordKeys.Medium]: {
     label: "Medium",
     placeholder: "digital animation",
+    type: "text",
+  },
+  [BasenameTextRecordKeys.AvailableForHire]: {
+    label: "Available for Hire",
+    placeholder: "",
+    type: "boolean",
   },
 };
 
@@ -322,7 +346,35 @@ export default function EditBasenameProfile({
                     >
                       {FIELD_CONFIG[key].label}
                     </label>
-                    {FIELD_CONFIG[key].isTextarea ? (
+                    {FIELD_CONFIG[key].type === "boolean" ? (
+                      <div className="flex items-center">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleTextRecordChange(
+                              key,
+                              textRecords[key] === "true" ? "false" : "true"
+                            )
+                          }
+                          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-white/50 ${
+                            textRecords[key] === "true"
+                              ? "bg-blue-600"
+                              : "bg-gray-600"
+                          }`}
+                        >
+                          <span
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                              textRecords[key] === "true"
+                                ? "translate-x-6"
+                                : "translate-x-1"
+                            }`}
+                          />
+                        </button>
+                        <span className="ml-2 text-sm text-white/80">
+                          {textRecords[key] === "true" ? "Yes" : "No"}
+                        </span>
+                      </div>
+                    ) : FIELD_CONFIG[key].isTextarea ? (
                       <textarea
                         id={key}
                         value={textRecords[key] || ""}
