@@ -16,6 +16,80 @@ import LayoutWrapper from "~/app/components/LayoutWrapper";
 import Header from "~/app/components/Header";
 import Link from "next/link";
 
+interface TagInputProps {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+}
+
+function TagInput({ value, onChange, placeholder }: TagInputProps) {
+  const [inputValue, setInputValue] = useState("");
+  const tags = value
+    ? value
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter(Boolean)
+    : [];
+
+  const addTag = (newTag: string) => {
+    if (newTag && !tags.includes(newTag)) {
+      const newTags = [...tags, newTag];
+      onChange(newTags.join(", "));
+      setInputValue("");
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      addTag(inputValue.trim());
+    } else if (e.key === "Backspace" && !inputValue && tags.length > 0) {
+      const newTags = tags.slice(0, -1);
+      onChange(newTags.join(", "));
+    }
+  };
+
+  const handleBlur = () => {
+    if (inputValue.trim()) {
+      addTag(inputValue.trim());
+    }
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    const newTags = tags.filter((tag) => tag !== tagToRemove);
+    onChange(newTags.join(", "));
+  };
+
+  return (
+    <div className="flex flex-wrap gap-2 p-2 border border-white/30 rounded-lg bg-white/10">
+      {tags.map((tag, index) => (
+        <div
+          key={index}
+          className="flex items-center gap-1 px-2 py-1 bg-white/20 rounded-md"
+        >
+          <span className="text-white text-sm">{tag}</span>
+          <button
+            type="button"
+            onClick={() => removeTag(tag)}
+            className="text-white/60 hover:text-white"
+          >
+            ×
+          </button>
+        </div>
+      ))}
+      <input
+        type="text"
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+        onKeyDown={handleKeyDown}
+        onBlur={handleBlur}
+        className="flex-1 min-w-[100px] bg-transparent text-white outline-none placeholder:text-white/50"
+        placeholder={tags.length === 0 ? placeholder : "Add more tags..."}
+      />
+    </div>
+  );
+}
+
 // Define field configurations in one place
 const FIELD_CONFIG: Record<
   BasenameTextRecordKeys,
@@ -23,7 +97,7 @@ const FIELD_CONFIG: Record<
     label: string;
     placeholder: string;
     isTextarea?: boolean;
-    type?: "text" | "boolean"; // Add type field
+    type?: "text" | "boolean" | "tags"; // Add tags type
   }
 > = {
   [BasenameTextRecordKeys.Description]: {
@@ -94,8 +168,8 @@ const FIELD_CONFIG: Record<
   },
   [BasenameTextRecordKeys.Medium]: {
     label: "Medium",
-    placeholder: "digital animation",
-    type: "text",
+    placeholder: "digital-animation, painting, sculpture",
+    type: "tags",
   },
   [BasenameTextRecordKeys.AvailableForHire]: {
     label: "Available for Hire",
@@ -374,6 +448,12 @@ export default function EditBasenameProfile({
                           {textRecords[key] === "true" ? "Yes" : "No"}
                         </span>
                       </div>
+                    ) : FIELD_CONFIG[key].type === "tags" ? (
+                      <TagInput
+                        value={textRecords[key] || ""}
+                        onChange={(value) => handleTextRecordChange(key, value)}
+                        placeholder={FIELD_CONFIG[key].placeholder}
+                      />
                     ) : FIELD_CONFIG[key].isTextarea ? (
                       <textarea
                         id={key}
