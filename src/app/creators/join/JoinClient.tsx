@@ -8,6 +8,7 @@ import { useAccount, useDisconnect, useConnect } from "wagmi";
 import { config } from "~/components/providers/WagmiProvider";
 import { resolveBasenameOrAddress } from "~/app/hooks/useBasenameResolver";
 import { getOpenseaNFTContracts } from "~/lib/getNFTContracts";
+import { refreshRequirementsCache } from "./actions";
 
 interface EligibilityStatus {
   hasBasename: boolean;
@@ -25,6 +26,8 @@ export default function JoinClient() {
     hasNFTsOnBase: false,
     isLoading: true,
   });
+
+  const [refreshError, setRefreshError] = useState<string | null>(null);
 
   // Get wallet connection info
   const { address, isConnected } = useAccount();
@@ -112,6 +115,39 @@ export default function JoinClient() {
   // Check if all requirements are met
   const allRequirementsMet =
     eligibility.hasBasename && eligibility.hasNFTsOnBase;
+
+  const handleRefresh = async () => {
+    if (!address) return;
+
+    setEligibility((prev) => ({ ...prev, isLoading: true }));
+    setRefreshError(null);
+
+    // Call the server action
+    const result = await refreshRequirementsCache(address);
+
+    if (!result.success) {
+      setRefreshError(result.error ?? "An error occurred while refreshing");
+      setEligibility((prev) => ({ ...prev, isLoading: false }));
+      return;
+    }
+
+    // Re-run the eligibility check
+    const resolution = await resolveBasenameOrAddress(address);
+    const hasBasename = !!resolution?.basename;
+    const basename = resolution?.basename || "";
+
+    const contracts = await getOpenseaNFTContracts(address);
+    const hasNFTsOnBase = contracts.some(
+      (contract) => contract.chainId.toLowerCase() === "base"
+    );
+
+    setEligibility({
+      hasBasename,
+      basename,
+      hasNFTsOnBase,
+      isLoading: false,
+    });
+  };
 
   return (
     <LayoutWrapper>
@@ -233,6 +269,24 @@ export default function JoinClient() {
                 ? "Continue to profile creation"
                 : "Requirements not met"}
             </button>
+
+            <div className="space-y-2">
+              <button
+                className="w-full bg-white/10 text-white py-3 rounded-xl font-medium hover:bg-white/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleRefresh}
+                disabled={eligibility.isLoading || !!refreshError}
+              >
+                {eligibility.isLoading
+                  ? "Refreshing..."
+                  : "Refresh Requirements"}
+              </button>
+
+              {refreshError && (
+                <p className="text-sm text-amber-400 text-center">
+                  {refreshError}
+                </p>
+              )}
+            </div>
 
             <button
               className="w-full text-center py-3 text-sm opacity-80 hover:opacity-100"
