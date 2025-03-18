@@ -9,6 +9,7 @@ import { config } from "~/components/providers/WagmiProvider";
 import { resolveBasenameOrAddress } from "~/app/hooks/useBasenameResolver";
 import { getOpenseaNFTContracts } from "~/lib/getOpenseaNFTContracts";
 import { refreshRequirementsCache } from "./actions";
+import { truncateAddress } from "~/app/utils/address";
 
 interface EligibilityStatus {
   hasBasename: boolean;
@@ -49,9 +50,7 @@ export default function JoinClient() {
 
         // Check NFT releases on Base
         const contracts = await getOpenseaNFTContracts(address);
-        const hasNFTsOnBase = contracts.some(
-          (contract) => contract.chainId.toLowerCase() === "base"
-        );
+        const hasNFTsOnBase = contracts.some((contract) => contract.chainId.toLowerCase() === "base");
 
         setEligibility({
           hasBasename,
@@ -104,17 +103,10 @@ export default function JoinClient() {
   // Get user info from context or wallet
   // Fix: Use optional chaining for context.user.address which might not exist in UserContext
   const userAddress = address || context?.user?.fid?.toString();
-  const userName =
-    context?.user?.username ||
-    (eligibility.hasBasename
-      ? eligibility.basename
-      : userAddress
-      ? `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`
-      : "");
+  const userName = context?.user?.username || (eligibility.hasBasename ? eligibility.basename : userAddress ? `${truncateAddress(userAddress)}` : "");
 
   // Check if all requirements are met
-  const allRequirementsMet =
-    eligibility.hasBasename && eligibility.hasNFTsOnBase;
+  const allRequirementsMet = eligibility.hasBasename && eligibility.hasNFTsOnBase;
 
   const handleRefresh = async () => {
     if (!address) return;
@@ -137,9 +129,7 @@ export default function JoinClient() {
     const basename = resolution?.basename || "";
 
     const contracts = await getOpenseaNFTContracts(address);
-    const hasNFTsOnBase = contracts.some(
-      (contract) => contract.chainId.toLowerCase() === "base"
-    );
+    const hasNFTsOnBase = contracts.some((contract) => contract.chainId.toLowerCase() === "base");
 
     setEligibility({
       hasBasename,
@@ -152,153 +142,104 @@ export default function JoinClient() {
   return (
     <>
       <Header logoOnly />
+      <div className="flex flex-col gap-10">
+        <div className="flex flex-col gap-4 text-center">
+          {/* Title */}
+          <h1 className="font-mono text-6xl font-bold base-pixel">
+            Create
+            <br />
+            on Base
+          </h1>
 
-      {/* Title */}
-      <h1 className="text-center font-mono text-5xl font-bold mb-4 base-pixel">
-        Create
-        <br />
-        on Base
-      </h1>
-
-      {/* Description */}
-      <p className="text-center mb-12 opacity-90 px-8">
-        Get listed on thecreators directory for better discovery and
-        collaboration opportunities.
-      </p>
-
-      {/* Requirements */}
-      <div className="bg-[#0052CC] bg-opacity-30 rounded-xl p-6 mb-8">
-        <h2 className="text-sm uppercase tracking-wider mb-4 opacity-80">
-          Requirements
-        </h2>
-        <ul className="space-y-4">
-          <li className="flex items-center">
-            <div
-              className={`w-5 h-5 rounded-full mr-3 flex items-center justify-center ${
-                eligibility.hasBasename ? "bg-green-500" : "bg-white/20"
-              }`}
-            >
-              {eligibility.hasBasename && (
-                <svg
-                  className="w-3 h-3 text-white"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              )}
-            </div>
-            Own a basename
-          </li>
-          <li className="flex items-center">
-            <div
-              className={`w-5 h-5 rounded-full mr-3 flex items-center justify-center ${
-                eligibility.hasNFTsOnBase ? "bg-green-500" : "bg-white/20"
-              }`}
-            >
-              {eligibility.hasNFTsOnBase && (
-                <svg
-                  className="w-3 h-3 text-white"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              )}
-            </div>
-            Release NFTs on Base
-          </li>
-        </ul>
-      </div>
-
-      {/* User Info */}
-      {userAddress && (
-        <div className="flex items-center justify-center gap-2 mb-4 text-sm">
-          <span className="opacity-80">Signed in as</span>
-          <div className="flex items-center">
-            {context?.user?.pfpUrl && (
-              <img
-                src={context.user.pfpUrl}
-                alt="Profile"
-                className="w-5 h-5 rounded-full mr-2"
-              />
-            )}
-            <span>{userName}</span>
-          </div>
+          {/* Description */}
+          <p className="opacity-90">Get listed on thecreators directory for better discovery and collaboration opportunities.</p>
         </div>
-      )}
-      <button
-        className="w-full text-center py-3 text-sm opacity-80 hover:opacity-100"
-        onClick={() => disconnect()}
-      >
-        Disconnect
-      </button>
 
-      {/* Buttons */}
-      <div className="space-y-3">
-        {!userAddress ? (
-          <button
-            className="w-full bg-[#0052CC] text-white py-3 rounded-xl font-medium hover:bg-[#0047B3] transition-colors"
-            onClick={() => connect({ connector: config.connectors[0] })}
-          >
-            Connect Wallet
-          </button>
-        ) : (
-          <>
+        {/* Requirements */}
+        <div className="">
+          <h2 className="text-xs uppercase tracking-wider mb-2 opacity-80">Requirements</h2>
+          <ul className="space-y-4">
+            <li className="flex items-center">
+              <div className={`w-5 h-5 rounded-full mr-3 flex items-center justify-center border-1`}>
+                {eligibility.hasBasename && (
+                  <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                )}
+              </div>
+              Own a basename
+            </li>
+            <li className="flex items-center">
+              <div className={`w-5 h-5 rounded-full mr-3 flex items-center justify-center border-1`}>
+                {eligibility.hasNFTsOnBase && (
+                  <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                )}
+              </div>
+              Release NFTs on Base
+            </li>
+          </ul>
+        </div>
+        {userAddress && (
+          <div className="flex flex-col">
+            <h2 className="text-xs uppercase tracking-wider mb-2 opacity-80">Connected as</h2>
+            <div className="flex gap-4 w-full justify-between">
+              {/* User Info */}
+              {userAddress && (
+                <div className="flex items-center justify-center text-sm gap-2">
+                  <div className="flex items-center">
+                    {context?.user?.pfpUrl && <img src={context.user.pfpUrl} alt="Profile" className="w-5 h-5 rounded-full mr-2" />}
+                    <span className="font-mono">{userName}</span>
+                  </div>
+                </div>
+              )}
+              <button className="px-4 py-1 bg-white/10 text-white text-xs rounded-full cursor-pointer hover:bg-white/20 transition-colors" onClick={() => disconnect()}>
+                Disconnect
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Buttons */}
+        <div className="space-y-3">
+          {!userAddress ? (
             <button
-              className={`w-full py-3 rounded-xl font-medium transition-colors ${
-                allRequirementsMet
-                  ? "bg-[#0052CC] text-white hover:bg-[#0047B3]"
-                  : "bg-[#0052CC] bg-opacity-50 text-white cursor-not-allowed"
-              }`}
-              onClick={() =>
-                allRequirementsMet &&
-                (window.location.href = "/creators/join/requirements")
-              }
-              disabled={!allRequirementsMet}
+              className="w-full px-4 py-3 bg-white text-sm text-base-blue rounded-full cursor-pointer hover:bg-white/90 transition-colors"
+              onClick={() => connect({ connector: config.connectors[0] })}
             >
-              {eligibility.isLoading
-                ? "Checking requirements..."
-                : allRequirementsMet
-                ? "Continue to profile creation"
-                : "Requirements not met"}
+              Check Requirements
             </button>
-
-            <div className="space-y-2">
+          ) : (
+            <>
               <button
-                className="w-full bg-white/10 text-white py-3 rounded-xl font-medium hover:bg-white/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                onClick={handleRefresh}
-                disabled={eligibility.isLoading || !!refreshError}
+                className={`w-full py-3 rounded-full transition-colors ${
+                  allRequirementsMet ? "bg-white text-base-blue cursor-pointer hover:bg-white/90 transition-colors" : "bg-black/10 text-white cursor-not-allowed"
+                }`}
+                onClick={() => allRequirementsMet && (window.location.href = "/creators/join/requirements")}
+                disabled={!allRequirementsMet}
               >
-                {eligibility.isLoading
-                  ? "Refreshing..."
-                  : "Refresh Requirements"}
+                {eligibility.isLoading ? "Checking requirements..." : allRequirementsMet ? "Continue to profile creation" : "Requirements not met"}
               </button>
 
-              {refreshError && (
-                <p className="text-sm text-amber-400 text-center">
-                  {refreshError}
-                </p>
-              )}
-            </div>
-          </>
-        )}
-      </div>
+              <div className="space-y-2">
+                <button
+                  className="w-full py-3 border-1 text-white rounded-full cursor-pointer hover:bg-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={handleRefresh}
+                  disabled={eligibility.isLoading || !!refreshError}
+                >
+                  {eligibility.isLoading ? "Refreshing..." : "Refresh Requirements"}
+                </button>
 
-      {/* Bottom Bar */}
-      <div className="fixed bottom-0 left-0 right-0 h-1 bg-white/20" />
+                {refreshError && <p className="text-sm text-amber-400 text-center">{refreshError}</p>}
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="fixed bottom-0 left-0 right-0 h-1 bg-white/20" />
+      </div>
     </>
   );
 }
