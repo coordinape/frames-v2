@@ -7,7 +7,7 @@ export default function DirectoryPage() {
 
 // const appUrl = process.env.NEXT_PUBLIC_URL;
 // const appUrl = process.env.VERCEL_URL;
-const appUrl = `https://${process.env.VERCEL_URL}`;
+const appUrl = `https://${process.env.NEXT_PUBLIC_URL ?? process.env.VERCEL_URL}`;
 
 const frame = {
   version: "next",
@@ -32,6 +32,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title: "Creator Directory",
       description: "The creator directory.",
+      images: `${appUrl}/creators/ogimage`,
     },
     other: {
       "fc:frame": JSON.stringify(frame),
