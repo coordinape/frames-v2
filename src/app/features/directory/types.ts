@@ -17,11 +17,12 @@ export interface BasenameResolution {
 }
 
 export interface OpenSeaCollection {
-  id: string;
+  id?: string;
   name?: string;
-  description?: string;
   imageUrl?: string;
-  bannerImageUrl?: string;
+  openseaUrl?: string;
+  projectUrl?: string;
+  contractAddress?: string;
 }
 
 export interface OpenSeaData {

@@ -7,7 +7,7 @@ import Header from "~/app/components/Header";
 import { useAccount, useDisconnect, useConnect } from "wagmi";
 import { config } from "~/components/providers/WagmiProvider";
 import { resolveBasenameOrAddress } from "~/app/hooks/useBasenameResolver";
-import { getNFTContracts } from "~/lib/getNFTContracts";
+import { getOpenseaNFTContracts } from "~/lib/getNFTContracts";
 
 interface EligibilityStatus {
   hasBasename: boolean;
@@ -45,7 +45,7 @@ export default function JoinClient() {
         const basename = resolution?.basename || "";
 
         // Check NFT releases on Base
-        const contracts = await getNFTContracts(address);
+        const contracts = await getOpenseaNFTContracts(address);
         const hasNFTsOnBase = contracts.some(
           (contract) => contract.chainId.toLowerCase() === "base"
         );

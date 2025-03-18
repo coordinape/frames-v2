@@ -74,20 +74,20 @@ async function fetchWithLocalCache<T>(
 }
 
 interface OpenSeaCollection {
+  collection: string;
   name: string;
-  contract: string;
-  chain?: {
-    name: string;
-  };
+  description: string;
   image_url: string;
   banner_image_url: string;
-  description: string;
-  slug: string;
-  created_date: string;
-  total_supply: number;
-  external_url: string;
+  owner: string;
+  opensea_url: string;
+  project_url: string;
   discord_url: string;
   twitter_username: string;
+  contracts: {
+    address: string;
+    chain: string;
+  }[];
 }
 
 interface ContractDetails {
@@ -97,12 +97,18 @@ interface ContractDetails {
   imageUrl: string;
   bannerImageUrl: string;
   description: string;
-  slug: string;
-  createdDate: string;
-  totalSupply: number;
-  externalUrl: string;
+  openseaUrl: string;
+  projectUrl: string;
   discordUrl: string;
   twitterUsername: string;
+}
+
+// Add a function to filter collections by chain
+function filterCollectionsByChain(
+  collections: ContractDetails[],
+  chain: string
+): ContractDetails[] {
+  return collections.filter((collection) => collection.chainId === chain);
 }
 
 // First, get the username from the address
@@ -144,7 +150,10 @@ async function getOpenSeaUsernameFromAddress(address: string) {
 }
 
 // Then get collections by username
-export async function getNFTContracts(deployerAddress: string) {
+export async function getOpenseaNFTContracts(
+  deployerAddress: string,
+  chain?: string
+) {
   const cacheKey = `opensea-collections-${deployerAddress}`;
 
   return fetchWithCache<ContractDetails[]>(cacheKey, async () => {
@@ -173,6 +182,8 @@ export async function getNFTContracts(deployerAddress: string) {
         }
       );
 
+      console.log("response", JSON.stringify(response, null, 2));
+
       if (!response.ok) {
         throw new Error(`OpenSea API error: ${response.status}`);
       }
@@ -180,27 +191,79 @@ export async function getNFTContracts(deployerAddress: string) {
       const data = await response.json();
 
       // Extract detailed information from collections
-      const contractDetails: ContractDetails[] = data.collections.map(
-        (collection: OpenSeaCollection): ContractDetails => ({
-          name: collection.name,
-          contractAddress: collection.contract,
-          chainId: collection.chain?.name || "unknown",
-          imageUrl: collection.image_url,
-          bannerImageUrl: collection.banner_image_url,
-          description: collection.description,
-          slug: collection.slug,
-          createdDate: collection.created_date,
-          totalSupply: collection.total_supply,
-          externalUrl: collection.external_url,
-          discordUrl: collection.discord_url,
-          twitterUsername: collection.twitter_username,
-        })
+      const contractDetails: ContractDetails[] = data.collections.flatMap(
+        (collection: OpenSeaCollection): ContractDetails[] =>
+          collection.contracts.map(
+            (contract): ContractDetails => ({
+              name: collection.name,
+              contractAddress: contract.address,
+              chainId: contract.chain,
+              imageUrl: collection.image_url,
+              bannerImageUrl: collection.banner_image_url,
+              description: collection.description,
+              openseaUrl: collection.opensea_url,
+              projectUrl: collection.project_url,
+              discordUrl: collection.discord_url,
+              twitterUsername: collection.twitter_username,
+            })
+          )
       );
 
-      return contractDetails;
+      // Filter by chain if specified
+      return chain
+        ? filterCollectionsByChain(contractDetails, chain)
+        : contractDetails;
     } catch (error) {
       console.error("Error fetching collection details from OpenSea:", error);
       throw error;
     }
   });
+}
+
+/**
+ * Busts the cache for a given key
+ * @param cacheKey The key to remove from cache
+ */
+export async function bustCache(cacheKey: string): Promise<void> {
+  if (LOCAL_CACHE) {
+    // Delete local cache file if it exists
+    const cacheFile = path.join(CACHE_DIR, `${cacheKey}.json`);
+    if (fs.existsSync(cacheFile)) {
+      await fs.promises.unlink(cacheFile);
+      console.log(`Busted local cache for ${cacheKey}`);
+    }
+  } else {
+    // Delete key from Vercel KV
+    await kv.del(cacheKey);
+    console.log(`Busted KV cache for ${cacheKey}`);
+  }
+}
+
+/**
+ * Busts the cache for a specific OpenSea username
+ * @param address The Ethereum address associated with the username
+ */
+export async function bustOpenSeaUsernameCache(address: string): Promise<void> {
+  await bustCache(`opensea-username-${address}`);
+}
+
+/**
+ * Busts the cache for OpenSea collections
+ * @param address The Ethereum address associated with the collections
+ */
+export async function bustOpenSeaCollectionsCache(
+  address: string
+): Promise<void> {
+  await bustCache(`opensea-collections-${address}`);
+}
+
+/**
+ * Busts all OpenSea-related caches for an address
+ * @param address The Ethereum address to bust caches for
+ */
+export async function bustAllOpenSeaCaches(address: string): Promise<void> {
+  await Promise.all([
+    bustOpenSeaUsernameCache(address),
+    bustOpenSeaCollectionsCache(address),
+  ]);
 }

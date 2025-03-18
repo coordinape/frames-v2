@@ -2,7 +2,7 @@
 
 import { getApolloClient, getApolloClientAuthed } from "~/lib/apollo-client";
 import { gql } from "@apollo/client";
-import { getNFTContracts } from "~/lib/getNFTContracts";
+import { getOpenseaNFTContracts } from "~/lib/getNFTContracts";
 import {
   Creator,
   OpenSeaCollection,
@@ -155,7 +155,8 @@ export async function getCreator(
 
     try {
       // Get NFT contracts
-      const contracts = await getNFTContracts(creator.address);
+      const contracts = await getOpenseaNFTContracts(creator.address, "base");
+      console.log("contracts", JSON.stringify(contracts, null, 2));
 
       // Resolve basename
       const resolution = await resolveBasenameOrAddress(creator.address);
@@ -179,6 +180,9 @@ export async function getCreator(
             description: contract.description,
             imageUrl: contract.imageUrl,
             bannerImageUrl: contract.bannerImageUrl,
+            openseaUrl: `https://opensea.io/assets/base/${contract.contractAddress}`,
+            projectUrl: contract.projectUrl || "",
+            contractAddress: contract.contractAddress,
           })),
         },
       };
@@ -253,7 +257,7 @@ export async function getCreators(): Promise<CreatorWithOpenSeaData[]> {
       creators.map(async (creator: Creator) => {
         try {
           // Get NFT contracts
-          const contracts = await getNFTContracts(creator.address);
+          const contracts = await getOpenseaNFTContracts(creator.address);
 
           // Resolve basename
           const resolution = await resolveBasenameOrAddress(creator.address);
@@ -277,6 +281,9 @@ export async function getCreators(): Promise<CreatorWithOpenSeaData[]> {
                 description: contract.description,
                 imageUrl: contract.imageUrl,
                 bannerImageUrl: contract.bannerImageUrl,
+                openseaUrl: `https://opensea.io/assets/base/${contract.contractAddress}`,
+                projectUrl: contract.projectUrl || "",
+                contractAddress: contract.contractAddress,
               })),
             },
           };
@@ -364,7 +371,7 @@ export async function getGivesForCreator(
       },
     });
 
-    console.log("data for gives", JSON.stringify(data, null, 2));
+    // console.log("data for gives", JSON.stringify(data, null, 2));
     return groupAndSortGives(data.colinks_gives);
   } catch (error) {
     console.error(`Error fetching gives for address ${address}:`, error);
