@@ -1,5 +1,5 @@
 import ENSResolver from "./ENSResolver";
-import ContractGallery from "~/app/frames/hello/components/ContractGallery";
+import ContractGallery from "~/app/components/ContractGallery";
 import { Metadata } from "next";
 import { resolveBasenameOrAddress } from "~/app/hooks/useBasenameResolver";
 import { addressIsMember, getCreator } from "~/app/features/directory/actions";
