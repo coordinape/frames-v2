@@ -9,9 +9,9 @@ import Link from "next/link";
 
 function JoinDirectoryButton() {
   return (
-    <button onClick={() => (window.location.href = "/join")} className="px-4 py-1 bg-white text-base-blue text-xs rounded-full ml-2 cursor-pointer hover:bg-white/90 transition-colors">
+    <Link href="/creators/join" className="px-4 py-1 bg-white text-base-blue text-xs rounded-full ml-2 cursor-pointer hover:bg-white/90 transition-colors">
       Join the Directory
-    </button>
+    </Link>
   );
 }
 
