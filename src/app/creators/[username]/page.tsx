@@ -50,11 +50,11 @@ export default async function ProfilePage({ params }: Props) {
       <Header />
       <div className="flex flex-col gap-10">
         <div className="flex justify-between mb-2">
-          <Link href="/creators" className="flex items-center text-white hover:text-white/80 transition-colors text-sm">
+          <Link href="/creators" className="flex items-center text-white hover:text-white/80 transition-colors">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
+              width="24"
+              height="24"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
