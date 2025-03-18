@@ -2,6 +2,7 @@
 
 import { useWalletConnection } from "~/components/FrameOrWalletConnection";
 import Link from "next/link";
+import {useEffect, useState} from "react";
 
 export const EditProfile = ({
   address,
@@ -12,7 +13,12 @@ export const EditProfile = ({
 }) => {
   const { address: myAddress } = useWalletConnection();
 
-  if (myAddress === address) {
+  const [owner,setOwner] = useState<boolean>(false);
+  useEffect(() => {
+    setOwner(myAddress === address);
+  }, [address,myAddress]);
+
+  if (owner) {
     return (
       <Link
         href={`/creators/${basename || address}/edit`}
