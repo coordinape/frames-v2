@@ -19,6 +19,11 @@ try {
   console.error("Failed to create cache directory:", error);
 }
 
+// Helper function to generate consistent cache keys
+function generateCacheKey(type: string, identifier: string): string {
+  return `opensea-${type}-${identifier}`.toLowerCase();
+}
+
 async function fetchWithCache<T>(cacheKey: string, fetchFn: () => Promise<T>): Promise<T> {
   if (LOCAL_CACHE) {
     return fetchWithLocalCache(cacheKey, fetchFn);
@@ -105,7 +110,7 @@ function filterCollectionsByChain(collections: ContractDetails[], chain: string)
 
 // First, get the username from the address
 async function getOpenSeaUsernameFromAddress(address: string) {
-  const cacheKey = `opensea-username-${address}`;
+  const cacheKey = generateCacheKey("username", address);
 
   return fetchWithCache<string | null>(cacheKey, async () => {
     try {
@@ -116,6 +121,7 @@ async function getOpenSeaUsernameFromAddress(address: string) {
           accept: "application/json",
         },
       });
+
       if (response.status === 404 || response.status === 400) {
         return null;
       }
@@ -135,7 +141,7 @@ async function getOpenSeaUsernameFromAddress(address: string) {
 
 // Then get collections by username
 export async function getOpenseaNFTContracts(deployerAddress: string, chain?: string) {
-  const cacheKey = `opensea-collections-${deployerAddress}`;
+  const cacheKey = generateCacheKey("collections", deployerAddress);
 
   return fetchWithCache<ContractDetails[]>(cacheKey, async () => {
     try {
@@ -215,7 +221,7 @@ export async function bustCache(cacheKey: string): Promise<void> {
  * @param address The Ethereum address associated with the username
  */
 export async function bustOpenSeaUsernameCache(address: string): Promise<void> {
-  await bustCache(`opensea-username-${address}`);
+  await bustCache(generateCacheKey("username", address));
 }
 
 /**
@@ -223,7 +229,7 @@ export async function bustOpenSeaUsernameCache(address: string): Promise<void> {
  * @param address The Ethereum address associated with the collections
  */
 export async function bustOpenSeaCollectionsCache(address: string): Promise<void> {
-  await bustCache(`opensea-collections-${address}`);
+  await bustCache(generateCacheKey("collections", address));
 }
 
 /**
