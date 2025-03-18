@@ -210,7 +210,12 @@ export async function getCreators(): Promise<CreatorWithOpenSeaData[]> {
       query: gql`
         query GetCreators($circleId: bigint!) {
           users(
-            where: { circle_id: { _eq: $circleId } }
+            where: {
+              circle_id: { _eq: $circleId }
+              profile: {
+                address: { _neq: "0x4fd59e958a4eaf440d761c41c73e40bffd069f4d" }
+              }
+            }
             order_by: { created_at: desc }
           ) {
             id
