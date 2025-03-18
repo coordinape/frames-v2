@@ -9,7 +9,7 @@ import Link from "next/link";
 
 function JoinDirectoryButton() {
   return (
-    <Link href="/creators/join" className="px-4 py-1 bg-white text-base-blue text-xs rounded-full ml-2 cursor-pointer hover:bg-white/90 transition-colors">
+    <Link href="/creators/join" className="px-4 py-1 bg-white text-base-blue text-xs rounded-full ml-2 hover:bg-white/90 transition-colors">
       Join the Directory
     </Link>
   );
@@ -63,7 +63,7 @@ export default function WhoAmI() {
                               </div>
                             </Link>
                           ) : (
-                            <p className="text-white/60 text-xs font-mono hover:text-white/90 transition-colors">{truncateAddress(address)}</p>
+                            <p className="text-white/60 text-xs font-mono">{truncateAddress(address)}</p>
                           )}
                           <button onClick={disconnectWallet} className="px-4 py-1 bg-white/10 text-white text-xs rounded-full cursor-pointer hover:bg-white/20 transition-colors">
                             Disconnect

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import sdk, { type Context } from "@farcaster/frame-sdk";
-import LayoutWrapper from "~/app/components/LayoutWrapper";
 import Header from "~/app/components/Header";
 import { useAccount, useDisconnect, useConnect } from "wagmi";
 import { config } from "~/components/providers/WagmiProvider";
@@ -10,6 +9,7 @@ import { resolveBasenameOrAddress } from "~/app/hooks/useBasenameResolver";
 import { getOpenseaNFTContracts } from "~/lib/getOpenseaNFTContracts";
 import { refreshRequirementsCache } from "./actions";
 import { truncateAddress } from "~/app/utils/address";
+import { useRouter } from "next/navigation";
 
 interface EligibilityStatus {
   hasBasename: boolean;
@@ -18,16 +18,19 @@ interface EligibilityStatus {
   isLoading: boolean;
 }
 
+const initialEligibility: EligibilityStatus = {
+  hasBasename: false,
+  basename: "",
+  hasNFTsOnBase: false,
+  isLoading: true,
+};
+
 export default function JoinClient() {
+  const router = useRouter();
+  const [mounted, setMounted] = useState(false);
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
   const [context, setContext] = useState<Context.FrameContext>();
-  const [eligibility, setEligibility] = useState<EligibilityStatus>({
-    hasBasename: false,
-    basename: "",
-    hasNFTsOnBase: false,
-    isLoading: true,
-  });
-
+  const [eligibility, setEligibility] = useState<EligibilityStatus>(initialEligibility);
   const [refreshError, setRefreshError] = useState<string | null>(null);
 
   // Get wallet connection info
@@ -35,10 +38,17 @@ export default function JoinClient() {
   const { disconnect } = useDisconnect();
   const { connect } = useConnect();
 
-  // Check eligibility when address changes
+  // Handle mounting to prevent hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useEffect(() => {
     const checkEligibility = async () => {
-      if (!address) return;
+      if (!address) {
+        setEligibility(initialEligibility);
+        return;
+      }
 
       setEligibility((prev) => ({ ...prev, isLoading: true }));
 
@@ -69,19 +79,11 @@ export default function JoinClient() {
       }
     };
 
-    if (address) {
+    if (mounted && address) {
       checkEligibility();
-    } else {
-      setEligibility({
-        hasBasename: false,
-        basename: "",
-        hasNFTsOnBase: false,
-        isLoading: false,
-      });
     }
-  }, [address]);
+  }, [address, mounted]);
 
-  // Load SDK context
   useEffect(() => {
     const load = async () => {
       const context = await sdk.context;
@@ -90,22 +92,17 @@ export default function JoinClient() {
       sdk.actions.ready({});
     };
 
-    if (sdk && !isSDKLoaded) {
-      console.log("Join Frame: Calling load");
+    if (mounted && sdk && !isSDKLoaded) {
       setIsSDKLoaded(true);
       load();
       return () => {
         sdk.removeAllListeners();
       };
     }
-  }, [isSDKLoaded]);
+  }, [isSDKLoaded, mounted]);
 
-  // Get user info from context or wallet
-  // Fix: Use optional chaining for context.user.address which might not exist in UserContext
   const userAddress = address || context?.user?.fid?.toString();
-  const userName = context?.user?.username || (eligibility.hasBasename ? eligibility.basename : userAddress ? `${truncateAddress(userAddress)}` : "");
-
-  // Check if all requirements are met
+  const userName = context?.user?.username || (eligibility.hasBasename ? eligibility.basename : userAddress ? truncateAddress(userAddress) : "");
   const allRequirementsMet = eligibility.hasBasename && eligibility.hasNFTsOnBase;
 
   const handleRefresh = async () => {
@@ -114,53 +111,57 @@ export default function JoinClient() {
     setEligibility((prev) => ({ ...prev, isLoading: true }));
     setRefreshError(null);
 
-    // Call the server action
-    const result = await refreshRequirementsCache(address);
+    try {
+      const result = await refreshRequirementsCache(address);
 
-    if (!result.success) {
-      setRefreshError(result.error ?? "An error occurred while refreshing");
+      if (!result.success) {
+        setRefreshError(result.error ?? "An error occurred while refreshing");
+        setEligibility((prev) => ({ ...prev, isLoading: false }));
+        return;
+      }
+
+      const resolution = await resolveBasenameOrAddress(address);
+      const hasBasename = !!resolution?.basename;
+      const basename = resolution?.basename || "";
+
+      const contracts = await getOpenseaNFTContracts(address);
+      const hasNFTsOnBase = contracts.some((contract) => contract.chainId.toLowerCase() === "base");
+
+      setEligibility({
+        hasBasename,
+        basename,
+        hasNFTsOnBase,
+        isLoading: false,
+      });
+    } catch (error) {
+      console.error("Error refreshing requirements:", error);
+      setRefreshError("An error occurred while refreshing");
       setEligibility((prev) => ({ ...prev, isLoading: false }));
-      return;
     }
-
-    // Re-run the eligibility check
-    const resolution = await resolveBasenameOrAddress(address);
-    const hasBasename = !!resolution?.basename;
-    const basename = resolution?.basename || "";
-
-    const contracts = await getOpenseaNFTContracts(address);
-    const hasNFTsOnBase = contracts.some((contract) => contract.chainId.toLowerCase() === "base");
-
-    setEligibility({
-      hasBasename,
-      basename,
-      hasNFTsOnBase,
-      isLoading: false,
-    });
   };
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <>
       <Header logoOnly />
       <div className="flex flex-col gap-10">
         <div className="flex flex-col gap-4 text-center">
-          {/* Title */}
           <h1 className="font-mono text-6xl font-bold base-pixel">
             Create
             <br />
             on Base
           </h1>
-
-          {/* Description */}
           <p className="opacity-90">Get listed on thecreators directory for better discovery and collaboration opportunities.</p>
         </div>
 
-        {/* Requirements */}
-        <div className="">
+        <div className="flex flex-col">
           <h2 className="text-xs uppercase tracking-wider mb-2 opacity-80">Requirements</h2>
           <ul className="space-y-4">
             <li className="flex items-center">
-              <div className={`w-5 h-5 rounded-full mr-3 flex items-center justify-center border-1`}>
+              <div className="w-5 h-5 rounded-full mr-3 flex items-center justify-center border-1">
                 {eligibility.hasBasename && (
                   <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -170,7 +171,7 @@ export default function JoinClient() {
               Own a basename
             </li>
             <li className="flex items-center">
-              <div className={`w-5 h-5 rounded-full mr-3 flex items-center justify-center border-1`}>
+              <div className="w-5 h-5 rounded-full mr-3 flex items-center justify-center border-1">
                 {eligibility.hasNFTsOnBase && (
                   <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -181,11 +182,11 @@ export default function JoinClient() {
             </li>
           </ul>
         </div>
+
         {userAddress && (
           <div className="flex flex-col">
             <h2 className="text-xs uppercase tracking-wider mb-2 opacity-80">Connected as</h2>
             <div className="flex gap-4 w-full justify-between">
-              {/* User Info */}
               {userAddress && (
                 <div className="flex items-center justify-center text-sm gap-2">
                   <div className="flex items-center">
@@ -201,7 +202,6 @@ export default function JoinClient() {
           </div>
         )}
 
-        {/* Buttons */}
         <div className="space-y-3">
           {!userAddress ? (
             <button
@@ -214,9 +214,9 @@ export default function JoinClient() {
             <>
               <button
                 className={`w-full py-3 rounded-full transition-colors ${
-                  allRequirementsMet ? "bg-white text-base-blue cursor-pointer hover:bg-white/90 transition-colors" : "bg-black/10 text-white cursor-not-allowed"
+                  allRequirementsMet ? "bg-white text-base-blue hover:bg-white/90 cursor-pointer" : "bg-black/10 text-white cursor-not-allowed"
                 }`}
-                onClick={() => allRequirementsMet && (window.location.href = "/creators/join/requirements")}
+                onClick={() => allRequirementsMet && router.push("/creators/join/requirements")}
                 disabled={!allRequirementsMet}
               >
                 {eligibility.isLoading ? "Checking requirements..." : allRequirementsMet ? "Continue to profile creation" : "Requirements not met"}
@@ -224,7 +224,7 @@ export default function JoinClient() {
 
               <div className="space-y-2">
                 <button
-                  className="w-full py-3 border-1 text-white rounded-full cursor-pointer hover:bg-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-3 border-1 text-white rounded-full hover:bg-white/10 transition-colors disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
                   onClick={handleRefresh}
                   disabled={eligibility.isLoading || !!refreshError}
                 >
@@ -237,7 +237,6 @@ export default function JoinClient() {
           )}
         </div>
 
-        {/* Bottom Bar */}
         <div className="fixed bottom-0 left-0 right-0 h-1 bg-white/20" />
       </div>
     </>
