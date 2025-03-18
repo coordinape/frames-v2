@@ -239,6 +239,12 @@ export default function JoinClient() {
           </div>
         </div>
       )}
+      <button
+        className="w-full text-center py-3 text-sm opacity-80 hover:opacity-100"
+        onClick={() => disconnect()}
+      >
+        Disconnect
+      </button>
 
       {/* Buttons */}
       <div className="space-y-3">
@@ -287,13 +293,6 @@ export default function JoinClient() {
                 </p>
               )}
             </div>
-
-            <button
-              className="w-full text-center py-3 text-sm opacity-80 hover:opacity-100"
-              onClick={() => disconnect()}
-            >
-              Log out
-            </button>
           </>
         )}
       </div>
