@@ -4,13 +4,7 @@ import { useWalletConnection } from "~/components/FrameOrWalletConnection";
 import Link from "next/link";
 import {useEffect, useState} from "react";
 
-export const EditProfile = ({
-  address,
-  basename,
-}: {
-  address: string;
-  basename?: string;
-}) => {
+export const EditProfile = ({ address, basename }: { address: string; basename?: string }) => {
   const { address: myAddress } = useWalletConnection();
 
   const [owner,setOwner] = useState<boolean>(false);
@@ -22,12 +16,12 @@ export const EditProfile = ({
     return (
       <Link
         href={`/creators/${basename || address}/edit`}
-        className="bg-blue-600 text-white px-4 py-2 rounded-full font-medium hover:bg-blue-700 transition-all inline-flex items-center"
+        className="px-4 py-1 bg-white/10 text-white text-sm rounded-full cursor-pointer hover:bg-white/20 transition-colors inline-flex items-center"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
+          width="14"
+          height="14"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
