@@ -189,10 +189,12 @@ export default function JoinClient() {
       setIsCreating(true);
       setCreateStatus("idle");
 
-      // First check if profile exists
+      // Check if profile exists
       const exists = await addressIsMember(address);
       if (exists) {
-        // If profile exists, just redirect to their profile
+        setCreateStatus("success");
+        // Set a loading state before redirecting
+        setIsCreating(true);
         router.push(`/creators/${userName}`);
         return;
       }
@@ -209,9 +211,8 @@ export default function JoinClient() {
     } catch (error) {
       console.error("Error joining directory:", error);
       setCreateStatus("error");
-    } finally {
-      setIsCreating(false);
     }
+    // Don't set isCreating to false here, as we want to maintain the loading state during navigation
   };
 
   if (!mounted) {
@@ -381,7 +382,7 @@ export default function JoinClient() {
                         ? "bg-red-100 text-red-700 hover:bg-red-200"
                         : "bg-white text-base-blue hover:bg-white/90"
                     : "bg-black/10 text-white"
-                } ${isCreating ? "opacity-70 cursor-not-allowed" : allRequirementsMet ? "cursor-pointer" : "cursor-not-allowed"}`}
+                } ${isCreating || createStatus === "success" ? "opacity-70 cursor-not-allowed" : allRequirementsMet ? "cursor-pointer" : "cursor-not-allowed"}`}
                 onClick={handleProfileCreation}
                 disabled={
                   !allRequirementsMet ||
@@ -389,17 +390,15 @@ export default function JoinClient() {
                   createStatus === "success"
                 }
               >
-                {isCreating
+                {isCreating || createStatus === "success"
                   ? "Preparing Profile..."
-                  : createStatus === "success"
-                    ? "Redirecting to Profile..."
-                    : createStatus === "error"
-                      ? "Failed to proceed - Try Again"
-                      : eligibility.isLoading
-                        ? "Checking requirements..."
-                        : allRequirementsMet
-                          ? "Join Directory"
-                          : "Requirements not met"}
+                  : createStatus === "error"
+                    ? "Failed to proceed - Try Again"
+                    : eligibility.isLoading
+                      ? "Checking requirements..."
+                      : allRequirementsMet
+                        ? "Join Directory"
+                        : "Requirements not met"}
               </button>
 
               {createStatus === "error" && (
