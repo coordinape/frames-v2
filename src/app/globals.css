@@ -3,8 +3,8 @@
 @font-face {
   font-family: "BasePixel-Low";
   src:
-    url("./fonts/BasePixel-LowResolution.woff2") format("woff2"),
-    url("./fonts/BasePixel-LowResolution.woff") format("woff");
+    url("/fonts/BasePixel-LowResolution.woff2") format("woff2"),
+    url("/fonts/BasePixel-LowResolution.woff") format("woff");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -12,8 +12,8 @@
 @font-face {
   font-family: "BasePixel-Medium";
   src:
-    url("./fonts/BasePixel-MediumResolution.woff2") format("woff2"),
-    url("./fonts/BasePixel-MediumResolution.woff") format("woff");
+    url("/fonts/BasePixel-MediumResolution.woff2") format("woff2"),
+    url("/fonts/BasePixel-MediumResolution.woff") format("woff");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
