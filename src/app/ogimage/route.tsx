@@ -26,9 +26,9 @@ export async function GET(request: NextRequest) {
         <div tw="flex items-center justify-center flex-1">
           <img
             src={IMAGE_URL_BASE + "Base_Symbol_White.png"}
-            tw="h-38 mr-5"
-            width={138}
-            height={138}
+            // tw="h-38 mr-5"
+            width={100}
+            height={100}
             alt="BASE Logo"
           />
           <div tw="flex flex-col justify-start">
