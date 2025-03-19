@@ -26,7 +26,7 @@ function generateCacheKey(type: string, identifier: string): string {
 
 async function fetchWithCache<T>(
   cacheKey: string,
-  fetchFn: () => Promise<T>
+  fetchFn: () => Promise<T>,
 ): Promise<T> {
   if (LOCAL_CACHE) {
     return fetchWithLocalCache(cacheKey, fetchFn);
@@ -48,7 +48,7 @@ async function fetchWithCache<T>(
 // Function to get cached data or fetch new data
 async function fetchWithLocalCache<T>(
   cacheKey: string,
-  fetchFn: () => Promise<T>
+  fetchFn: () => Promise<T>,
 ): Promise<T> {
   const cacheFile = path.join(CACHE_DIR, `${cacheKey}.json`);
 
@@ -112,7 +112,7 @@ interface ContractDetails {
 // Add a function to filter collections by chain
 function filterCollectionsByChain(
   collections: ContractDetails[],
-  chain: string
+  chain: string,
 ): ContractDetails[] {
   return collections.filter((collection) => collection.chainId === chain);
 }
@@ -135,7 +135,7 @@ async function getOpenSeaUsernameFromAddress(address: string) {
             revalidate: 3600,
             tags: [`opensea-username-${address}`],
           },
-        }
+        },
       );
 
       if (response.status === 404 || response.status === 400) {
@@ -156,7 +156,10 @@ async function getOpenSeaUsernameFromAddress(address: string) {
 }
 
 // Then get collections by username
-export async function getOpenseaNFTContracts(deployerAddress: string, chain?: string) {
+export async function getOpenseaNFTContracts(
+  deployerAddress: string,
+  chain?: string,
+) {
   const cacheKey = generateCacheKey("collections", deployerAddress);
 
   return fetchWithCache<ContractDetails[]>(cacheKey, async () => {
@@ -178,7 +181,7 @@ export async function getOpenseaNFTContracts(deployerAddress: string, chain?: st
             "x-api-key": process.env.OPENSEA_API_KEY!,
             accept: "application/json",
           },
-        }
+        },
       );
 
       console.log("response", JSON.stringify(response, null, 2));
@@ -204,8 +207,8 @@ export async function getOpenseaNFTContracts(deployerAddress: string, chain?: st
               projectUrl: collection.project_url,
               discordUrl: collection.discord_url,
               twitterUsername: collection.twitter_username,
-            })
-          )
+            }),
+          ),
       );
 
       // Filter by chain if specified
@@ -251,7 +254,7 @@ export async function bustOpenSeaUsernameCache(address: string): Promise<void> {
  * @param address The Ethereum address associated with the collections
  */
 export async function bustOpenSeaCollectionsCache(
-  address: string
+  address: string,
 ): Promise<void> {
   await bustCache(generateCacheKey("collections", address));
 }

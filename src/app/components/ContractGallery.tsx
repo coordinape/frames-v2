@@ -1,4 +1,3 @@
-import { getOpenseaNFTContracts } from "~/lib/getOpenseaNFTContracts";
 import { OpenSeaCollection } from "~/app/features/directory/types";
 
 interface ContractGalleryProps {
@@ -7,11 +6,8 @@ interface ContractGalleryProps {
 }
 
 export default async function ContractGallery({
-  address,
   openSeaCollections = [],
 }: ContractGalleryProps) {
-  const contracts = await getOpenseaNFTContracts(address);
-
   return (
     <div className="space-y-8">
       {/* OpenSea Collections */}
@@ -72,7 +68,7 @@ export default async function ContractGallery({
                       >
                         {`${collection.contractAddress.slice(
                           0,
-                          6
+                          6,
                         )}...${collection.contractAddress.slice(-4)}`}
                       </a>
                     </div>

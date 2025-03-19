@@ -209,7 +209,7 @@ const WagmiProvider = dynamic(
   () => import("~/components/providers/WagmiProvider"),
   {
     ssr: false,
-  }
+  },
 );
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -732,7 +732,6 @@ export default function Demo() {
 }
 ```
 
-
 Now let's request a transaction. We'll use the Wagmi `useSendTransaction` hook to call the Yoink contract and `useWaitForTransactionReceipt` to watch its status.
 
 > [!NOTE]
@@ -796,7 +795,7 @@ export default function Demo() {
         onSuccess: (hash) => {
           setTxHash(hash);
         },
-      }
+      },
     );
   }, [sendTransaction]);
 
@@ -855,8 +854,8 @@ export default function Demo() {
                     {isConfirming
                       ? "Confirming..."
                       : isConfirmed
-                      ? "Confirmed!"
-                      : "Pending"}
+                        ? "Confirmed!"
+                        : "Pending"}
                   </div>
                 </div>
               )}
@@ -961,7 +960,7 @@ export default function Demo() {
         onSuccess: (hash) => {
           setTxHash(hash);
         },
-      }
+      },
     );
   }, [sendTransaction]);
 
@@ -1090,8 +1089,8 @@ export default function Demo() {
                     {isConfirming
                       ? "Confirming..."
                       : isConfirmed
-                      ? "Confirmed!"
-                      : "Pending"}
+                        ? "Confirmed!"
+                        : "Pending"}
                   </div>
                 </div>
               )}

@@ -5,15 +5,8 @@ import {
   type Basename,
   getAddressFromBasename,
   BasenameTextRecordKeys,
+  textRecordsKeysEnabled,
 } from "~/app/creators/[username]/basenames";
-
-interface BasenameResolution {
-  basename: string;
-  address: string;
-  textRecords: Record<BasenameTextRecordKeys, string | undefined>;
-  isLoading: boolean;
-  error: string | null;
-}
 
 const emptyTextRecords: Record<BasenameTextRecordKeys, string | undefined> = {
   [BasenameTextRecordKeys.Description]: undefined,
@@ -43,12 +36,12 @@ export async function resolveBasenameOrAddress(input: string) {
       return await resolveBasename(input as Basename);
     } else {
       throw new Error(
-        "Invalid input: must be an Ethereum address or .base.eth name"
+        "Invalid input: must be an Ethereum address or .base.eth name",
       );
     }
   } catch (err) {
     throw new Error(
-      err instanceof Error ? err.message : "An unknown error occurred"
+      err instanceof Error ? err.message : "An unknown error occurred",
     );
   }
 }
@@ -75,15 +68,11 @@ async function resolveBasename(name: Basename) {
     const formattedRecords =
       records?.reduce(
         (acc, record, index) => {
-          const key = Object.keys(BasenameTextRecordKeys)[
-            index
-          ] as keyof typeof BasenameTextRecordKeys;
-          acc[BasenameTextRecordKeys[key]] = record.result as
-            | string
-            | undefined;
+          const key = textRecordsKeysEnabled[index];
+          acc[key] = record.result as string | undefined;
           return acc;
         },
-        { ...emptyTextRecords }
+        { ...emptyTextRecords },
       ) || emptyTextRecords;
 
     return {
@@ -94,7 +83,9 @@ async function resolveBasename(name: Basename) {
       error: null,
     };
   } catch (err) {
-    throw new Error("Error resolving Base name");
+    throw new Error(
+      err instanceof Error ? err.message : "Error resolving Base name",
+    );
   }
 }
 
@@ -118,15 +109,11 @@ async function resolveAddress(addr: Address) {
     const formattedRecords =
       records?.reduce(
         (acc, record, index) => {
-          const key = Object.keys(BasenameTextRecordKeys)[
-            index
-          ] as keyof typeof BasenameTextRecordKeys;
-          acc[BasenameTextRecordKeys[key]] = record.result as
-            | string
-            | undefined;
+          const key = textRecordsKeysEnabled[index];
+          acc[key] = record.result as string | undefined;
           return acc;
         },
-        { ...emptyTextRecords }
+        { ...emptyTextRecords },
       ) || emptyTextRecords;
 
     return {

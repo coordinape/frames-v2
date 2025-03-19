@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { isAddress } from "viem";
 import { resolveBasenameOrAddress } from "~/app/hooks/useBasenameResolver";
 import type { BasenameTextRecordKeys } from "./basenames";
 
@@ -28,7 +27,7 @@ export default function ENSResolver({
       address: "",
       textRecords: {} as Record<BasenameTextRecordKeys, string | undefined>,
       error: null,
-    }
+    },
   );
   const [loading, setLoading] = useState(false);
 
@@ -116,7 +115,7 @@ export default function ENSResolver({
                             </span>
                             <span className="flex-1">{value}</span>
                           </div>
-                        )
+                        ),
                     )}
                   </div>
                 </div>

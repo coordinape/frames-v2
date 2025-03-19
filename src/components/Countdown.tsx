@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ApolloProvider, useQuery, gql } from "@apollo/client";
 import sdk, { type Context } from "@farcaster/frame-sdk";
 
 const STAR_COUNT = 100;
