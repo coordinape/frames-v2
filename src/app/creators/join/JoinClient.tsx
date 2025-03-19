@@ -11,6 +11,7 @@ import { refreshRequirementsCache } from "./actions";
 import { truncateAddress } from "~/app/utils/address";
 import { useRouter } from "next/navigation";
 import { addressIsMember, joinDirectory } from "~/app/features/directory/actions";
+import Link from "next/link";
 
 interface EligibilityStatus {
   hasBasename: boolean;
@@ -208,7 +209,14 @@ export default function JoinClient() {
                   </svg>
                 )}
               </div>
-              Own a basename
+              <div className="flex items-baseline justify-between w-full">
+                Own a basename
+                {!eligibility.hasBasename && (
+                  <Link href="https://basenames.xyz/" className="text-xs text-white/80 hover:text-white ml-3">
+                    Get your basename
+                  </Link>
+                )}
+              </div>
             </li>
             <li className="flex items-center">
               <div className="w-5 h-5 rounded-full mr-3 flex items-center justify-center border-1">
@@ -218,7 +226,14 @@ export default function JoinClient() {
                   </svg>
                 )}
               </div>
-              Release NFTs on Base
+              <div className="flex items-baseline justify-between w-full">
+                Release NFTs on Base
+                {!eligibility.hasNFTsOnBase && (
+                  <Link href="https://manifold.xyz/" className="text-xs text-white/80 hover:text-white ml-3">
+                    Publish an NFT
+                  </Link>
+                )}
+              </div>
             </li>
           </ul>
         </div>
