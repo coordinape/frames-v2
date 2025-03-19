@@ -5,6 +5,7 @@ import {
   type Basename,
   getAddressFromBasename,
   BasenameTextRecordKeys,
+  textRecordsKeysEnabled,
 } from "~/app/creators/[username]/basenames";
 
 const emptyTextRecords: Record<BasenameTextRecordKeys, string | undefined> = {
@@ -67,12 +68,8 @@ async function resolveBasename(name: Basename) {
     const formattedRecords =
       records?.reduce(
         (acc, record, index) => {
-          const key = Object.keys(BasenameTextRecordKeys)[
-            index
-          ] as keyof typeof BasenameTextRecordKeys;
-          acc[BasenameTextRecordKeys[key]] = record.result as
-            | string
-            | undefined;
+          const key = textRecordsKeysEnabled[index];
+          acc[key] = record.result as string | undefined;
           return acc;
         },
         { ...emptyTextRecords },
@@ -112,12 +109,8 @@ async function resolveAddress(addr: Address) {
     const formattedRecords =
       records?.reduce(
         (acc, record, index) => {
-          const key = Object.keys(BasenameTextRecordKeys)[
-            index
-          ] as keyof typeof BasenameTextRecordKeys;
-          acc[BasenameTextRecordKeys[key]] = record.result as
-            | string
-            | undefined;
+          const key = textRecordsKeysEnabled[index];
+          acc[key] = record.result as string | undefined;
           return acc;
         },
         { ...emptyTextRecords },

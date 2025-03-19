@@ -220,25 +220,25 @@ export default async function ForHireCard({ address }: ForHireCardProps) {
   }
 
   return (
-    <div className="border-2 border-white/20 rounded-xl p-6 backdrop-blur-sm">
-      <div className="flex items-center gap-2 mb-4">
-        <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
-        <h3 className="text-xl font-bold text-white base-pixel">
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center gap-2">
+        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+        <h3 className="text-sm font-medium text-white/90 base-pixel">
           Available for Work
         </h3>
       </div>
 
-      <div className="flex flex-wrap gap-4">
+      <div className="flex flex-wrap gap-2">
         {availableContactMethods.map((method) => (
           <a
             key={method.key}
             href={method.href(method.value!)}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
+            className="flex items-center gap-1.5 text-sm text-white/70 hover:text-white/90 transition-colors"
           >
             {method.icon}
-            <span className="text-white/90">{method.label}</span>
+            <span>{method.label}</span>
           </a>
         ))}
       </div>
