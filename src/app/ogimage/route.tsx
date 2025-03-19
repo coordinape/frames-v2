@@ -1,5 +1,4 @@
 import { ImageResponse } from "next/og";
-import { baseBlue, basePixelLow } from "./helpers";
 import { NextRequest } from "next/server";
 
 // export const runtime = 'edge'; // Add this line to use the Edge runtime
@@ -17,9 +16,9 @@ export async function GET(request: NextRequest) {
       <div
         tw="h-full w-full flex flex-col justify-between items-center relative text-white"
         style={{
-          backgroundColor: baseBlue, // This is the bg-base-blue color
-          fontFamily: "BasePixel-Low",
-          letterSpacing: "0.02em",
+          backgroundColor: "#abc123", // This is the bg-base-blue color
+          // fontFamily: "BasePixel-Low",
+          // letterSpacing: "0.02em",
         }}
       >
         <h1 tw="text-2xl">{title}</h1>
@@ -43,14 +42,14 @@ export async function GET(request: NextRequest) {
         "Content-Type": "image/png",
       },
       // Include the font in the response
-      fonts: [
-        {
-          name: "BasePixel-Low",
-          data: basePixelLow,
-          style: "normal",
-          weight: 400,
-        },
-      ],
+      // fonts: [
+      //   {
+      //     name: "BasePixel-Low",
+      //     data: basePixelLow,
+      //     style: "normal",
+      //     weight: 400,
+      //   },
+      // ],
     },
   );
 }
