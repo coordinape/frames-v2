@@ -92,8 +92,12 @@ export default function WhoAmI() {
                                   alt={creator.name}
                                   className="w-5 h-5 rounded-full"
                                 />
-                                <p className="text-white/60 text-xs font-mono hover:text-white/80 transition-colors">
-                                  {truncateAddress(address)}
+                                <p
+                                  className="text-white/60 text-xs font-mono hover:text-white/80 transition-colors overflow-hidden text-ellipsis whitespace-nowrap"
+                                  style={{ maxWidth: "180px" }}
+                                >
+                                  {creator.resolution?.basename ||
+                                    truncateAddress(address)}
                                 </p>
                               </div>
                             </Link>
