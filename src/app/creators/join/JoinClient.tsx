@@ -15,11 +15,13 @@ import {
   joinDirectory,
 } from "~/app/features/directory/actions";
 import Link from "next/link";
+import { getOpenSeaUsernameFromAddress } from "~/lib/getOpenseaNFTContracts";
 
 interface EligibilityStatus {
   hasBasename: boolean;
   basename: string;
   hasNFTsOnBase: boolean;
+  hasOpenseaUsername: boolean;
   isLoading: boolean;
 }
 
@@ -27,6 +29,7 @@ const initialEligibility: EligibilityStatus = {
   hasBasename: false,
   basename: "",
   hasNFTsOnBase: false,
+  hasOpenseaUsername: false,
   isLoading: true,
 };
 
@@ -74,10 +77,15 @@ export default function JoinClient() {
           (contract) => contract.chainId.toLowerCase() === "base",
         );
 
+        // Check OpenSea username
+        const openseaUsername = await getOpenSeaUsernameFromAddress(address);
+        const hasOpenseaUsername = openseaUsername !== null;
+
         setEligibility({
           hasBasename,
           basename,
           hasNFTsOnBase,
+          hasOpenseaUsername,
           isLoading: false,
         });
       } catch (error) {
@@ -86,6 +94,7 @@ export default function JoinClient() {
           hasBasename: false,
           basename: "",
           hasNFTsOnBase: false,
+          hasOpenseaUsername: false,
           isLoading: false,
         });
       }
@@ -122,7 +131,9 @@ export default function JoinClient() {
         ? truncateAddress(userAddress)
         : "");
   const allRequirementsMet =
-    eligibility.hasBasename && eligibility.hasNFTsOnBase;
+    eligibility.hasBasename &&
+    eligibility.hasNFTsOnBase &&
+    eligibility.hasOpenseaUsername;
 
   const handleRefresh = async () => {
     if (!address) return;
@@ -148,10 +159,15 @@ export default function JoinClient() {
         (contract) => contract.chainId.toLowerCase() === "base",
       );
 
+      // Check OpenSea username
+      const openseaUsername = await getOpenSeaUsernameFromAddress(address);
+      const hasOpenseaUsername = openseaUsername !== null;
+
       setEligibility({
         hasBasename,
         basename,
         hasNFTsOnBase,
+        hasOpenseaUsername,
         isLoading: false,
       });
     } catch (error) {
@@ -173,10 +189,12 @@ export default function JoinClient() {
       setIsCreating(true);
       setCreateStatus("idle");
 
-      // First check if profile exists
+      // Check if profile exists
       const exists = await addressIsMember(address);
       if (exists) {
-        // If profile exists, just redirect to their profile
+        setCreateStatus("success");
+        // Set a loading state before redirecting
+        setIsCreating(true);
         router.push(`/creators/${userName}`);
         return;
       }
@@ -193,9 +211,8 @@ export default function JoinClient() {
     } catch (error) {
       console.error("Error joining directory:", error);
       setCreateStatus("error");
-    } finally {
-      setIsCreating(false);
     }
+    // Don't set isCreating to false here, as we want to maintain the loading state during navigation
   };
 
   if (!mounted) {
@@ -249,6 +266,36 @@ export default function JoinClient() {
                     className="text-xs text-white/80 hover:text-white ml-3"
                   >
                     Get your basename
+                  </Link>
+                )}
+              </div>
+            </li>
+            <li className="flex items-center">
+              <div className="w-5 h-5 rounded-full mr-3 flex items-center justify-center border-1">
+                {eligibility.hasOpenseaUsername && (
+                  <svg
+                    className="w-3 h-3 text-white"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={3}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                )}
+              </div>
+              <div className="flex items-baseline justify-between w-full">
+                Set an OpenSea Username
+                {!eligibility.hasOpenseaUsername && (
+                  <Link
+                    href="https://opensea.io/account/settings"
+                    className="text-xs text-white/80 hover:text-white ml-3"
+                  >
+                    Set up OpenSea
                   </Link>
                 )}
               </div>
@@ -335,7 +382,7 @@ export default function JoinClient() {
                         ? "bg-red-100 text-red-700 hover:bg-red-200"
                         : "bg-white text-base-blue hover:bg-white/90"
                     : "bg-black/10 text-white"
-                } ${isCreating ? "opacity-70 cursor-not-allowed" : allRequirementsMet ? "cursor-pointer" : "cursor-not-allowed"}`}
+                } ${isCreating || createStatus === "success" ? "opacity-70 cursor-not-allowed" : allRequirementsMet ? "cursor-pointer" : "cursor-not-allowed"}`}
                 onClick={handleProfileCreation}
                 disabled={
                   !allRequirementsMet ||
@@ -343,17 +390,15 @@ export default function JoinClient() {
                   createStatus === "success"
                 }
               >
-                {isCreating
+                {isCreating || createStatus === "success"
                   ? "Preparing Profile..."
-                  : createStatus === "success"
-                    ? "Redirecting to Profile..."
-                    : createStatus === "error"
-                      ? "Failed to proceed - Try Again"
-                      : eligibility.isLoading
-                        ? "Checking requirements..."
-                        : allRequirementsMet
-                          ? "Join Directory"
-                          : "Requirements not met"}
+                  : createStatus === "error"
+                    ? "Failed to proceed - Try Again"
+                    : eligibility.isLoading
+                      ? "Checking requirements..."
+                      : allRequirementsMet
+                        ? "Join Directory"
+                        : "Requirements not met"}
               </button>
 
               {createStatus === "error" && (
