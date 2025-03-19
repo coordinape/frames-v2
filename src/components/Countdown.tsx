@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { ApolloProvider, useQuery, gql } from "@apollo/client";
 import sdk, { type Context } from "@farcaster/frame-sdk";
-import { getApolloClientAuthed, CO_SOULS_QUERY } from "../lib/apollo-client";
 
 const STAR_COUNT = 100;
 const FALL_DURATION = 5000; // Duration for stars to fall in milliseconds
@@ -47,11 +46,6 @@ const QUOTES = [
   "The time is always right to do what is right. - Martin Luther King Jr.",
 ];
 
-// Convert the query string to a gql query
-const CO_SOULS_GQL = gql`
-  ${CO_SOULS_QUERY}
-`;
-
 interface Star {
   id: number;
   x: number;
@@ -66,33 +60,6 @@ const generateStars = (): Star[] => {
     delay: Math.random() * FALL_DURATION,
     color: COLORS[Math.floor(Math.random() * COLORS.length)],
   }));
-};
-
-// GraphQL query component
-const CoSoulsDisplay = () => {
-  const { loading, error, data } = useQuery(CO_SOULS_GQL, {
-    fetchPolicy: "network-only",
-  });
-
-  if (loading) return <div className="text-white">Loading CoSouls data...</div>;
-  if (error)
-    return <div className="text-white">Error loading CoSouls data</div>;
-  if (!data?.cosouls) return null;
-
-  return (
-    <div className="mt-4 bg-black/50 p-4 rounded-lg overflow-auto max-h-48">
-      <h2 className="text-white font-bold mb-2">CoSouls Data</h2>
-      <div className="text-xs text-white">
-        {data.cosouls.map(
-          (soul: { id: string; token_id: string; address: string }) => (
-            <div key={soul.id} className="mb-1">
-              ID: {soul.token_id} - Address: {soul.address.substring(0, 8)}...
-            </div>
-          )
-        )}
-      </div>
-    </div>
-  );
 };
 
 const CountdownContent = () => {
@@ -180,9 +147,6 @@ const CountdownContent = () => {
             <span className="opacity-50">{fadedDigits}</span>
             <span className="text-xl md:text-2xl ml-2">ms</span>
           </p>
-          <div className="mx-4">
-            <CoSoulsDisplay />
-          </div>
         </div>
       </div>
 
@@ -213,9 +177,5 @@ const CountdownContent = () => {
 
 // Wrap the component with ApolloProvider
 export default function Countdown() {
-  return (
-    <ApolloProvider client={getApolloClientAuthed()}>
-      <CountdownContent />
-    </ApolloProvider>
-  );
+  return <CountdownContent />;
 }

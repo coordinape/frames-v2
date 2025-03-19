@@ -38,14 +38,3 @@ export function getApolloClient() {
     Authorization: "anon",
   });
 }
-
-// Example query for CoSouls
-export const CO_SOULS_QUERY = `
-  query CoSouls {
-    cosouls(limit: 10) {
-      token_id
-      id
-      address
-    }
-  }
-`;

@@ -5,7 +5,6 @@ import { gql } from "@apollo/client";
 import { getOpenseaNFTContracts } from "~/lib/getOpenseaNFTContracts";
 import {
   Creator,
-  OpenSeaCollection,
   CreatorWithOpenSeaData,
   Give,
   GroupedGives,
@@ -25,7 +24,10 @@ export async function addressIsMember(address: string): Promise<boolean> {
   try {
     const { data } = await getApolloClientAuthed().query({
       query: gql`
-        query CheckMembership($address: String!, $circleId: bigint!) {
+        query CreatorsDirCheckMembership(
+          $address: String!
+          $circleId: bigint!
+        ) {
           users(
             where: {
               circle_id: { _eq: $circleId }
@@ -67,7 +69,7 @@ export async function joinDirectory(
   try {
     const { data } = await getApolloClientAuthed().mutate({
       mutation: gql`
-        mutation JoinDirectory(
+        mutation CreatorsDirJoinDirectory(
           $circleId: Int!
           $address: String!
           $name: String!
@@ -110,7 +112,10 @@ export async function getCreator(
   try {
     const { data } = await getApolloClientAuthed().query({
       query: gql`
-        query GetCreator($circleId: bigint!, $address: String!) {
+        query CreatorsDirGetSingleCreator(
+          $circleId: bigint!
+          $address: String!
+        ) {
           users(
             where: {
               circle_id: { _eq: $circleId }
@@ -208,7 +213,7 @@ export async function getCreators(): Promise<CreatorWithOpenSeaData[]> {
   try {
     const { data } = await getApolloClientAuthed().query({
       query: gql`
-        query GetCreators($circleId: bigint!) {
+        query CreatorsDirGetAllCreators($circleId: bigint!) {
           users(
             where: {
               circle_id: { _eq: $circleId }
@@ -358,7 +363,7 @@ export async function getGivesForCreator(
   try {
     const { data } = await getApolloClient().query({
       query: gql`
-        query GivesForAddress($address: String!) {
+        query CreatorsDirGetCreatorGives($address: String!) {
           colinks_gives(
             where: {
               target_profile_public: { address: { _ilike: $address } }
