@@ -37,10 +37,10 @@ export default async function ProfilePage({ params }: Props) {
       <>
         <Header />
         <div className="text-center my-10">
-          <h1 className="text-4xl font-bold text-white mb-4">
+          <h1 className="text-4xl font-bold text-white mb-4 base-pixel">
             Creator Not Found
           </h1>
-          <p className="text-white mb-6">
+          <p className="text-white mb-6 text-white/60">
             We couldn&apos;t find this creator in our directory.
           </p>
           <Link

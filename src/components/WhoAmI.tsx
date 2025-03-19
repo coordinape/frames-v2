@@ -60,7 +60,9 @@ export default function WhoAmI() {
           return (
             <>
               {loading ? (
-                <p className="text-xs">Loading...</p>
+                <div className="flex items-center flex-1 justify-end py-1">
+                  <p className="text-xs text-white/60">Loading...</p>
+                </div>
               ) : (
                 <div
                   className={`flex gap-2 items-center flex-1 ${!creator ? "justify-between" : "justify-end"}`}
@@ -90,8 +92,12 @@ export default function WhoAmI() {
                                   alt={creator.name}
                                   className="w-5 h-5 rounded-full"
                                 />
-                                <p className="text-white/60 text-xs font-mono hover:text-white/80 transition-colors">
-                                  {truncateAddress(address)}
+                                <p
+                                  className="text-white/60 text-xs font-mono hover:text-white/80 transition-colors overflow-hidden text-ellipsis whitespace-nowrap"
+                                  style={{ maxWidth: "180px" }}
+                                >
+                                  {creator.resolution?.basename ||
+                                    truncateAddress(address)}
                                 </p>
                               </div>
                             </Link>
