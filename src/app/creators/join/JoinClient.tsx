@@ -10,7 +10,7 @@ import { getOpenseaNFTContracts } from "~/lib/getOpenseaNFTContracts";
 import { refreshRequirementsCache } from "./actions";
 import { truncateAddress } from "~/app/utils/address";
 import { useRouter } from "next/navigation";
-import { joinDirectory } from "~/app/features/directory/actions";
+import { addressIsMember, joinDirectory } from "~/app/features/directory/actions";
 
 interface EligibilityStatus {
   hasBasename: boolean;
@@ -145,15 +145,25 @@ export default function JoinClient() {
 
   const handleProfileCreation = async () => {
     if (!allRequirementsMet) return;
-
     if (!address) return;
+
     const resolution = await resolveBasenameOrAddress(address);
     const basename = resolution?.basename || "";
-    if (basename == "") return;
+    if (basename === "") return;
+
     try {
       setIsCreating(true);
       setCreateStatus("idle");
 
+      // First check if profile exists
+      const exists = await addressIsMember(address);
+      if (exists) {
+        // If profile exists, just redirect to their profile
+        router.push(`/creators/${userName}`);
+        return;
+      }
+
+      // If no profile exists, create one
       const success = await joinDirectory(address, basename);
 
       if (success) {
@@ -264,23 +274,24 @@ export default function JoinClient() {
                   : eligibility.isLoading
                   ? "Checking requirements..."
                   : allRequirementsMet
-                  ? "Continue to Profile"
+                  ? "Join Directory"
                   : "Requirements not met"}
               </button>
 
-              {createStatus === "error" && <p className="text-sm text-red-600 text-center mt-2">There was an error proceeding to profile creation. Please try again.</p>}
+              {createStatus === "error" && <p className="text-sm text-red-100 text-center mt-2">There was an error proceeding to profile creation. Please try again.</p>}
+              {!allRequirementsMet && (
+                <div className="flex flex-col gap-2">
+                  <button
+                    className="w-full py-3 bg-white text-base-blue rounded-full hover:bg-white/90 transition-colors disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
+                    onClick={handleRefresh}
+                    disabled={eligibility.isLoading || !!refreshError}
+                  >
+                    {eligibility.isLoading ? "Refreshing..." : "Refresh Requirements"}
+                  </button>
 
-              <div className="space-y-2">
-                <button
-                  className="w-full py-3 border-1 text-white rounded-full hover:bg-white/10 transition-colors disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
-                  onClick={handleRefresh}
-                  disabled={eligibility.isLoading || !!refreshError}
-                >
-                  {eligibility.isLoading ? "Refreshing..." : "Refresh Requirements"}
-                </button>
-
-                {refreshError && <p className="text-sm text-amber-400 text-center">{refreshError}</p>}
-              </div>
+                  {refreshError && <p className="text-sm text-amber-400 text-center">{refreshError}</p>}
+                </div>
+              )}
             </>
           )}
         </div>

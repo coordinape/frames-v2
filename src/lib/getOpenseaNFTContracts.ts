@@ -162,8 +162,6 @@ export async function getOpenseaNFTContracts(deployerAddress: string, chain?: st
         },
       });
 
-      console.log("response", JSON.stringify(response, null, 2));
-
       if (!response.ok) {
         throw new Error(`OpenSea API error: ${response.status}`);
       }
