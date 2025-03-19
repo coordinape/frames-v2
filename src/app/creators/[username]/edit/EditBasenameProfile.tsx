@@ -326,8 +326,8 @@ export default function EditBasenameProfile({ username }: EditBasenameProfilePro
           </Link>
         </div>
 
-        <div className="">
-          <h2 className="text-2xl font-bold mb-4 text-white">Edit Profile</h2>
+        <div className="flex flex-col">
+          <h2 className="text-2xl font-bold mb-4 text-white base-pixel">Edit Profile</h2>
           <p className="text-white/80 mb-6 text-sm">Update your profile information stored on the Base blockchain.</p>
 
           {isLoading ? (

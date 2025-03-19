@@ -35,6 +35,7 @@ async function fetchWithCache<T>(
   const cachedData = await kv.get(cacheKey);
   if (cachedData) {
     console.log(`Cache hit for ${cacheKey}`);
+    console.log({ cachedData });
     return cachedData as T;
   }
 
@@ -132,7 +133,7 @@ async function getOpenSeaUsernameFromAddress(address: string) {
           },
           next: {
             revalidate: 3600,
-            tags: [generateCacheKey("username", address)],
+            tags: [`opensea-username-${address}`],
           },
         }
       );
@@ -155,10 +156,7 @@ async function getOpenSeaUsernameFromAddress(address: string) {
 }
 
 // Then get collections by username
-export async function getOpenseaNFTContracts(
-  deployerAddress: string,
-  chain?: string
-) {
+export async function getOpenseaNFTContracts(deployerAddress: string, chain?: string) {
   const cacheKey = generateCacheKey("collections", deployerAddress);
 
   return fetchWithCache<ContractDetails[]>(cacheKey, async () => {
@@ -179,10 +177,6 @@ export async function getOpenseaNFTContracts(
           headers: {
             "x-api-key": process.env.OPENSEA_API_KEY!,
             accept: "application/json",
-          },
-          next: {
-            revalidate: 3600,
-            tags: [generateCacheKey("collections", deployerAddress)],
           },
         }
       );
