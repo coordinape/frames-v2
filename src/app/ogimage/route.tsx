@@ -11,10 +11,10 @@ export const basePixelLow = fs.readFileSync(
 export const basePixelMedium = fs.readFileSync(
   path.join(process.cwd(), "public/fonts/BasePixel-MediumResolution.ttf"),
 );
-export const IMAGE_URL_BASE =
-  process.env.VERCEL_ENV === "production"
-    ? "https://dir-stg.coordinape.com/images/"
-    : "http://localhost:3012/images/";
+export const Sans = fs.readFileSync(
+  path.join(process.cwd(), "public/fonts/Denim-Regular.ttf"),
+);
+export const IMAGE_URL_BASE = `${process.env.NEXT_PUBLIC_URL}/images/`;
 const size = {
   width: 600,
   height: 400,
