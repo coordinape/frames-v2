@@ -60,7 +60,9 @@ export default function WhoAmI() {
           return (
             <>
               {loading ? (
-                <p className="text-xs">Loading...</p>
+                <div className="flex items-center flex-1 justify-end py-1">
+                  <p className="text-xs text-white/60">Loading...</p>
+                </div>
               ) : (
                 <div
                   className={`flex gap-2 items-center flex-1 ${!creator ? "justify-between" : "justify-end"}`}
