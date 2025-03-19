@@ -1,24 +1,12 @@
 import { ImageResponse } from "next/og";
-import fs from "fs";
-import path from "path";
+import {
+  baseBlue,
+  basePixelLow,
+  IMAGE_URL_BASE,
+  DEFAULT_OG_SIZE,
+} from "./helpers";
 
 // export const runtime = 'edge'; // Add this line to use the Edge runtime
-export const baseBlue = "#0053ff";
-// Load the font file
-export const basePixelLow = fs.readFileSync(
-  path.join(process.cwd(), "public/fonts/BasePixel-LowResolution.ttf"),
-);
-export const basePixelMedium = fs.readFileSync(
-  path.join(process.cwd(), "public/fonts/BasePixel-MediumResolution.ttf"),
-);
-export const Sans = fs.readFileSync(
-  path.join(process.cwd(), "public/fonts/Denim-Regular.ttf"),
-);
-export const IMAGE_URL_BASE = `${process.env.NEXT_PUBLIC_URL}/images/`;
-const size = {
-  width: 600,
-  height: 400,
-};
 
 export async function GET() {
   return new ImageResponse(
@@ -46,7 +34,7 @@ export async function GET() {
       </div>
     ),
     {
-      ...size,
+      ...DEFAULT_OG_SIZE,
       headers: {
         "Content-Type": "image/png",
       },

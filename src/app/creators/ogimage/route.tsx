@@ -1,8 +1,6 @@
 import { ImageResponse } from "next/og";
-import { baseBlue, basePixelLow } from "~/app/ogimage/route";
+import { baseBlue, basePixelLow, IMAGE_URL_BASE } from "~/app/ogimage/helpers";
 
-import { IMAGE_URL_BASE } from "~/app/ogimage/route";
-// export const runtime = 'edge'; // Add this line to use the Edge runtime
 const size = {
   width: 600,
   height: 400,

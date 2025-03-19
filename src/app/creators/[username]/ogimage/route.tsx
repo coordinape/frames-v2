@@ -5,14 +5,10 @@ import { resolveBasenameOrAddress } from "~/app/hooks/useBasenameResolver";
 import {
   baseBlue,
   basePixelLow,
+  DEFAULT_OG_SIZE,
+  Denim,
   IMAGE_URL_BASE,
-  Sans,
-} from "~/app/ogimage/route";
-
-const size = {
-  width: 600,
-  height: 400,
-};
+} from "~/app/ogimage/helpers";
 
 export async function GET(
   request: NextRequest,
@@ -39,7 +35,7 @@ export async function GET(
         </div>
       ),
       {
-        ...size,
+        ...DEFAULT_OG_SIZE,
         headers: {
           "Content-Type": "image/png",
         },
@@ -51,7 +47,7 @@ export async function GET(
   const collections = creator.openSeaData?.collections || [];
 
   // Take up to 4 collections to display
-  const displayCollections = collections.slice(0, 4);
+  const displayCollections = collections.slice(0, 5);
 
   return new ImageResponse(
     (
@@ -130,7 +126,10 @@ export async function GET(
             <h2 tw="text-xl text-white mb-4 uppercase">Latest Onchain Work</h2>
             <div tw="flex flex-row gap-4">
               {displayCollections.map((collection, index) => (
-                <div key={index} tw="bg-white/10 rounded-lg flex items-center">
+                <div
+                  key={index}
+                  tw="bg-white/10 rounded-lg flex items-center mr-4"
+                >
                   {collection.imageUrl ? (
                     <img
                       src={collection.imageUrl}
@@ -150,14 +149,14 @@ export async function GET(
       </div>
     ),
     {
-      ...size,
+      ...DEFAULT_OG_SIZE,
       headers: {
         "Content-Type": "image/png",
       },
       fonts: [
         {
-          name: "Sans",
-          data: Sans,
+          name: "Denim",
+          data: Denim,
           style: "normal",
           weight: 400,
         },
