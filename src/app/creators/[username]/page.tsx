@@ -110,12 +110,7 @@ export default async function ProfilePage({ params }: Props) {
             >
               {displayName}
             </h2>
-            <MembershipStatus
-              isMember={isMember}
-              address={resolution?.address}
-              username={username}
-              basename={resolution?.basename}
-            />
+            <MembershipStatus isMember={isMember} />
           </div>
 
           {creator.bio && <p className="text-white text-sm">{creator.bio}</p>}
