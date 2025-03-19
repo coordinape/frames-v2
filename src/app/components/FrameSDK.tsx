@@ -1,17 +1,14 @@
-"use client"
+"use client";
 
-import {useEffect, useState} from "react";
-import sdk, {Context} from "@farcaster/frame-sdk";
-
+import { useEffect, useState } from "react";
+import sdk from "@farcaster/frame-sdk";
 
 export const FrameSDK = () => {
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
-  const [context, setContext] = useState<Context.FrameContext>();
 
   useEffect(() => {
     const load = async () => {
-      const context = await sdk.context;
-      setContext(context);
+      await sdk.context;
       console.log("Directory Frame: Calling ready");
       sdk.actions.ready({});
     };
@@ -26,5 +23,4 @@ export const FrameSDK = () => {
     }
   }, [isSDKLoaded]);
   return null;
-
-}
+};

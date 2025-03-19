@@ -1,17 +1,15 @@
-import ENSResolver from "./ENSResolver";
 import ContractGallery from "~/app/components/ContractGallery";
 import { Metadata } from "next";
 import { resolveBasenameOrAddress } from "~/app/hooks/useBasenameResolver";
 import { addressIsMember, getCreator } from "~/app/features/directory/actions";
 import MembershipStatus from "~/app/creators/[username]/MembershipStatus";
 import Link from "next/link";
-import LayoutWrapper from "~/app/components/LayoutWrapper";
 import Header from "~/app/components/Header";
 import { EditProfile } from "~/app/components/EditProfile";
 import Gives from "./Gives";
+import ForHireCard from "./ForHireCard";
+import { FrameSDK } from "~/app/components/FrameSDK";
 
-import { headers } from "next/headers";
-import {FrameSDK} from "~/app/components/FrameSDK";
 interface Props {
   params: Promise<{
     username: string;
@@ -25,19 +23,30 @@ export default async function ProfilePage({ params }: Props) {
   const resolution = await resolveBasenameOrAddress(username);
 
   // Check if the user is a member of the directory
-  const isMember = resolution?.address ? await addressIsMember(resolution.address) : false;
+  const isMember = resolution?.address
+    ? await addressIsMember(resolution.address)
+    : false;
 
   // Fetch creator data using getCreator if we have an address
-  const creator = resolution?.address ? await getCreator(resolution.address) : null;
+  const creator = resolution?.address
+    ? await getCreator(resolution.address)
+    : null;
 
   if (!creator) {
     return (
       <>
         <Header />
         <div className="text-center my-10">
-          <h1 className="text-4xl font-bold text-white mb-4">Creator Not Found</h1>
-          <p className="text-white mb-6">We couldn&apos;t find this creator in our directory.</p>
-          <Link href="/creators" className="bg-white text-blue-600 px-6 py-3 rounded-full font-medium hover:bg-opacity-90 transition-all">
+          <h1 className="text-4xl font-bold text-white mb-4">
+            Creator Not Found
+          </h1>
+          <p className="text-white mb-6">
+            We couldn&apos;t find this creator in our directory.
+          </p>
+          <Link
+            href="/creators"
+            className="bg-white text-blue-600 px-6 py-3 rounded-full font-medium hover:bg-opacity-90 transition-all"
+          >
             Back to Creators
           </Link>
         </div>
@@ -48,11 +57,14 @@ export default async function ProfilePage({ params }: Props) {
 
   return (
     <>
-      <FrameSDK/>
+      <FrameSDK />
       <Header />
       <div className="flex flex-col gap-10">
         <div className="flex justify-between mb-2">
-          <Link href="/creators" className="flex items-center text-white hover:text-white/80 transition-colors">
+          <Link
+            href="/creators"
+            className="flex items-center text-white hover:text-white/80 transition-colors"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -69,35 +81,62 @@ export default async function ProfilePage({ params }: Props) {
             </svg>
             Back to Creators
           </Link>
-          <EditProfile address={resolution?.address || ""} basename={creator.resolution?.basename || ""} />
+          <EditProfile
+            address={resolution?.address || ""}
+            basename={creator.resolution?.basename || ""}
+          />
         </div>
 
         <div className="flex flex-col gap-2">
           {creator.avatar ? (
-            <img src={creator.avatar} alt={creator.name} className="w-22 h-22 rounded-full mr-4" />
+            <img
+              src={creator.avatar}
+              alt={creator.name}
+              className="w-22 h-22 rounded-full mr-4"
+            />
           ) : (
             <div className="w-16 h-16 rounded-full bg-blue-300 flex items-center justify-center mr-4">
-              <span className="text-blue-700 text-xl font-bold">{creator.name.charAt(0)}</span>
+              <span className="text-blue-700 text-xl font-bold">
+                {creator.name.charAt(0)}
+              </span>
             </div>
           )}
 
           <div className="flex items-center gap-2">
-            <h2 className={`font-bold text-white base-pixel-display ${displayName.length > 20 ? "text-2xl" : "text-3xl"}`}>{displayName}</h2>
-            <MembershipStatus isMember={isMember} address={resolution?.address} username={username} basename={resolution?.basename} />
+            <h2
+              className={`font-bold text-white base-pixel-display ${
+                displayName.length > 20 ? "text-2xl" : "text-3xl"
+              }`}
+            >
+              {displayName}
+            </h2>
+            <MembershipStatus
+              isMember={isMember}
+              address={resolution?.address}
+              username={username}
+              basename={resolution?.basename}
+            />
           </div>
 
           {creator.bio && <p className="text-white text-sm">{creator.bio}</p>}
           <p className="text-white/80 text-xs font-mono">{creator.address}</p>
         </div>
 
+        {resolution?.address && <ForHireCard address={resolution.address} />}
+
         {resolution?.address && <Gives address={resolution.address} />}
 
-        <ContractGallery address={resolution?.address || ""} openSeaCollections={creator.openSeaData?.collections || []} />
+        <ContractGallery
+          address={resolution?.address || ""}
+          openSeaCollections={creator.openSeaData?.collections || []}
+        />
       </div>
     </>
   );
 }
-const appUrl = `https://${process.env.NEXT_PUBLIC_URL ?? process.env.VERCEL_URL}`;
+const appUrl = `https://${
+  process.env.NEXT_PUBLIC_URL ?? process.env.VERCEL_URL
+}`;
 // const appUrl = process.env.NEXT_PUBLIC_URL;
 // const appUrl = process.env.VERCEL_URL;
 

@@ -14,7 +14,7 @@ export default function JoinDirectoryButton({
 }: JoinDirectoryButtonProps) {
   const [isJoining, setIsJoining] = useState(false);
   const [joinStatus, setJoinStatus] = useState<"idle" | "success" | "error">(
-    "idle"
+    "idle",
   );
 
   const handleJoin = async () => {
@@ -50,17 +50,17 @@ export default function JoinDirectoryButton({
           joinStatus === "success"
             ? "bg-green-500 text-white"
             : joinStatus === "error"
-            ? "bg-red-100 text-red-700 hover:bg-red-200"
-            : "bg-blue-500 text-white hover:bg-blue-600"
+              ? "bg-red-100 text-red-700 hover:bg-red-200"
+              : "bg-blue-500 text-white hover:bg-blue-600"
         } ${isJoining ? "opacity-70 cursor-not-allowed" : ""}`}
       >
         {isJoining
           ? "Joining..."
           : joinStatus === "success"
-          ? "Joined Successfully!"
-          : joinStatus === "error"
-          ? "Failed to Join - Try Again"
-          : "Join Directory"}
+            ? "Joined Successfully!"
+            : joinStatus === "error"
+              ? "Failed to Join - Try Again"
+              : "Join Directory"}
       </button>
 
       {joinStatus === "success" && (

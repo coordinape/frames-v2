@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { createConfig, http, injected, WagmiProvider } from "wagmi";
 import { base, degen, mainnet, optimism, unichain } from "wagmi/chains";

@@ -1,16 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import sdk, { type Context } from "@farcaster/frame-sdk";
+import sdk from "@farcaster/frame-sdk";
 import { getCreators } from "~/app/features/directory/actions";
 import { CreatorWithOpenSeaData } from "~/app/features/directory/types";
 import Header from "../components/Header";
-import LayoutWrapper from "../components/LayoutWrapper";
 import Link from "next/link";
 
 export default function CreatorsList() {
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
-  const [context, setContext] = useState<Context.FrameContext>();
   const [searchQuery, setSearchQuery] = useState("");
   const [creators, setCreators] = useState<CreatorWithOpenSeaData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -18,8 +16,7 @@ export default function CreatorsList() {
 
   useEffect(() => {
     const load = async () => {
-      const context = await sdk.context;
-      setContext(context);
+      await sdk.context;
       console.log("Directory Frame: Calling ready");
       sdk.actions.ready({});
     };
@@ -131,7 +128,9 @@ export default function CreatorsList() {
         </div>
       </div>
 
-      <p className="text-white mb-4 font-medium text-sm">{filteredCreators.length} CREATORS FOUND</p>
+      <p className="text-white mb-4 font-medium text-sm">
+        {filteredCreators.length} CREATORS FOUND
+      </p>
 
       <div className="space-y-4">
         {filteredCreators.map((creator) => (
@@ -153,38 +152,70 @@ export default function CreatorsList() {
                     />
                   ) : (
                     <div className="bg-white/70 w-10 h-10 rounded-full flex items-center justify-center mr-3">
-                      <span className="text-blue-700">{creator.name.charAt(0)}</span>
+                      <span className="text-blue-700">
+                        {creator.name.charAt(0)}
+                      </span>
                     </div>
                   )}
                   <div>
-                    <h2 className="text-white">{creator.resolution?.basename || creator.name}</h2>
+                    <h2 className="text-white">
+                      {creator.resolution?.basename || creator.name}
+                    </h2>
                   </div>
                 </div>
                 <div className="opacity-40">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+                  <svg
+                    className="w-6 h-6 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M9 5l7 7-7 7"
+                    ></path>
                   </svg>
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-2 mt-4">
-                {creator.openSeaData?.collections && creator.openSeaData.collections.length > 0 ? (
-                  creator.openSeaData.collections.slice(0, 3).map((collection, index) => (
-                    <div key={collection.id || index} className="aspect-square overflow-hidden rounded-lg">
-                      {collection.imageUrl ? (
-                        <img src={collection.imageUrl} alt={collection.name || "Collection"} className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <span className="text-blue-100 text-xs">No Image</span>
-                        </div>
-                      )}
-                    </div>
-                  ))
+                {creator.openSeaData?.collections &&
+                creator.openSeaData.collections.length > 0 ? (
+                  creator.openSeaData.collections
+                    .slice(0, 3)
+                    .map((collection, index) => (
+                      <div
+                        key={collection.id || index}
+                        className="aspect-square overflow-hidden rounded-lg"
+                      >
+                        {collection.imageUrl ? (
+                          <img
+                            src={collection.imageUrl}
+                            alt={collection.name || "Collection"}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <span className="text-blue-100 text-xs">
+                              No Image
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    ))
                 ) : (
                   <>
                     {[1, 2, 3].map((i) => (
-                      <div key={i} className="bg-white/10 aspect-square overflow-hidden rounded-lg flex items-center justify-center">
-                        <span className="text-white/80 text-xs font-medium">No NFT</span>
+                      <div
+                        key={i}
+                        className="bg-white/10 aspect-square overflow-hidden rounded-lg flex items-center justify-center"
+                      >
+                        <span className="text-white/80 text-xs font-medium">
+                          No NFT
+                        </span>
                       </div>
                     ))}
                   </>

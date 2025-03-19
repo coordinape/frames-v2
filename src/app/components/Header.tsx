@@ -8,7 +8,9 @@ interface HeaderProps {
 
 export default function Header({ logoOnly = false }: HeaderProps) {
   return (
-    <div className={`flex ${logoOnly ? "justify-center" : "justify-between"} items-start mb-8`}>
+    <div
+      className={`flex ${logoOnly ? "justify-center" : "justify-between"} items-start mb-8`}
+    >
       <Logo />
       {!logoOnly && <WhoAmI />}
     </div>

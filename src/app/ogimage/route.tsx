@@ -1,5 +1,5 @@
-import { ImageResponse } from 'next/og';
-import { NextRequest } from 'next/server';
+import { ImageResponse } from "next/og";
+import { NextRequest } from "next/server";
 
 // export const runtime = 'edge'; // Add this line to use the Edge runtime
 const size = {
@@ -7,13 +7,10 @@ const size = {
   height: 400,
 };
 
-
 export async function GET(request: NextRequest) {
-    const { searchParams } = new URL(request.url);
-    const title = searchParams.get('title') || 'CoCreator Frames';
+  const { searchParams } = new URL(request.url);
+  const title = searchParams.get("title") || "CoCreator Frames";
 
-  
-  
   return new ImageResponse(
     (
       <div tw="h-full w-full flex flex-col justify-center items-center relative bg-white">
@@ -23,8 +20,8 @@ export async function GET(request: NextRequest) {
     {
       ...size,
       headers: {
-        'Content-Type': 'image/png',
+        "Content-Type": "image/png",
       },
-    }
+    },
   );
 }

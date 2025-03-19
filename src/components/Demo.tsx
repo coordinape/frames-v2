@@ -31,7 +31,7 @@ import { createStore } from "mipd";
 import { Label } from "~/components/ui/label";
 
 export default function Demo(
-  { title }: { title?: string } = { title: "Frames v2 Demo" }
+  { title }: { title?: string } = { title: "Frames v2 Demo" },
 ) {
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
   const [context, setContext] = useState<Context.FrameContext>();
@@ -109,7 +109,7 @@ export default function Demo(
 
       sdk.on("frameAdded", ({ notificationDetails }) => {
         setLastEvent(
-          `frameAdded${!!notificationDetails ? ", notifications enabled" : ""}`
+          `frameAdded${!!notificationDetails ? ", notifications enabled" : ""}`,
         );
 
         setAdded(true);
@@ -187,7 +187,7 @@ export default function Demo(
       setAddFrameResult(
         result.notificationDetails
           ? `Added, got notificaton token ${result.notificationDetails.token} and url ${result.notificationDetails.url}`
-          : "Added, got no notification details"
+          : "Added, got no notification details",
       );
     } catch (error: unknown) {
       if (error instanceof AddFrame.RejectedByUser) {
@@ -245,7 +245,7 @@ export default function Demo(
         onSuccess: (hash) => {
           setTxHash(hash);
         },
-      }
+      },
     );
   }, [sendTransaction]);
 
@@ -462,8 +462,8 @@ export default function Demo(
                       {isConfirming
                         ? "Confirming..."
                         : isConfirmed
-                        ? "Confirmed!"
-                        : "Pending"}
+                          ? "Confirmed!"
+                          : "Pending"}
                     </div>
                   </div>
                 )}
@@ -584,8 +584,8 @@ function SendEth() {
             {isConfirming
               ? "Confirming..."
               : isConfirmed
-              ? "Confirmed!"
-              : "Pending"}
+                ? "Confirmed!"
+                : "Pending"}
           </div>
         </div>
       )}
@@ -718,7 +718,7 @@ const renderError = (error: Error | null) => {
   if (!error) return null;
   if (error instanceof BaseError) {
     const isUserRejection = error.walk(
-      (e) => e instanceof UserRejectedRequestError
+      (e) => e instanceof UserRejectedRequestError,
     );
 
     if (isUserRejection) {

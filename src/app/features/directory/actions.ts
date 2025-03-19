@@ -64,7 +64,7 @@ export async function addressIsMember(address: string): Promise<boolean> {
  */
 export async function joinDirectory(
   address: string,
-  name: string
+  name: string,
 ): Promise<boolean> {
   try {
     const { data } = await getApolloClientAuthed().mutate({
@@ -107,7 +107,7 @@ export async function joinDirectory(
  * @returns Promise<CreatorWithOpenSeaData | null> The creator with their OpenSea data or null if not found
  */
 export async function getCreator(
-  address: string
+  address: string,
 ): Promise<CreatorWithOpenSeaData | null> {
   try {
     const { data } = await getApolloClientAuthed().query({
@@ -259,7 +259,7 @@ export async function getCreators(): Promise<CreatorWithOpenSeaData[]> {
             : `https://coordinape-prod.s3.amazonaws.com/${user.profile.avatar}`
           : "",
         bio: user.profile?.bio || "",
-      })
+      }),
     );
 
     // Fetch OpenSea data and resolve basenames for each creator on the server side
@@ -305,7 +305,7 @@ export async function getCreators(): Promise<CreatorWithOpenSeaData[]> {
             resolution: null,
           };
         }
-      })
+      }),
     );
 
     return creatorsWithOpenSeaData;
@@ -358,7 +358,7 @@ const groupAndSortGives = (gives: Give[]): SortedGiveGroup[] => {
  * @returns Promise<SortedGiveGroup[]> Array of sorted and grouped gives for the creator
  */
 export async function getGivesForCreator(
-  address: string
+  address: string,
 ): Promise<SortedGiveGroup[]> {
   try {
     const { data } = await getApolloClient().query({

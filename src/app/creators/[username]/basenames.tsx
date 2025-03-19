@@ -59,7 +59,7 @@ export const textRecordsKeysEnabled = [
 const baseClient = createPublicClient({
   chain: base,
   transport: http(
-    process.env.NEXT_PUBLIC_ALCHEMY_BASE_URL || "https://mainnet.base.org"
+    process.env.NEXT_PUBLIC_ALCHEMY_BASE_URL || "https://mainnet.base.org",
   ),
 });
 
@@ -74,7 +74,7 @@ export async function getBasenameAvatar(basename: Basename) {
 
 export function buildBasenameTextRecordContract(
   basename: Basename,
-  key: BasenameTextRecordKeys
+  key: BasenameTextRecordKeys,
 ): ContractFunctionParameters {
   return {
     abi: L2ResolverAbi,
@@ -102,7 +102,7 @@ export async function setText(
       functionName: string;
       args: readonly unknown[];
     }) => Promise<Hash>;
-  }
+  },
 ) {
   try {
     // First normalize the basename to ensure consistent processing
@@ -143,7 +143,7 @@ export async function setMultipleTextRecords(
       functionName: string;
       args: readonly unknown[];
     }) => Promise<Hash>;
-  }
+  },
 ) {
   try {
     // First normalize the basename to ensure consistent processing
@@ -158,7 +158,7 @@ export async function setMultipleTextRecords(
         abi: L2ResolverAbi,
         functionName: "setText",
         args: [node, key, value],
-      })
+      }),
     );
 
     // Call multicallWithNodeCheck with the node and encoded function calls
@@ -173,7 +173,7 @@ export async function setMultipleTextRecords(
   } catch (error) {
     console.error(
       `Error setting multiple text records for ${basename}:`,
-      error
+      error,
     );
     throw error;
   }
@@ -182,13 +182,15 @@ export async function setMultipleTextRecords(
 // Get a single TextRecord
 export async function getBasenameTextRecord(
   basename: Basename,
-  key: BasenameTextRecordKeys
+  key: BasenameTextRecordKeys,
 ) {
   try {
     const contractParameters = buildBasenameTextRecordContract(basename, key);
     const textRecord = await baseClient.readContract(contractParameters);
     return textRecord as string;
-  } catch (error) {}
+  } catch {
+    // Handle error silently
+  }
 }
 
 // Get a all TextRecords
@@ -196,14 +198,16 @@ export async function getBasenameTextRecords(basename: Basename) {
   try {
     const readContracts: ContractFunctionParameters[] =
       textRecordsKeysEnabled.map((key) =>
-        buildBasenameTextRecordContract(basename, key)
+        buildBasenameTextRecordContract(basename, key),
       );
     const textRecords = await baseClient.multicall({
       contracts: readContracts,
     });
 
     return textRecords;
-  } catch (error) {}
+  } catch {
+    // Handle error silently
+  }
 }
 
 /**
@@ -224,16 +228,16 @@ export const convertChainIdToCoinType = (chainId: number): string => {
  */
 export const convertReverseNodeToBytes = (
   address: Address,
-  chainId: number
+  chainId: number,
 ) => {
   const addressFormatted = address.toLocaleLowerCase() as Address;
   const addressNode = keccak256(addressFormatted.substring(2) as Address);
   const chainCoinType = convertChainIdToCoinType(chainId);
   const baseReverseNode = namehash(
-    `${chainCoinType.toLocaleUpperCase()}.reverse`
+    `${chainCoinType.toLocaleUpperCase()}.reverse`,
   );
   const addressReverseNode = keccak256(
-    encodePacked(["bytes32", "bytes32"], [baseReverseNode, addressNode])
+    encodePacked(["bytes32", "bytes32"], [baseReverseNode, addressNode]),
   );
   return addressReverseNode;
 };
@@ -250,7 +254,9 @@ export async function getBasename(address: Address) {
     if (basename) {
       return basename as Basename;
     }
-  } catch (error) {}
+  } catch {
+    // Handle error silently
+  }
 }
 
 export async function getAddressFromBasename(basename: Basename) {

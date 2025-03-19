@@ -7,14 +7,6 @@ import {
   BasenameTextRecordKeys,
 } from "~/app/creators/[username]/basenames";
 
-interface BasenameResolution {
-  basename: string;
-  address: string;
-  textRecords: Record<BasenameTextRecordKeys, string | undefined>;
-  isLoading: boolean;
-  error: string | null;
-}
-
 const emptyTextRecords: Record<BasenameTextRecordKeys, string | undefined> = {
   [BasenameTextRecordKeys.Description]: undefined,
   [BasenameTextRecordKeys.Keywords]: undefined,
@@ -43,12 +35,12 @@ export async function resolveBasenameOrAddress(input: string) {
       return await resolveBasename(input as Basename);
     } else {
       throw new Error(
-        "Invalid input: must be an Ethereum address or .base.eth name"
+        "Invalid input: must be an Ethereum address or .base.eth name",
       );
     }
   } catch (err) {
     throw new Error(
-      err instanceof Error ? err.message : "An unknown error occurred"
+      err instanceof Error ? err.message : "An unknown error occurred",
     );
   }
 }
@@ -83,7 +75,7 @@ async function resolveBasename(name: Basename) {
             | undefined;
           return acc;
         },
-        { ...emptyTextRecords }
+        { ...emptyTextRecords },
       ) || emptyTextRecords;
 
     return {
@@ -94,7 +86,9 @@ async function resolveBasename(name: Basename) {
       error: null,
     };
   } catch (err) {
-    throw new Error("Error resolving Base name");
+    throw new Error(
+      err instanceof Error ? err.message : "Error resolving Base name",
+    );
   }
 }
 
@@ -126,7 +120,7 @@ async function resolveAddress(addr: Address) {
             | undefined;
           return acc;
         },
-        { ...emptyTextRecords }
+        { ...emptyTextRecords },
       ) || emptyTextRecords;
 
     return {
