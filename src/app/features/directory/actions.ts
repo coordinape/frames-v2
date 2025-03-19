@@ -48,7 +48,6 @@ export async function addressIsMember(address: string): Promise<boolean> {
       },
     });
 
-    console.log("data", data);
     return data.users.length > 0;
   } catch (error) {
     console.error("Error checking membership:", error);
@@ -161,7 +160,7 @@ export async function getCreator(
     try {
       // Get NFT contracts
       const contracts = await getOpenseaNFTContracts(creator.address, "base");
-      console.log("contracts", JSON.stringify(contracts, null, 2));
+      console.log("getOpenseaNFTContracts", JSON.stringify(contracts, null, 2));
 
       // Resolve basename
       const resolution = await resolveBasenameOrAddress(creator.address);

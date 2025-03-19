@@ -118,7 +118,7 @@ function filterCollectionsByChain(
 }
 
 // First, get the username from the address
-async function getOpenSeaUsernameFromAddress(address: string) {
+export async function getOpenSeaUsernameFromAddress(address: string) {
   const cacheKey = generateCacheKey("username", address);
 
   return fetchWithCache<string | null>(cacheKey, async () => {
@@ -130,10 +130,6 @@ async function getOpenSeaUsernameFromAddress(address: string) {
           headers: {
             "x-api-key": process.env.OPENSEA_API_KEY!,
             accept: "application/json",
-          },
-          next: {
-            revalidate: 3600,
-            tags: [`opensea-username-${address}`],
           },
         },
       );
