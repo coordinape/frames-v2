@@ -124,7 +124,7 @@ export async function GET(
         {displayCollections.length > 0 && (
           <div tw="flex flex-col" style={{ fontFamily: "Sans" }}>
             <h2 tw="text-xl text-white mb-4 uppercase">Latest Onchain Work</h2>
-            <div tw="flex flex-row gap-4">
+            <div tw="flex flex-row">
               {displayCollections.map((collection, index) => (
                 <div
                   key={index}
