@@ -1,12 +1,11 @@
 import { ImageResponse } from "next/og";
-import {
-  baseBlue,
-  basePixelLow,
-  IMAGE_URL_BASE,
-  DEFAULT_OG_SIZE,
-} from "./helpers";
+import { baseBlue, basePixelLow, IMAGE_URL_BASE } from "./helpers";
 
 // export const runtime = 'edge'; // Add this line to use the Edge runtime
+const size = {
+  width: 600,
+  height: 400,
+};
 
 export async function GET() {
   return new ImageResponse(
@@ -34,7 +33,7 @@ export async function GET() {
       </div>
     ),
     {
-      ...DEFAULT_OG_SIZE,
+      ...size,
       headers: {
         "Content-Type": "image/png",
       },

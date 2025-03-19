@@ -17,7 +17,7 @@ export async function GET() {
       imageUrl: `${appUrl}/ogimage?title=CoCreator+Frames`,
       buttonTitle: "Launch Frame",
       splashImageUrl: `${appUrl}/splash.png`,
-      splashBackgroundColor: "#f7f7f7",
+      splashBackgroundColor: "#0053ff",
       webhookUrl: `${appUrl}/api/webhook`,
     },
   };

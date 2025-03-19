@@ -19,7 +19,7 @@ const frame = {
       name: "Join Frame",
       url: `${appUrl}/creators/join`,
       splashImageUrl: `${appUrl}/splash.png`,
-      splashBackgroundColor: "#f7f7f7",
+      splashBackgroundColor: "#0053ff",
     },
   },
 };

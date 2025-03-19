@@ -5,10 +5,14 @@ import { resolveBasenameOrAddress } from "~/app/hooks/useBasenameResolver";
 import {
   baseBlue,
   basePixelLow,
-  DEFAULT_OG_SIZE,
   Denim,
   IMAGE_URL_BASE,
 } from "~/app/ogimage/helpers";
+
+const size = {
+  width: 600,
+  height: 400,
+};
 
 export async function GET(
   request: NextRequest,
@@ -35,7 +39,7 @@ export async function GET(
         </div>
       ),
       {
-        ...DEFAULT_OG_SIZE,
+        ...size,
         headers: {
           "Content-Type": "image/png",
         },
@@ -149,7 +153,7 @@ export async function GET(
       </div>
     ),
     {
-      ...DEFAULT_OG_SIZE,
+      ...size,
       headers: {
         "Content-Type": "image/png",
       },

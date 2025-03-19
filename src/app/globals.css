@@ -42,7 +42,7 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --primary-blue: #0066ff;
+  --primary-blue: #0053ff;
 }
 
 @media (prefers-color-scheme: dark) {
