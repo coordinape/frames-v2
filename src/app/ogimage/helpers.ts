@@ -16,4 +16,6 @@ export const Denim = fs.readFileSync(
   path.join(process.cwd(), "public/fonts/Denim-Regular.ttf"),
 );
 
-export const IMAGE_URL_BASE = `${process.env.NEXT_PUBLIC_URL ?? process.env.VERCEL_URL}/images/`;
+export const IMAGE_URL_BASE = process.env.NEXT_PUBLIC_URL
+  ? `${process.env.NEXT_PUBLIC_URL}/images/`
+  : `https://${process.env.VERCEL_URL}/images/`;

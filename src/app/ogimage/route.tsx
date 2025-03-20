@@ -25,13 +25,13 @@ export async function GET(request: NextRequest) {
         <h1 tw="text-2xl">{title}</h1>
         <h1 tw="text-xl">{IMAGE_URL_BASE + "Base_Symbol_White.png"}</h1>
         <div tw="flex items-center justify-center flex-1">
-          {/* <img
+          <img
             src={IMAGE_URL_BASE + "Base_Symbol_White.png"}
             tw="h-38 mr-5"
             width={100}
             height={100}
             alt="BASE Logo"
-          /> */}
+          />
           <div tw="flex flex-col justify-start">
             <p tw="text-5xl mt-0 mb-1">Join</p>
             <p tw="text-5xl mt-0 mb-1">The Creators</p>
