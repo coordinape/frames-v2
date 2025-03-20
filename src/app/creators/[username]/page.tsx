@@ -6,6 +6,7 @@ import MembershipStatus from "~/app/creators/[username]/MembershipStatus";
 import Link from "next/link";
 import Header from "~/app/components/Header";
 import { EditProfile } from "~/app/components/EditProfile";
+import ShareButton from "~/app/components/ShareButton";
 import Gives from "./Gives";
 import InfoCard from "./InfoCard";
 import { FrameSDK } from "~/app/components/FrameSDK";
@@ -82,10 +83,13 @@ export default async function ProfilePage({ params }: Props) {
             </svg>
             Back to Creators
           </Link>
-          <EditProfile
-            address={resolution?.address || ""}
-            basename={creator.resolution?.basename || ""}
-          />
+          <div className="flex items-center gap-4">
+            <ShareButton text="Share Profile" />
+            <EditProfile
+              address={resolution?.address || ""}
+              basename={creator.resolution?.basename || ""}
+            />
+          </div>
         </div>
         <div className="flex flex-col gap-2">
           {creator.avatar ? (

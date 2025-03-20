@@ -6,6 +6,7 @@ import { getCreators } from "~/app/features/directory/actions";
 import { CreatorWithOpenSeaData } from "~/app/features/directory/types";
 import Header from "../components/Header";
 import Link from "next/link";
+import ShareButton from "../components/ShareButton";
 
 export default function CreatorsList() {
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
@@ -122,9 +123,12 @@ export default function CreatorsList() {
         </div>
       </div>
 
-      <p className="text-white mb-4 font-medium text-sm">
-        {filteredCreators.length} CREATORS FOUND
-      </p>
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-white font-medium text-sm">
+          {filteredCreators.length} CREATORS FOUND
+        </p>
+        <ShareButton text="Share Directory" />
+      </div>
 
       <div className="space-y-4">
         {filteredCreators.map((creator) => (
