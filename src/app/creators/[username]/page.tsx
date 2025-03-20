@@ -104,8 +104,12 @@ export default async function ProfilePage({ params }: Props) {
           <div className="flex items-center gap-2 my-2">
             <h2
               className={`font-bold text-white base-pixel-display ${
-                displayName.length > 20 ? "text-2xl" : "text-3xl"
-              }`}
+                displayName.length > 25
+                  ? "text-xl"
+                  : displayName.length > 20
+                    ? "text-2xl"
+                    : "text-3xl"
+              } overflow-hidden whitespace-nowrap`}
             >
               {displayName}
             </h2>

@@ -136,43 +136,51 @@ export default async function InfoCard({ address }: InfoCardProps) {
     resolution.textRecords[BasenameTextRecordKeys.AvailableForHire] === "true";
 
   return (
-    <div className="flex flex-col gap-8">
-      {isAvailableForWork && (
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-          <h3 className="text-sm font-medium text-white">Available for Work</h3>
-        </div>
-      )}
+    <>
+      {(isAvailableForWork ||
+        availableContactMethods.length > 0 ||
+        creativeMediumValue) && (
+        <div className="flex flex-col gap-8">
+          {isAvailableForWork && (
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+              <h3 className="text-sm font-medium text-white">
+                Available for Work
+              </h3>
+            </div>
+          )}
 
-      <div className="flex flex-wrap gap-4">
-        {availableContactMethods.map((method) => (
-          <a
-            key={method.key}
-            href={method.href(method.value!)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-sm text-white hover:text-white/90 transition-colors"
-          >
-            {method.icon}
-            <span>{method.label}</span>
-          </a>
-        ))}
-      </div>
-      {creativeMediumValue && (
-        <div className="text-white">
-          <div className="text-xl mb-2 base-pixel">Creative Medium</div>
-          <div className="flex flex-wrap gap-2">
-            {creativeMediumTags.map((tag, index) => (
-              <div
-                key={index}
-                className="flex items-center px-2 py-1 bg-white/10 rounded-md"
+          <div className="flex flex-wrap gap-4">
+            {availableContactMethods.map((method) => (
+              <a
+                key={method.key}
+                href={method.href(method.value!)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-sm text-white hover:text-white/90 transition-colors"
               >
-                <span className="text-white text-sm">{tag}</span>
-              </div>
+                {method.icon}
+                <span>{method.label}</span>
+              </a>
             ))}
           </div>
+          {creativeMediumValue && (
+            <div className="text-white">
+              <div className="text-xl mb-2 base-pixel">Creative Medium</div>
+              <div className="flex flex-wrap gap-2">
+                {creativeMediumTags.map((tag, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center px-2 py-1 bg-white/10 rounded-md"
+                  >
+                    <span className="text-white text-sm">{tag}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
-    </div>
+    </>
   );
 }
