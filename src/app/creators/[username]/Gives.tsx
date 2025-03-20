@@ -9,11 +9,7 @@ export default async function Gives({ address }: GivesProps) {
   gives = gives.slice(0, 10);
 
   if (!gives.length) {
-    return (
-      <div className="text-white/80 text-sm">
-        No gives found for this creator.
-      </div>
-    );
+    return null;
   }
 
   return (

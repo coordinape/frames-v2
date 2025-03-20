@@ -13,7 +13,7 @@ export default async function ContractGallery({
       {/* OpenSea Collections */}
       {openSeaCollections && openSeaCollections.length > 0 && (
         <>
-          <h3 className="text-xl font-bold text-white mb-4 base-pixel">
+          <h3 className="text-xl font-bold text-white mb-2 base-pixel">
             Latest onchain work
           </h3>
           <div className="grid grid-cols-2 gap-4">
