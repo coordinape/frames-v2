@@ -2,6 +2,8 @@
  * Type definitions for the directory feature
  */
 
+import { BasenameTextRecordKeys } from "~/app/creators/[username]/basenames";
+
 export interface Creator {
   id: string;
   address: string;
@@ -14,6 +16,7 @@ export interface BasenameResolution {
   basename?: string;
   address: string;
   resolved: boolean;
+  textRecords?: Record<BasenameTextRecordKeys, string | undefined>;
 }
 
 export interface OpenSeaCollection {
