@@ -1,12 +1,12 @@
 import { ImageResponse } from "next/og";
-import { baseBlue, basePixelLow, IMAGE_URL_BASE } from "./helpers";
+import {
+  baseBlue,
+  basePixelLow,
+  IMAGE_URL_BASE,
+  DEFAULT_FRAME_SIZE,
+} from "./helpers";
 
 // export const runtime = 'edge'; // Add this line to use the Edge runtime
-const size = {
-  width: 600,
-  height: 400,
-};
-
 export async function GET() {
   return new ImageResponse(
     (
@@ -21,19 +21,19 @@ export async function GET() {
         <div tw="flex items-center justify-center flex-1">
           <img
             src={IMAGE_URL_BASE + "Base_Symbol_White.png"}
-            tw="h-38 mr-5"
+            tw="h-57 mr-7"
             alt="BASE Logo"
           />
           <div tw="flex flex-col justify-start">
-            <p tw="text-5xl mt-0 mb-1">Join</p>
-            <p tw="text-5xl mt-0 mb-1">The Creators</p>
-            <p tw="text-5xl mt-0 mb-1">Directory</p>
+            <p tw="text-7xl mt-0 mb-1">Join</p>
+            <p tw="text-7xl mt-0 mb-1">The Creators</p>
+            <p tw="text-7xl mt-0 mb-1">Directory</p>
           </div>
         </div>
       </div>
     ),
     {
-      ...size,
+      ...DEFAULT_FRAME_SIZE,
       headers: {
         "Content-Type": "image/png",
       },

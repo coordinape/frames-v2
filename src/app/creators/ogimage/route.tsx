@@ -1,10 +1,10 @@
 import { ImageResponse } from "next/og";
-import { baseBlue, basePixelLow, IMAGE_URL_BASE } from "~/app/ogimage/helpers";
-
-const size = {
-  width: 600,
-  height: 400,
-};
+import {
+  baseBlue,
+  basePixelLow,
+  DEFAULT_FRAME_SIZE,
+  IMAGE_URL_BASE,
+} from "~/app/ogimage/helpers";
 
 export async function GET() {
   return new ImageResponse(
@@ -20,21 +20,21 @@ export async function GET() {
         <div tw="flex flex-col items-center justify-center flex-1">
           <img
             src={IMAGE_URL_BASE + "Base_Wordmark_White.png"}
-            tw="h-10 mb-2"
+            tw="h-14 mb-4"
             alt="BASE Logo"
           />
-          <p tw="text-7xl my-0">Creators</p>
-          <p tw="text-7xl my-0">Directory</p>
+          <p tw="text-9xl my-0">Creators</p>
+          <p tw="text-9xl my-0">Directory</p>
         </div>
         <img
           src={IMAGE_URL_BASE + "buddies.png"}
-          tw="h-38"
+          tw="h-62"
           alt="Base Buddies"
         />
       </div>
     ),
     {
-      ...size,
+      ...DEFAULT_FRAME_SIZE,
       headers: {
         "Content-Type": "image/png",
       },

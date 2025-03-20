@@ -5,14 +5,10 @@ import { resolveBasenameOrAddress } from "~/app/hooks/useBasenameResolver";
 import {
   baseBlue,
   basePixelLow,
+  DEFAULT_FRAME_SIZE,
   Denim,
   IMAGE_URL_BASE,
 } from "~/app/ogimage/helpers";
-
-const size = {
-  width: 600,
-  height: 400,
-};
 
 export async function GET(
   request: NextRequest,
@@ -39,7 +35,7 @@ export async function GET(
         </div>
       ),
       {
-        ...size,
+        ...DEFAULT_FRAME_SIZE,
         headers: {
           "Content-Type": "image/png",
         },
@@ -65,15 +61,15 @@ export async function GET(
         <div tw="flex items-center justify-center flex-1">
           <img
             src={IMAGE_URL_BASE + "Base_Symbol_White.png"}
-            tw="h-20 mr-5"
+            tw="h-32 mr-5"
             alt="BASE Logo"
           />
           <div
             tw="flex flex-col justify-start"
             style={{ fontFamily: "Inter, Helvetica" }}
           >
-            <p tw="text-4xl mt-0 mb-1">Based Creator</p>
-            <p tw="text-4xl mt-0 mb-1">Showcase</p>
+            <p tw="text-6xl mt-0 mb-1">Based Creator</p>
+            <p tw="text-6xl mt-0 mb-1">Showcase</p>
           </div>
         </div>
         <div tw="flex items-center justify-center flex-1">
@@ -81,20 +77,21 @@ export async function GET(
             <img
               src={creator.avatar}
               alt={creator.name}
-              width="60"
-              height="60"
+              width="90"
+              height="90"
               tw="rounded-full mr-4"
             />
           ) : (
-            <div tw="w-[60px] h-[60px] rounded-full bg-white/20 flex items-center justify-center mr-4">
+            <div tw="w-[90px] h-[90px] rounded-full bg-white/20 flex items-center justify-center mr-4">
               <span tw="text-2xl text-white font-bold">
                 {creator.name.charAt(0)}
               </span>
             </div>
           )}
           <h1
-            tw="text-4xl text-white"
+            tw="text-6xl text-white overflow-hidden text-ellipsis whitespace-nowrap h-18 mr-3"
             style={{
+              maxWidth: "82%",
               fontFamily: "BasePixel-Low",
               letterSpacing: "0.02em",
             }}
@@ -102,9 +99,9 @@ export async function GET(
             {displayName}
           </h1>
           <svg
-            className="h-30 w-30 mr-1.5"
-            width="30"
-            height="30"
+            className="h-34 w-34"
+            width="34"
+            height="34"
             viewBox="0 0 24 24"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -127,23 +124,23 @@ export async function GET(
         {/* Collections Grid */}
         {displayCollections.length > 0 && (
           <div tw="flex flex-col" style={{ fontFamily: "Sans" }}>
-            <h2 tw="text-xl text-white mb-4 uppercase">Latest Onchain Work</h2>
+            <h2 tw="text-2xl text-white mb-4 uppercase">Latest Onchain Work</h2>
             <div tw="flex flex-row">
               {displayCollections.map((collection, index) => (
                 <div
                   key={index}
-                  tw="bg-white/10 rounded-lg flex items-center mr-4"
+                  tw="bg-white/10 rounded-lg flex items-center mr-6"
                 >
                   {collection.imageUrl ? (
                     <img
                       src={collection.imageUrl}
                       alt={collection.name}
-                      width="100"
-                      height="100"
+                      width="165"
+                      height="165"
                       tw="rounded-lg"
                     />
                   ) : (
-                    <div tw="flex w-[100px] h-[100px] bg-white/20 rounded-lg" />
+                    <div tw="flex w-[165px] h-[165px] bg-white/20 rounded-lg" />
                   )}
                 </div>
               ))}
@@ -153,7 +150,7 @@ export async function GET(
       </div>
     ),
     {
-      ...size,
+      ...DEFAULT_FRAME_SIZE,
       headers: {
         "Content-Type": "image/png",
       },

@@ -19,3 +19,8 @@ export const Denim = fs.readFileSync(
 export const IMAGE_URL_BASE = process.env.NEXT_PUBLIC_URL
   ? `${process.env.NEXT_PUBLIC_URL}/images/`
   : `https://${process.env.VERCEL_URL}/images/`;
+
+export const DEFAULT_FRAME_SIZE = {
+  width: 960,
+  height: 640,
+} as const;
