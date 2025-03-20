@@ -9,7 +9,7 @@ export interface Creator {
   address: string;
   name: string;
   avatar?: string;
-  bio?: string;
+  description?: string;
 }
 
 export interface BasenameResolution {

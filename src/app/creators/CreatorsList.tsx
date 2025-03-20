@@ -62,7 +62,7 @@ export default function CreatorsList() {
 
     return (
       checkMatch("name", creator.name) ||
-      checkMatch("bio", creator.bio) ||
+      checkMatch("description", creator.description) ||
       Object.entries(creator.resolution?.textRecords || {}).some(
         ([key, value]) => checkMatch(key, value),
       )

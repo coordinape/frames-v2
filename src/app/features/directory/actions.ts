@@ -127,7 +127,7 @@ export async function getCreator(
               address
               name
               avatar
-              bio
+              description
             }
           }
         }
@@ -154,7 +154,7 @@ export async function getCreator(
           ? user.profile.avatar
           : `https://coordinape-prod.s3.amazonaws.com/${user.profile.avatar}`
         : "",
-      bio: user.profile?.bio || "",
+      description: user.profile?.description || "",
     };
 
     try {
@@ -229,7 +229,7 @@ export async function getCreators(): Promise<CreatorWithOpenSeaData[]> {
               address
               name
               avatar
-              bio
+              description
             }
           }
         }
@@ -247,7 +247,7 @@ export async function getCreators(): Promise<CreatorWithOpenSeaData[]> {
           address?: string;
           name?: string;
           avatar?: string;
-          bio?: string;
+          description?: string;
         };
       }) => ({
         id: user.id,
@@ -258,7 +258,7 @@ export async function getCreators(): Promise<CreatorWithOpenSeaData[]> {
             ? user.profile.avatar
             : `https://coordinape-prod.s3.amazonaws.com/${user.profile.avatar}`
           : "",
-        bio: user.profile?.bio || "",
+        description: user.profile?.description || "",
       }),
     );
 
