@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { APP_BASE_URL } from "~/lib/constants";
 
 export const baseBlue = "#0053ff";
 
@@ -16,9 +17,7 @@ export const Denim = fs.readFileSync(
   path.join(process.cwd(), "public/fonts/Denim-Regular.ttf"),
 );
 
-export const IMAGE_URL_BASE = process.env.NEXT_PUBLIC_URL
-  ? `${process.env.NEXT_PUBLIC_URL}/images/`
-  : `https://${process.env.VERCEL_URL}/images/`;
+export const IMAGE_URL_BASE = APP_BASE_URL ? `${APP_BASE_URL}/images/` : "";
 
 export const DEFAULT_FRAME_SIZE = {
   width: 960,

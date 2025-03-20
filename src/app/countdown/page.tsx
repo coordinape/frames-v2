@@ -1,20 +1,17 @@
 import { Metadata } from "next";
 import CountdownApp from "./countdown-app";
-
-// const appUrl = process.env.NEXT_PUBLIC_URL;
-// const appUrl = process.env.VERCEL_URL;
-const appUrl = `https://${process.env.VERCEL_URL}`;
+import { APP_BASE_URL } from "~/lib/constants";
 
 const frame = {
   version: "next",
-  imageUrl: `${appUrl}/ogimage?title=Countdown`,
+  imageUrl: `${APP_BASE_URL}/ogimage?title=Countdown`,
   button: {
     title: "Launch Frame",
     action: {
       type: "launch_frame",
       name: "Countdown Frame",
-      url: `${appUrl}/countdown`,
-      splashImageUrl: `${appUrl}/splash.png`,
+      url: `${APP_BASE_URL}/countdown`,
+      splashImageUrl: `${APP_BASE_URL}/splash.png`,
       splashBackgroundColor: "#0053ff",
     },
   },

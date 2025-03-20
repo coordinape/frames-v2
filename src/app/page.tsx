@@ -1,19 +1,17 @@
 import { Metadata } from "next";
 import App from "./app";
-
-// const appUrl = process.env.NEXT_PUBLIC_URL;
-const appUrl = process.env.VERCEL_URL;
+import { APP_BASE_URL } from "~/lib/constants";
 
 const frame = {
   version: "next",
-  imageUrl: `https://${appUrl}/ogimage?title=Creators`,
+  imageUrl: `${APP_BASE_URL}/ogimage?title=Creators`,
   button: {
     title: "Launch Frame",
     action: {
       type: "launch_frame",
       name: "Coordinape Frames v2 Demo",
-      url: `https://${appUrl}`,
-      splashImageUrl: `https://${appUrl}/splash.png`,
+      url: APP_BASE_URL,
+      splashImageUrl: `${APP_BASE_URL}/splash.png`,
       splashBackgroundColor: "#0053ff",
     },
   },

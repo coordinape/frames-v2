@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import CreatorsList from "./CreatorsList";
+import { APP_BASE_URL } from "~/lib/constants";
 
 export default function DirectoryPage() {
   return <CreatorsList />;
@@ -7,18 +8,19 @@ export default function DirectoryPage() {
 
 // const appUrl = process.env.NEXT_PUBLIC_URL;
 // const appUrl = process.env.VERCEL_URL;
-const appUrl = `https://${process.env.NEXT_PUBLIC_URL ?? process.env.VERCEL_URL}`;
+// const appUrl = APP_BASE_URL;
+const appUrl = `https://${APP_BASE_URL}`;
 
 const frame = {
   version: "next",
-  imageUrl: `${appUrl}/creators/ogimage`,
+  imageUrl: `${APP_BASE_URL}/creators/ogimage`,
   button: {
     title: "Launch Frame",
     action: {
       type: "launch_frame",
       name: "Creator Directory",
-      url: `${appUrl}/creators`,
-      splashImageUrl: `${appUrl}/splash.png`,
+      url: `${APP_BASE_URL}/creators`,
+      splashImageUrl: `${APP_BASE_URL}/splash.png`,
       splashBackgroundColor: "#0053ff",
     },
   },

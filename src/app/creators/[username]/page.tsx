@@ -9,6 +9,7 @@ import { EditProfile } from "~/app/components/EditProfile";
 import Gives from "./Gives";
 import ForHireCard from "./ForHireCard";
 import { FrameSDK } from "~/app/components/FrameSDK";
+import { APP_BASE_URL } from "~/lib/constants";
 
 interface Props {
   params: Promise<{
@@ -129,22 +130,17 @@ export default async function ProfilePage({ params }: Props) {
     </>
   );
 }
-const appUrl = `https://${
-  process.env.NEXT_PUBLIC_URL ?? process.env.VERCEL_URL
-}`;
-// const appUrl = process.env.NEXT_PUBLIC_URL;
-// const appUrl = process.env.VERCEL_URL;
 
 const frame = ({ username }: { username: string }) => ({
   version: "next",
-  imageUrl: `${appUrl}/creators/${username}/ogimage`,
+  imageUrl: `${APP_BASE_URL}/creators/${username}/ogimage`,
   button: {
     title: "View Creator Profile",
     action: {
       type: "launch_frame",
       name: "View Creator Profile",
-      url: `${appUrl}/creators/${username}`,
-      splashImageUrl: `${appUrl}/splash.png`,
+      url: `${APP_BASE_URL}/creators/${username}`,
+      splashImageUrl: `${APP_BASE_URL}/splash.png`,
       splashBackgroundColor: "#0053ff",
     },
   },

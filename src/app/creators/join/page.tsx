@@ -1,24 +1,21 @@
 import { Metadata } from "next";
 import JoinClient from "./JoinClient";
+import { APP_BASE_URL } from "~/lib/constants";
 
 export default function JoinPage() {
   return <JoinClient />;
 }
 
-// const appUrl = process.env.NEXT_PUBLIC_URL;
-// const appUrl = process.env.VERCEL_URL;
-const appUrl = `https://${process.env.VERCEL_URL}`;
-
 const frame = {
   version: "next",
-  imageUrl: `${appUrl}/ogimage?title=Join+Directory`,
+  imageUrl: `${APP_BASE_URL}/ogimage?title=Join+Directory`,
   button: {
     title: "Launch Frame",
     action: {
       type: "launch_frame",
       name: "Join Frame",
-      url: `${appUrl}/creators/join`,
-      splashImageUrl: `${appUrl}/splash.png`,
+      url: `${APP_BASE_URL}/creators/join`,
+      splashImageUrl: `${APP_BASE_URL}/splash.png`,
       splashBackgroundColor: "#0053ff",
     },
   },
