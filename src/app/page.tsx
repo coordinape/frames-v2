@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import App from "./app";
+import { redirect } from "next/navigation";
 import { APP_BASE_URL } from "~/lib/constants";
 
 const frame = {
@@ -33,5 +33,5 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function Home() {
-  return <App />;
+  redirect("/creators");
 }
