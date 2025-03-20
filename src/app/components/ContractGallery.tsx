@@ -24,25 +24,31 @@ export default async function ContractGallery({
               >
                 <div className="aspect-square overflow-hidden">
                   {collection.imageUrl ? (
-                    <img
-                      src={collection.imageUrl}
-                      alt={collection.name || "Collection"}
-                      className="w-full h-full object-cover rounded-md"
-                    />
+                    <a
+                      href={collection.openseaUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <img
+                        src={collection.imageUrl}
+                        alt={collection.name || "Collection"}
+                        className="w-full h-full object-cover rounded-md"
+                      />
+                    </a>
                   ) : (
                     <div className="w-full h-full bg-blue-800 flex items-center justify-center">
                       <span className="text-blue-100 text-sm">No Image</span>
                     </div>
                   )}
                 </div>
-                <div className="p-2 space-y-2">
-                  <div className="flex gap-2 text-sm">
+                <div className="p-2 space-y-1">
+                  <div className="flex text-sm">
                     {collection.openseaUrl && (
                       <a
                         href={collection.openseaUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-400 hover:text-blue-300"
+                        className="text-white/80 hover:text-white"
                       >
                         {collection.name || "OpenSea"}
                       </a>
@@ -59,12 +65,12 @@ export default async function ContractGallery({
                     )}
                   </div>
                   {collection.contractAddress && (
-                    <div className="text-gray-400 text-xs font-mono">
+                    <div className="text-white/50 text-xs font-mono">
                       <a
                         href={`https://basescan.org/address/${collection.contractAddress}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="hover:text-gray-300"
+                        className="hover:text-white"
                       >
                         {`${collection.contractAddress.slice(
                           0,

@@ -102,7 +102,6 @@ export default async function ProfilePage({ params }: Props) {
               </span>
             </div>
           )}
-
           <div className="flex items-center gap-2">
             <h2
               className={`font-bold text-white base-pixel-display ${
