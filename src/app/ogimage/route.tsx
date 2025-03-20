@@ -1,6 +1,5 @@
 import { ImageResponse } from "next/og";
 import { baseBlue, basePixelLow, IMAGE_URL_BASE } from "./helpers";
-import { NextRequest } from "next/server";
 
 // export const runtime = 'edge'; // Add this line to use the Edge runtime
 const size = {
@@ -8,10 +7,7 @@ const size = {
   height: 400,
 };
 
-export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const title = searchParams.get("title") || "CoCreator Frames";
-
+export async function GET() {
   return new ImageResponse(
     (
       <div
@@ -22,14 +18,10 @@ export async function GET(request: NextRequest) {
           letterSpacing: "0.02em",
         }}
       >
-        <h1 tw="text-2xl">{title}</h1>
-        <h1 tw="text-xl">{IMAGE_URL_BASE + "Base_Symbol_White.png"}</h1>
         <div tw="flex items-center justify-center flex-1">
           <img
             src={IMAGE_URL_BASE + "Base_Symbol_White.png"}
             tw="h-38 mr-5"
-            width={100}
-            height={100}
             alt="BASE Logo"
           />
           <div tw="flex flex-col justify-start">
