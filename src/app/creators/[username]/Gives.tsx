@@ -25,9 +25,18 @@ export default async function Gives({ address }: GivesProps) {
             key={index}
             className="inline-flex items-center bg-white/10 hover:bg-white/15 rounded-full px-3 py-1 text-sm"
           >
-            <span className="text-white/90">
-              {giveGroup.skill || "Uncategorized"}
-            </span>
+            {giveGroup.skill ? (
+              <a
+                href={`https://coordinape.com/give/skill/${giveGroup.skill.toLowerCase()}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white/90 hover:text-white"
+              >
+                {giveGroup.skill}
+              </a>
+            ) : (
+              <span className="text-white/90">Uncategorized</span>
+            )}
             <span className="ml-2 text-white/60 text-xs">
               {giveGroup.count}
             </span>
