@@ -6,6 +6,7 @@ import { getCreators } from "~/app/features/directory/actions";
 import { CreatorWithOpenSeaData } from "~/app/features/directory/types";
 import Header from "../components/Header";
 import Link from "next/link";
+import { BasenameTextRecordKeys } from "~/app/creators/[username]/basenames";
 
 export default function CreatorsList() {
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
@@ -57,6 +58,42 @@ export default function CreatorsList() {
       creator.name.toLowerCase().includes(query) ||
       creator.address.toLowerCase().includes(query) ||
       creator.resolution?.basename?.toLowerCase().includes(query) ||
+      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Description]
+        ?.toLowerCase()
+        .includes(query) ||
+      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Keywords]
+        ?.toLowerCase()
+        .includes(query) ||
+      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Url]
+        ?.toLowerCase()
+        .includes(query) ||
+      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Email]
+        ?.toLowerCase()
+        .includes(query) ||
+      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Phone]
+        ?.toLowerCase()
+        .includes(query) ||
+      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Github]
+        ?.toLowerCase()
+        .includes(query) ||
+      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Twitter]
+        ?.toLowerCase()
+        .includes(query) ||
+      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Farcaster]
+        ?.toLowerCase()
+        .includes(query) ||
+      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Lens]
+        ?.toLowerCase()
+        .includes(query) ||
+      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Telegram]
+        ?.toLowerCase()
+        .includes(query) ||
+      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Discord]
+        ?.toLowerCase()
+        .includes(query) ||
+      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Medium]
+        ?.toLowerCase()
+        .includes(query) ||
       creator.bio?.toLowerCase().includes(query)
     );
   });

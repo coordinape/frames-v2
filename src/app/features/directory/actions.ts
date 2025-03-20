@@ -171,6 +171,7 @@ export async function getCreator(
             basename: resolution.basename,
             address: resolution.address,
             resolved: !!resolution.basename,
+            textRecords: resolution.textRecords,
           }
         : null;
 
@@ -277,6 +278,7 @@ export async function getCreators(): Promise<CreatorWithOpenSeaData[]> {
                 basename: resolution.basename,
                 address: resolution.address,
                 resolved: !!resolution.basename,
+                textRecords: resolution.textRecords,
               }
             : null;
 
