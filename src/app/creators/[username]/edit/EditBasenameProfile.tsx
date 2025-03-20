@@ -99,81 +99,30 @@ const FIELD_CONFIG: Record<
     type?: "text" | "boolean" | "tags"; // Add tags type
   }
 > = {
-  [BasenameTextRecordKeys.Description]: {
-    label: "Bio/Description",
-    placeholder: "Tell us about yourself...",
-    isTextarea: true,
-    type: "text",
-  },
-  [BasenameTextRecordKeys.Keywords]: {
-    label: "Keywords",
-    placeholder: "Comma-separated keywords",
-    type: "text",
+  [BasenameTextRecordKeys.CreativeMedium]: {
+    label: "Creative Medium",
+    placeholder: "Your creative medium",
+    type: "tags",
   },
   [BasenameTextRecordKeys.Url]: {
     label: "Website URL",
-    placeholder: "https://yourwebsite.com",
-    type: "text",
-  },
-  [BasenameTextRecordKeys.Email]: {
-    label: "Email",
-    placeholder: "your@email.com",
-    type: "text",
-  },
-  [BasenameTextRecordKeys.Phone]: {
-    label: "Phone",
-    placeholder: "+1 123 456 7890",
+    placeholder: "https://example.com",
     type: "text",
   },
   [BasenameTextRecordKeys.Github]: {
-    label: "GitHub Username",
-    placeholder: "yourusername",
-    type: "text",
-  },
-  [BasenameTextRecordKeys.Twitter]: {
-    label: "Twitter Username",
-    placeholder: "yourusername",
+    label: "Github Username",
+    placeholder: "yourgithubusername",
     type: "text",
   },
   [BasenameTextRecordKeys.Farcaster]: {
-    label: "Farcaster",
-    placeholder: "yourfarcasterhandle",
+    label: "Farcaster Username",
+    placeholder: "yourfarcasterusername",
     type: "text",
-  },
-  [BasenameTextRecordKeys.Lens]: {
-    label: "Lens Handle",
-    placeholder: "yourlenshandle",
-    type: "text",
-  },
-  [BasenameTextRecordKeys.Telegram]: {
-    label: "Telegram",
-    placeholder: "yourtelegramusername",
-    type: "text",
-  },
-  [BasenameTextRecordKeys.Discord]: {
-    label: "Discord",
-    placeholder: "yourdiscordusername",
-    type: "text",
-  },
-  [BasenameTextRecordKeys.Avatar]: {
-    label: "Avatar URL",
-    placeholder: "https://example.com/avatar.jpg",
-    type: "text",
-  },
-  [BasenameTextRecordKeys.Frames]: {
-    label: "Frames URL",
-    placeholder: "https://example.com/frames",
-    type: "text",
-  },
-  [BasenameTextRecordKeys.Medium]: {
-    label: "Medium",
-    placeholder: "digital-animation, painting, sculpture",
-    type: "tags",
   },
   [BasenameTextRecordKeys.AvailableForHire]: {
     label: "Available for Hire",
-    placeholder: "",
     type: "boolean",
+    placeholder: "false",
   },
 };
 

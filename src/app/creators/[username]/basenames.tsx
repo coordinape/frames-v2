@@ -21,38 +21,18 @@ export const BASENAME_L2_RESOLVER_ADDRESS =
   "0xC6d566A56A1aFf6508b41f6c90ff131615583BCD";
 
 export enum BasenameTextRecordKeys {
-  Description = "description",
-  Keywords = "keywords",
   Url = "url",
-  Email = "email",
-  Phone = "phone",
   Github = "com.github",
-  Twitter = "com.twitter",
   Farcaster = "xyz.farcaster",
-  Lens = "xyz.lens",
-  Telegram = "org.telegram",
-  Discord = "com.discord",
-  Avatar = "avatar",
-  Frames = "frames",
-  Medium = "com.coordinape.creator.medium",
+  CreativeMedium = "com.coordinape.creator.medium",
   AvailableForHire = "com.coordinape.creator.availableForHire",
 }
 
 export const textRecordsKeysEnabled = [
-  BasenameTextRecordKeys.Description,
-  BasenameTextRecordKeys.Keywords,
+  BasenameTextRecordKeys.CreativeMedium,
   BasenameTextRecordKeys.Url,
   BasenameTextRecordKeys.Github,
-  BasenameTextRecordKeys.Email,
-  BasenameTextRecordKeys.Phone,
-  BasenameTextRecordKeys.Twitter,
   BasenameTextRecordKeys.Farcaster,
-  BasenameTextRecordKeys.Lens,
-  BasenameTextRecordKeys.Telegram,
-  BasenameTextRecordKeys.Discord,
-  BasenameTextRecordKeys.Avatar,
-  BasenameTextRecordKeys.Frames,
-  BasenameTextRecordKeys.Medium,
   BasenameTextRecordKeys.AvailableForHire,
 ];
 
@@ -62,15 +42,6 @@ const baseClient = createPublicClient({
     process.env.NEXT_PUBLIC_ALCHEMY_BASE_URL || "https://mainnet.base.org",
   ),
 });
-
-export async function getBasenameAvatar(basename: Basename) {
-  const avatar = await baseClient.getEnsAvatar({
-    name: basename,
-    universalResolverAddress: BASENAME_L2_RESOLVER_ADDRESS,
-  });
-
-  return avatar;
-}
 
 export function buildBasenameTextRecordContract(
   basename: Basename,

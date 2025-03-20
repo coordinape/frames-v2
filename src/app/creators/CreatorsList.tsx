@@ -6,7 +6,6 @@ import { getCreators } from "~/app/features/directory/actions";
 import { CreatorWithOpenSeaData } from "~/app/features/directory/types";
 import Header from "../components/Header";
 import Link from "next/link";
-import { BasenameTextRecordKeys } from "~/app/creators/[username]/basenames";
 
 export default function CreatorsList() {
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
@@ -57,67 +56,16 @@ export default function CreatorsList() {
 
     // Helper function to check and log matches
     const checkMatch = (field: string, value: string | undefined | null) => {
-      if (value?.toLowerCase().includes(query)) {
-        console.log(`Match found for ${creator.name} in ${field}:`, value);
-        return true;
-      }
-      return false;
+      if (!value) return false;
+      return value.toLowerCase().includes(query);
     };
 
-    // Check each field and log matches
     return (
       checkMatch("name", creator.name) ||
-      checkMatch("address", creator.address) ||
-      checkMatch("basename", creator.resolution?.basename) ||
-      checkMatch(
-        "description",
-        creator.resolution?.textRecords?.[BasenameTextRecordKeys.Description],
-      ) ||
-      checkMatch(
-        "keywords",
-        creator.resolution?.textRecords?.[BasenameTextRecordKeys.Keywords],
-      ) ||
-      checkMatch(
-        "url",
-        creator.resolution?.textRecords?.[BasenameTextRecordKeys.Url],
-      ) ||
-      checkMatch(
-        "email",
-        creator.resolution?.textRecords?.[BasenameTextRecordKeys.Email],
-      ) ||
-      checkMatch(
-        "phone",
-        creator.resolution?.textRecords?.[BasenameTextRecordKeys.Phone],
-      ) ||
-      checkMatch(
-        "github",
-        creator.resolution?.textRecords?.[BasenameTextRecordKeys.Github],
-      ) ||
-      checkMatch(
-        "twitter",
-        creator.resolution?.textRecords?.[BasenameTextRecordKeys.Twitter],
-      ) ||
-      checkMatch(
-        "farcaster",
-        creator.resolution?.textRecords?.[BasenameTextRecordKeys.Farcaster],
-      ) ||
-      checkMatch(
-        "lens",
-        creator.resolution?.textRecords?.[BasenameTextRecordKeys.Lens],
-      ) ||
-      checkMatch(
-        "telegram",
-        creator.resolution?.textRecords?.[BasenameTextRecordKeys.Telegram],
-      ) ||
-      checkMatch(
-        "discord",
-        creator.resolution?.textRecords?.[BasenameTextRecordKeys.Discord],
-      ) ||
-      checkMatch(
-        "medium",
-        creator.resolution?.textRecords?.[BasenameTextRecordKeys.Medium],
-      ) ||
-      checkMatch("bio", creator.bio)
+      checkMatch("bio", creator.bio) ||
+      Object.entries(creator.resolution?.textRecords || {}).some(
+        ([key, value]) => checkMatch(key, value),
+      )
     );
   });
 
