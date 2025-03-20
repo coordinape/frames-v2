@@ -113,7 +113,7 @@ export default async function ProfilePage({ params }: Props) {
                   : displayName.length > 20
                     ? "text-2xl"
                     : "text-3xl"
-              } overflow-hidden whitespace-nowrap`}
+              }`}
             >
               {displayName}
             </h2>
