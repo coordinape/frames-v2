@@ -7,7 +7,7 @@ interface LogoProps {
 }
 
 export default function Logo({
-  logoSrc = "/Base_Symbol_White.png",
+  logoSrc = "/images/Base_Symbol_White.png",
   altText = "Base Logo",
   className = "text-center mb-2",
 }: LogoProps) {

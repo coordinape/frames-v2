@@ -1,27 +1,51 @@
 import { ImageResponse } from "next/og";
-import { NextRequest } from "next/server";
+import {
+  baseBlue,
+  basePixelLow,
+  IMAGE_URL_BASE,
+  DEFAULT_FRAME_SIZE,
+} from "./helpers";
 
 // export const runtime = 'edge'; // Add this line to use the Edge runtime
-const size = {
-  width: 600,
-  height: 400,
-};
-
-export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const title = searchParams.get("title") || "CoCreator Frames";
-
+export async function GET() {
   return new ImageResponse(
     (
-      <div tw="h-full w-full flex flex-col justify-center items-center relative bg-white">
-        <h1 tw="text-6xl">{title}</h1>
+      <div
+        tw="h-full w-full flex flex-col justify-between items-center relative text-white"
+        style={{
+          backgroundColor: baseBlue, // This is the bg-base-blue color
+          fontFamily: "BasePixel-Low",
+          letterSpacing: "0.02em",
+        }}
+      >
+        <div tw="flex items-center justify-center flex-1">
+          <img
+            src={IMAGE_URL_BASE + "Base_Symbol_White.png"}
+            tw="h-57 mr-7"
+            alt="BASE Logo"
+          />
+          <div tw="flex flex-col justify-start">
+            <p tw="text-7xl mt-0 mb-1">Join</p>
+            <p tw="text-7xl mt-0 mb-1">The Creators</p>
+            <p tw="text-7xl mt-0 mb-1">Directory</p>
+          </div>
+        </div>
       </div>
     ),
     {
-      ...size,
+      ...DEFAULT_FRAME_SIZE,
       headers: {
         "Content-Type": "image/png",
       },
+      // Include the font in the response
+      fonts: [
+        {
+          name: "BasePixel-Low",
+          data: basePixelLow,
+          style: "normal",
+          weight: 400,
+        },
+      ],
     },
   );
 }

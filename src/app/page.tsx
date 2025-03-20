@@ -14,7 +14,7 @@ const frame = {
       name: "Coordinape Frames v2 Demo",
       url: `https://${appUrl}`,
       splashImageUrl: `https://${appUrl}/splash.png`,
-      splashBackgroundColor: "#f7f7f7",
+      splashBackgroundColor: "#0053ff",
     },
   },
 };
