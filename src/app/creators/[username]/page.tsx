@@ -87,7 +87,6 @@ export default async function ProfilePage({ params }: Props) {
             basename={creator.resolution?.basename || ""}
           />
         </div>
-
         <div className="flex flex-col gap-2">
           {creator.avatar ? (
             <img
@@ -118,11 +117,8 @@ export default async function ProfilePage({ params }: Props) {
           )}
           <p className="text-white/80 text-xs font-mono">{creator.address}</p>
         </div>
-
         {resolution?.address && <InfoCard address={resolution.address} />}
-
         {resolution?.address && <Gives address={resolution.address} />}
-
         <ContractGallery
           address={resolution?.address || ""}
           openSeaCollections={creator.openSeaData?.collections || []}
