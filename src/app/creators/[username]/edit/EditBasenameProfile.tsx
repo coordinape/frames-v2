@@ -308,7 +308,7 @@ export default function EditBasenameProfile({
             Edit Profile
           </h2>
           <p className="text-white/80 mb-6 text-sm">
-            Update your profile information stored on the Base blockchain.
+            Update your Basename profile information on the Base blockchain.
           </p>
 
           {isLoading ? (
