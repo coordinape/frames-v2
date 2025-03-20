@@ -72,13 +72,24 @@ export default function WhoAmI() {
                     {error && (
                       <p className="text-red-500 text-xs">{error.message}</p>
                     )}
-                    {isConnecting && (
-                      <p className="text-white/60 text-xs">Connecting...</p>
-                    )}
                     {isFrame && (
                       <p className="text-white/40 text-xs">In Frame</p>
                     )}
-                    {address ? (
+                    {isConnecting ? (
+                      <p className="text-white/60 text-xs">Connecting...</p>
+                    ) : (
+                      <>
+                        {!address && (
+                          <button
+                            onClick={connectWallet}
+                            className="px-4 py-1 bg-white text-base-blue text-xs rounded-full cursor-pointer hover:bg-white/90 transition-colors"
+                          >
+                            Connect Wallet
+                          </button>
+                        )}
+                      </>
+                    )}
+                    {address && (
                       <>
                         <div className="flex items-center justify-between gap-2">
                           {profileUrl && creator ? (
@@ -114,13 +125,6 @@ export default function WhoAmI() {
                           </button>
                         </div>
                       </>
-                    ) : (
-                      <button
-                        onClick={connectWallet}
-                        className="px-4 py-1 bg-white text-base-blue text-xs rounded-full cursor-pointer hover:bg-white/90 transition-colors"
-                      >
-                        Connect Wallet
-                      </button>
                     )}
                   </div>
                 </div>
