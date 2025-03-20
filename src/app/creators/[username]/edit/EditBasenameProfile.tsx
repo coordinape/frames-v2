@@ -252,15 +252,15 @@ export default function EditBasenameProfile({
 
       if (successCount > 0) {
         if (successCount === 1) {
-          // If only one field changed, use the single setText method
           const { key, value } = changedRecords[0];
           await setText(basename, key, value, walletClient);
         } else {
-          // If multiple fields changed, use the multicall method
           await setMultipleTextRecords(basename, changedRecords, walletClient);
         }
 
-        router.push(`/creators/${basename}`);
+        // Refresh router data before redirecting
+        router.refresh();
+
         setSuccess(`Successfully updated ${successCount} profile fields.`);
       } else {
         setSuccess("No changes detected.");
@@ -434,7 +434,13 @@ export default function EditBasenameProfile({
 
                 {success && (
                   <div className="mb-4 p-3 bg-green-500/20 text-green-200 rounded-lg">
-                    {success}
+                    <p>{success}</p>
+                    <Link
+                      href={`/creators/${basename}`}
+                      className="text-white underline hover:text-white/80 mt-2 inline-block"
+                    >
+                      View your updated profile →
+                    </Link>
                   </div>
                 )}
 
