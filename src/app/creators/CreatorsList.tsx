@@ -114,7 +114,7 @@ export default function CreatorsList() {
           </svg>
           <input
             type="text"
-            placeholder="Name, Medium, etc..."
+            placeholder="Search creators by name, creative medium, etc..."
             className="w-full bg-transparent border-none text-white py-3 px-2 focus:outline-none"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
