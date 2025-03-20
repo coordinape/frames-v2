@@ -60,7 +60,7 @@ export default async function ProfilePage({ params }: Props) {
     <>
       <FrameSDK />
       <Header />
-      <div className="flex flex-col gap-10">
+      <div className="flex flex-col gap-8">
         <div className="flex justify-between mb-2">
           <Link
             href="/creators"
@@ -101,7 +101,7 @@ export default async function ProfilePage({ params }: Props) {
               </span>
             </div>
           )}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 my-2">
             <h2
               className={`font-bold text-white base-pixel-display ${
                 displayName.length > 20 ? "text-2xl" : "text-3xl"
