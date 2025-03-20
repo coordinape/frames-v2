@@ -6,7 +6,6 @@ import { getCreators } from "~/app/features/directory/actions";
 import { CreatorWithOpenSeaData } from "~/app/features/directory/types";
 import Header from "../components/Header";
 import Link from "next/link";
-import { BasenameTextRecordKeys } from "~/app/creators/[username]/basenames";
 
 export default function CreatorsList() {
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
@@ -54,47 +53,19 @@ export default function CreatorsList() {
     if (!searchQuery) return true;
 
     const query = searchQuery.toLowerCase();
+
+    // Helper function to check and log matches
+    const checkMatch = (field: string, value: string | undefined | null) => {
+      if (!value) return false;
+      return value.toLowerCase().includes(query);
+    };
+
     return (
-      creator.name.toLowerCase().includes(query) ||
-      creator.address.toLowerCase().includes(query) ||
-      creator.resolution?.basename?.toLowerCase().includes(query) ||
-      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Description]
-        ?.toLowerCase()
-        .includes(query) ||
-      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Keywords]
-        ?.toLowerCase()
-        .includes(query) ||
-      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Url]
-        ?.toLowerCase()
-        .includes(query) ||
-      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Email]
-        ?.toLowerCase()
-        .includes(query) ||
-      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Phone]
-        ?.toLowerCase()
-        .includes(query) ||
-      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Github]
-        ?.toLowerCase()
-        .includes(query) ||
-      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Twitter]
-        ?.toLowerCase()
-        .includes(query) ||
-      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Farcaster]
-        ?.toLowerCase()
-        .includes(query) ||
-      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Lens]
-        ?.toLowerCase()
-        .includes(query) ||
-      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Telegram]
-        ?.toLowerCase()
-        .includes(query) ||
-      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Discord]
-        ?.toLowerCase()
-        .includes(query) ||
-      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Medium]
-        ?.toLowerCase()
-        .includes(query) ||
-      creator.bio?.toLowerCase().includes(query)
+      checkMatch("name", creator.name) ||
+      checkMatch("bio", creator.bio) ||
+      Object.entries(creator.resolution?.textRecords || {}).some(
+        ([key, value]) => checkMatch(key, value),
+      )
     );
   });
 
@@ -148,7 +119,6 @@ export default function CreatorsList() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          
         </div>
       </div>
 

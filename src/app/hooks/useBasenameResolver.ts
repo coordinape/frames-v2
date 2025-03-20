@@ -9,21 +9,11 @@ import {
 } from "~/app/creators/[username]/basenames";
 
 const emptyTextRecords: Record<BasenameTextRecordKeys, string | undefined> = {
-  [BasenameTextRecordKeys.Description]: undefined,
-  [BasenameTextRecordKeys.Keywords]: undefined,
   [BasenameTextRecordKeys.Url]: undefined,
-  [BasenameTextRecordKeys.Email]: undefined,
-  [BasenameTextRecordKeys.Phone]: undefined,
   [BasenameTextRecordKeys.Github]: undefined,
-  [BasenameTextRecordKeys.Twitter]: undefined,
   [BasenameTextRecordKeys.Farcaster]: undefined,
-  [BasenameTextRecordKeys.Lens]: undefined,
-  [BasenameTextRecordKeys.Telegram]: undefined,
-  [BasenameTextRecordKeys.Discord]: undefined,
-  [BasenameTextRecordKeys.Avatar]: undefined,
-  [BasenameTextRecordKeys.Frames]: undefined,
-  [BasenameTextRecordKeys.Medium]: undefined,
-  [BasenameTextRecordKeys.AvailableForHire]: undefined,
+  [BasenameTextRecordKeys.CreativeMedium]: undefined,
+  [BasenameTextRecordKeys.AvailableForHire]: "false",
 };
 
 export async function resolveBasenameOrAddress(input: string) {

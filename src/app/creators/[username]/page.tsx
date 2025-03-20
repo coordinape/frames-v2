@@ -7,7 +7,7 @@ import Link from "next/link";
 import Header from "~/app/components/Header";
 import { EditProfile } from "~/app/components/EditProfile";
 import Gives from "./Gives";
-import ForHireCard from "./ForHireCard";
+import InfoCard from "./InfoCard";
 import { FrameSDK } from "~/app/components/FrameSDK";
 import { APP_BASE_URL } from "~/lib/constants";
 
@@ -118,7 +118,7 @@ export default async function ProfilePage({ params }: Props) {
           <p className="text-white/80 text-xs font-mono">{creator.address}</p>
         </div>
 
-        {resolution?.address && <ForHireCard address={resolution.address} />}
+        {resolution?.address && <InfoCard address={resolution.address} />}
 
         {resolution?.address && <Gives address={resolution.address} />}
 
