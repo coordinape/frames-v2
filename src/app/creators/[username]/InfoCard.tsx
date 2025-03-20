@@ -17,10 +17,6 @@ export default async function InfoCard({ address }: InfoCardProps) {
   const creativeMediumValue =
     resolution.textRecords[BasenameTextRecordKeys.CreativeMedium];
 
-  if (!creativeMediumValue) {
-    return null;
-  }
-
   console.log("Creative Medium Value:", creativeMediumValue);
 
   const creativeMediumTags = creativeMediumValue
@@ -134,19 +130,21 @@ export default async function InfoCard({ address }: InfoCardProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="text-white/70">
-        <div className="text-sm font-medium mb-1">Creative Medium:</div>
-        <div className="flex flex-wrap gap-2">
-          {creativeMediumTags.map((tag, index) => (
-            <div
-              key={index}
-              className="flex items-center px-2 py-1 bg-white/20 rounded-md"
-            >
-              <span className="text-white text-sm">{tag}</span>
-            </div>
-          ))}
+      {creativeMediumValue && (
+        <div className="text-white/70">
+          <div className="text-sm font-medium mb-1">Creative Medium:</div>
+          <div className="flex flex-wrap">
+            {creativeMediumTags.map((tag, index) => (
+              <div
+                key={index}
+                className="flex items-center px-2 py-1 bg-white/20 rounded-md"
+              >
+                <span className="text-white text-sm">{tag}</span>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {isAvailableForWork && (
         <div className="flex items-center gap-2">

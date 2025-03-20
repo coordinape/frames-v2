@@ -18,7 +18,9 @@ export default async function Gives({ address }: GivesProps) {
 
   return (
     <div className="space-y-2">
-      <h3 className="text-xl font-bold text-white base-pixel">Gives</h3>
+      <h3 className="text-xl font-bold text-white base-pixel">
+        Coordinape GIVE Skills
+      </h3>
       <div className="flex flex-wrap gap-2">
         {gives.map((giveGroup, index) => (
           <div
