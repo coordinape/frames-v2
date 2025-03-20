@@ -114,7 +114,9 @@ export default async function ProfilePage({ params }: Props) {
             <MembershipStatus isMember={isMember} />
           </div>
 
-          {creator.bio && <p className="text-white text-sm">{creator.bio}</p>}
+          {creator.description && (
+            <p className="text-white text-sm">{creator.description}</p>
+          )}
           <p className="text-white/80 text-xs font-mono">{creator.address}</p>
         </div>
 
