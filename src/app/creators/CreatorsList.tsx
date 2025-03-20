@@ -54,47 +54,70 @@ export default function CreatorsList() {
     if (!searchQuery) return true;
 
     const query = searchQuery.toLowerCase();
+
+    // Helper function to check and log matches
+    const checkMatch = (field: string, value: string | undefined | null) => {
+      if (value?.toLowerCase().includes(query)) {
+        console.log(`Match found for ${creator.name} in ${field}:`, value);
+        return true;
+      }
+      return false;
+    };
+
+    // Check each field and log matches
     return (
-      creator.name.toLowerCase().includes(query) ||
-      creator.address.toLowerCase().includes(query) ||
-      creator.resolution?.basename?.toLowerCase().includes(query) ||
-      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Description]
-        ?.toLowerCase()
-        .includes(query) ||
-      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Keywords]
-        ?.toLowerCase()
-        .includes(query) ||
-      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Url]
-        ?.toLowerCase()
-        .includes(query) ||
-      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Email]
-        ?.toLowerCase()
-        .includes(query) ||
-      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Phone]
-        ?.toLowerCase()
-        .includes(query) ||
-      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Github]
-        ?.toLowerCase()
-        .includes(query) ||
-      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Twitter]
-        ?.toLowerCase()
-        .includes(query) ||
-      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Farcaster]
-        ?.toLowerCase()
-        .includes(query) ||
-      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Lens]
-        ?.toLowerCase()
-        .includes(query) ||
-      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Telegram]
-        ?.toLowerCase()
-        .includes(query) ||
-      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Discord]
-        ?.toLowerCase()
-        .includes(query) ||
-      creator.resolution?.textRecords?.[BasenameTextRecordKeys.Medium]
-        ?.toLowerCase()
-        .includes(query) ||
-      creator.bio?.toLowerCase().includes(query)
+      checkMatch("name", creator.name) ||
+      checkMatch("address", creator.address) ||
+      checkMatch("basename", creator.resolution?.basename) ||
+      checkMatch(
+        "description",
+        creator.resolution?.textRecords?.[BasenameTextRecordKeys.Description],
+      ) ||
+      checkMatch(
+        "keywords",
+        creator.resolution?.textRecords?.[BasenameTextRecordKeys.Keywords],
+      ) ||
+      checkMatch(
+        "url",
+        creator.resolution?.textRecords?.[BasenameTextRecordKeys.Url],
+      ) ||
+      checkMatch(
+        "email",
+        creator.resolution?.textRecords?.[BasenameTextRecordKeys.Email],
+      ) ||
+      checkMatch(
+        "phone",
+        creator.resolution?.textRecords?.[BasenameTextRecordKeys.Phone],
+      ) ||
+      checkMatch(
+        "github",
+        creator.resolution?.textRecords?.[BasenameTextRecordKeys.Github],
+      ) ||
+      checkMatch(
+        "twitter",
+        creator.resolution?.textRecords?.[BasenameTextRecordKeys.Twitter],
+      ) ||
+      checkMatch(
+        "farcaster",
+        creator.resolution?.textRecords?.[BasenameTextRecordKeys.Farcaster],
+      ) ||
+      checkMatch(
+        "lens",
+        creator.resolution?.textRecords?.[BasenameTextRecordKeys.Lens],
+      ) ||
+      checkMatch(
+        "telegram",
+        creator.resolution?.textRecords?.[BasenameTextRecordKeys.Telegram],
+      ) ||
+      checkMatch(
+        "discord",
+        creator.resolution?.textRecords?.[BasenameTextRecordKeys.Discord],
+      ) ||
+      checkMatch(
+        "medium",
+        creator.resolution?.textRecords?.[BasenameTextRecordKeys.Medium],
+      ) ||
+      checkMatch("bio", creator.bio)
     );
   });
 
