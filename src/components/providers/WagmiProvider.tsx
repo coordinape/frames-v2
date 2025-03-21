@@ -14,7 +14,7 @@ export const config = createConfig({
     [degen.id]: http(),
     [unichain.id]: http(),
   },
-  connectors: [injected(), farcasterFrame()],
+  connectors: [farcasterFrame(), injected()],
 });
 
 const queryClient = new QueryClient();
