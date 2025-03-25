@@ -85,26 +85,29 @@ export default async function ProfilePage({ params }: Props) {
           </Link>
           <div className="flex items-center gap-4">
             <ShareButton text="Share Profile" />
+          </div>
+        </div>
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            {creator.avatar ? (
+              <img
+                src={creator.avatar}
+                alt={creator.name}
+                className="w-22 h-22 rounded-full mr-4"
+              />
+            ) : (
+              <div className="w-16 h-16 rounded-full bg-blue-300 flex items-center justify-center mr-4">
+                <span className="text-blue-700 text-xl font-bold">
+                  {creator.name.charAt(0)}
+                </span>
+              </div>
+            )}
             <EditProfile
               address={resolution?.address || ""}
               basename={creator.resolution?.basename || ""}
             />
           </div>
-        </div>
-        <div className="flex flex-col gap-2">
-          {creator.avatar ? (
-            <img
-              src={creator.avatar}
-              alt={creator.name}
-              className="w-22 h-22 rounded-full mr-4"
-            />
-          ) : (
-            <div className="w-16 h-16 rounded-full bg-blue-300 flex items-center justify-center mr-4">
-              <span className="text-blue-700 text-xl font-bold">
-                {creator.name.charAt(0)}
-              </span>
-            </div>
-          )}
+
           <div className="flex items-center gap-2 my-2">
             <h2
               className={`font-bold text-white base-pixel-display ${
