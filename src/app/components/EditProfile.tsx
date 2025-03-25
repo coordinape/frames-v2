@@ -22,7 +22,7 @@ export const EditProfile = ({
     return (
       <Link
         href={`/creators/${basename || address}/edit`}
-        className="px-4 py-1 bg-white/10 text-white text-sm rounded-full cursor-pointer hover:bg-white/20 transition-colors inline-flex items-center"
+        className="px-4 py-1 bg-white/10 text-white text-xs rounded-full cursor-pointer hover:bg-white/20 transition-colors inline-flex items-center"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
