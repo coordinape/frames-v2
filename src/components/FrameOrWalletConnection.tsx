@@ -29,15 +29,15 @@ export function useWalletConnection() {
     setError(null);
 
     try {
-      // Check if any wallet is available
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      if (typeof window !== "undefined" && !(window as any).ethereum) {
-        throw new Error(
-          "No wallet found. Please install MetaMask or another Ethereum wallet.",
-        );
-      }
+      // // Check if any wallet is available
+      // // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // if (typeof window !== "undefined" && !(window as any).ethereum) {
+      //   throw new Error(
+      //     "No wallet found. Please install MetaMask or another Ethereum wallet.",
+      //   );
+      // }
 
-      await connect({
+      connect({
         connector: config.connectors[0],
       });
     } catch (err) {
