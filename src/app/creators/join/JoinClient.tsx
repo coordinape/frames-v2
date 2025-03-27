@@ -6,7 +6,7 @@ import Header from "~/app/components/Header";
 import { useAccount, useDisconnect, useConnect } from "wagmi";
 import { config } from "~/components/providers/WagmiProvider";
 import { resolveBasenameOrAddress } from "~/app/hooks/useBasenameResolver";
-import { getOpenseaNFTContracts } from "~/lib/getOpenseaNFTContracts";
+import { getNFTContracts } from "~/lib/getNFTContracts";
 import { refreshRequirementsCache } from "./actions";
 import { truncateAddress } from "~/app/utils/address";
 import { useRouter } from "next/navigation";
@@ -15,13 +15,11 @@ import {
   joinDirectory,
 } from "~/app/features/directory/actions";
 import Link from "next/link";
-import { getOpenSeaUsernameFromAddress } from "~/lib/getOpenseaNFTContracts";
 
 interface EligibilityStatus {
   hasBasename: boolean;
   basename: string;
   hasNFTsOnBase: boolean;
-  hasOpenseaUsername: boolean;
   isLoading: boolean;
 }
 
@@ -29,7 +27,6 @@ const initialEligibility: EligibilityStatus = {
   hasBasename: false,
   basename: "",
   hasNFTsOnBase: false,
-  hasOpenseaUsername: false,
   isLoading: true,
 };
 
@@ -72,20 +69,15 @@ export default function JoinClient() {
         const basename = resolution?.basename || "";
 
         // Check NFT releases on Base
-        const contracts = await getOpenseaNFTContracts(address);
+        const contracts = await getNFTContracts(address);
         const hasNFTsOnBase = contracts.some(
-          (contract) => contract.chainId.toLowerCase() === "base",
+          (contract) => contract.chainId === "BASE_MAINNET",
         );
-
-        // Check OpenSea username
-        const openseaUsername = await getOpenSeaUsernameFromAddress(address);
-        const hasOpenseaUsername = openseaUsername !== null;
 
         setEligibility({
           hasBasename,
           basename,
           hasNFTsOnBase,
-          hasOpenseaUsername,
           isLoading: false,
         });
       } catch (error) {
@@ -94,7 +86,6 @@ export default function JoinClient() {
           hasBasename: false,
           basename: "",
           hasNFTsOnBase: false,
-          hasOpenseaUsername: false,
           isLoading: false,
         });
       }
@@ -131,9 +122,7 @@ export default function JoinClient() {
         ? truncateAddress(userAddress)
         : "");
   const allRequirementsMet =
-    eligibility.hasBasename &&
-    eligibility.hasNFTsOnBase &&
-    eligibility.hasOpenseaUsername;
+    eligibility.hasBasename && eligibility.hasNFTsOnBase;
 
   const handleRefresh = async () => {
     if (!address) return;
@@ -154,20 +143,15 @@ export default function JoinClient() {
       const hasBasename = !!resolution?.basename;
       const basename = resolution?.basename || "";
 
-      const contracts = await getOpenseaNFTContracts(address);
+      const contracts = await getNFTContracts(address);
       const hasNFTsOnBase = contracts.some(
-        (contract) => contract.chainId.toLowerCase() === "base",
+        (contract) => contract.chainId === "BASE_MAINNET",
       );
-
-      // Check OpenSea username
-      const openseaUsername = await getOpenSeaUsernameFromAddress(address);
-      const hasOpenseaUsername = openseaUsername !== null;
 
       setEligibility({
         hasBasename,
         basename,
         hasNFTsOnBase,
-        hasOpenseaUsername,
         isLoading: false,
       });
     } catch (error) {
@@ -266,36 +250,6 @@ export default function JoinClient() {
                     className="text-xs text-white/80 hover:text-white ml-3"
                   >
                     Get your basename
-                  </Link>
-                )}
-              </div>
-            </li>
-            <li className="flex items-center">
-              <div className="w-5 h-5 rounded-full mr-3 flex items-center justify-center border-1">
-                {eligibility.hasOpenseaUsername && (
-                  <svg
-                    className="w-3 h-3 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={3}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                )}
-              </div>
-              <div className="flex items-baseline justify-between w-full">
-                Set an OpenSea Username
-                {!eligibility.hasOpenseaUsername && (
-                  <Link
-                    href="https://opensea.io/account/settings"
-                    className="text-xs text-white/80 hover:text-white ml-3"
-                  >
-                    Set up OpenSea
                   </Link>
                 )}
               </div>

@@ -35,7 +35,7 @@ async function fetchWithCache<T>(
   const cachedData = await kv.get(cacheKey);
   if (cachedData) {
     console.log(`Cache hit for ${cacheKey}`);
-    console.log({ cachedData });
+    // console.log({ cachedData });
     return cachedData as T;
   }
 
@@ -96,17 +96,17 @@ interface OpenSeaCollection {
   }[];
 }
 
-interface ContractDetails {
+export interface ContractDetails {
   name: string;
   contractAddress: string;
   chainId: string;
   imageUrl: string;
   bannerImageUrl: string;
   description: string;
-  openseaUrl: string;
-  projectUrl: string;
-  discordUrl: string;
-  twitterUsername: string;
+  openseaUrl?: string;
+  projectUrl?: string;
+  discordUrl?: string;
+  twitterUsername?: string;
 }
 
 // Add a function to filter collections by chain

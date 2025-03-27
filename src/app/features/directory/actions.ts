@@ -2,7 +2,7 @@
 
 import { getApolloClient, getApolloClientAuthed } from "~/lib/apollo-client";
 import { gql } from "@apollo/client";
-import { getOpenseaNFTContracts } from "~/lib/getOpenseaNFTContracts";
+import { getNFTContracts } from "~/lib/getNFTContracts";
 import {
   Creator,
   CreatorWithOpenSeaData,
@@ -159,8 +159,8 @@ export async function getCreator(
 
     try {
       // Get NFT contracts
-      const contracts = await getOpenseaNFTContracts(creator.address, "base");
-      console.log("getOpenseaNFTContracts", JSON.stringify(contracts, null, 2));
+      const contracts = await getNFTContracts(creator.address, "BASE_MAINNET");
+      console.log("getNFTContracts", JSON.stringify(contracts, null, 2));
 
       // Resolve basename
       const resolution = await resolveBasenameOrAddress(creator.address);
@@ -267,7 +267,7 @@ export async function getCreators(): Promise<CreatorWithOpenSeaData[]> {
       creators.map(async (creator: Creator) => {
         try {
           // Get NFT contracts
-          const contracts = await getOpenseaNFTContracts(creator.address);
+          const contracts = await getNFTContracts(creator.address);
 
           // Resolve basename
           const resolution = await resolveBasenameOrAddress(creator.address);
