@@ -79,8 +79,10 @@ export async function getNFTContracts(
     // Create a map to store merged contracts by address
     const contractMap = new Map<string, NFTContractDetails>();
 
+    // some contracts with no contractAddress are bogus spam contracts
+
     // Process OpenSea contracts first
-    for (const contract of openSeaContracts) {
+    for (const contract of openSeaContracts.filter((contract) => contract.contractAddress)) {
       contractMap.set(contract.contractAddress.toLowerCase(), mergeContractDetails(contract, undefined));
     }
 

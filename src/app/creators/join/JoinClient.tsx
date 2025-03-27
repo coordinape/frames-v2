@@ -15,7 +15,6 @@ import {
   joinDirectory,
 } from "~/app/features/directory/actions";
 import Link from "next/link";
-import { getOpenSeaUsernameFromAddress } from "~/lib/getOpenseaNFTContracts";
 
 interface EligibilityStatus {
   hasBasename: boolean;

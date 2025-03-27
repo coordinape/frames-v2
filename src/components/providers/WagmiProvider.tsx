@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { farcasterFrame } from "@farcaster/frame-wagmi-connector";
 
 export const config = createConfig({
+
   chains: [base, optimism, mainnet, degen, unichain],
   transports: {
     [base.id]: http(),
@@ -14,7 +15,7 @@ export const config = createConfig({
     [degen.id]: http(),
     [unichain.id]: http(),
   },
-  connectors: [farcasterFrame(), injected()],
+  connectors: typeof window !== "undefined" && window.ethereum ? [injected()] : [farcasterFrame()],
 });
 
 const queryClient = new QueryClient();

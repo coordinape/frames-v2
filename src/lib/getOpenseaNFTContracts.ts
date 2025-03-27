@@ -35,7 +35,7 @@ async function fetchWithCache<T>(
   const cachedData = await kv.get(cacheKey);
   if (cachedData) {
     console.log(`Cache hit for ${cacheKey}`);
-    console.log({ cachedData });
+    // console.log({ cachedData });
     return cachedData as T;
   }
 
