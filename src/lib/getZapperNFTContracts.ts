@@ -237,7 +237,7 @@ export async function getZapperNFTContracts(
           )
           .map(({ node }) => ({
             name: node.name,
-            contractAddress: node.address.toLowerCase(),
+            contractAddress: (node.address as string).toLowerCase(),
             chainId: node.network,
             imageUrl:
               node.medias?.logo?.original || node.medias?.logo?.thumbnail || "",

@@ -5,6 +5,7 @@ import { base, degen, mainnet, optimism, unichain } from "wagmi/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { farcasterFrame } from "@farcaster/frame-wagmi-connector";
 
+// @ts-ignore
 export const config = createConfig({
   chains: [base, optimism, mainnet, degen, unichain],
   transports: {
@@ -15,7 +16,7 @@ export const config = createConfig({
     [unichain.id]: http(),
   },
   connectors:
-    typeof window !== "undefined" && window.ethereum
+    typeof window !== "undefined" && (window as any).ethereum
       ? [injected()]
       : [farcasterFrame()],
 });
