@@ -1,5 +1,11 @@
-import { getOpenseaNFTContracts, ContractDetails as OpenSeaContractDetails } from "./getOpenseaNFTContracts";
-import { getZapperNFTContracts, ContractDetails as ZapperContractDetails } from "./getZapperNFTContracts";
+import {
+  getOpenseaNFTContracts,
+  ContractDetails as OpenSeaContractDetails,
+} from "./getOpenseaNFTContracts";
+import {
+  getZapperNFTContracts,
+  ContractDetails as ZapperContractDetails,
+} from "./getZapperNFTContracts";
 
 export interface NFTContractDetails {
   name: string;
@@ -82,8 +88,13 @@ export async function getNFTContracts(
     // some contracts with no contractAddress are bogus spam contracts
 
     // Process OpenSea contracts first
-    for (const contract of openSeaContracts.filter((contract) => contract.contractAddress)) {
-      contractMap.set(contract.contractAddress.toLowerCase(), mergeContractDetails(contract, undefined));
+    for (const contract of openSeaContracts.filter(
+      (contract) => contract.contractAddress,
+    )) {
+      contractMap.set(
+        contract.contractAddress.toLowerCase(),
+        mergeContractDetails(contract, undefined),
+      );
     }
 
     // Merge or add Zapper contracts
@@ -91,7 +102,10 @@ export async function getNFTContracts(
       const address = contract.contractAddress.toLowerCase();
       const existing = contractMap.get(address);
       if (existing) {
-        contractMap.set(address, mergeContractDetails(existing as OpenSeaContractDetails, contract));
+        contractMap.set(
+          address,
+          mergeContractDetails(existing as OpenSeaContractDetails, contract),
+        );
       } else {
         contractMap.set(address, mergeContractDetails(undefined, contract));
       }
@@ -102,4 +116,4 @@ export async function getNFTContracts(
     console.error("Error fetching NFT contracts:", error);
     throw error;
   }
-} 
+}

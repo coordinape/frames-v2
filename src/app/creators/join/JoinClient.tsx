@@ -122,8 +122,7 @@ export default function JoinClient() {
         ? truncateAddress(userAddress)
         : "");
   const allRequirementsMet =
-    eligibility.hasBasename &&
-    eligibility.hasNFTsOnBase;
+    eligibility.hasBasename && eligibility.hasNFTsOnBase;
 
   const handleRefresh = async () => {
     if (!address) return;

@@ -6,7 +6,6 @@ const CACHE_DURATION = 3600 * 1000 * 24; // 24 hours in milliseconds
 
 // Types for Zapper API response
 type Network = string;
-type Address = string;
 
 interface MediaAsset {
   thumbnail?: string;
@@ -189,9 +188,15 @@ export async function getZapperNFTContracts(
 
       const variables = {
         deployers: [deployerAddress],
-        networks: chain 
-          ? [chain.toUpperCase()] 
-          : ["ETHEREUM_MAINNET", "OPTIMISM_MAINNET", "POLYGON_MAINNET", "ARBITRUM_MAINNET", "BASE_MAINNET"],
+        networks: chain
+          ? [chain.toUpperCase()]
+          : [
+              "ETHEREUM_MAINNET",
+              "OPTIMISM_MAINNET",
+              "POLYGON_MAINNET",
+              "ARBITRUM_MAINNET",
+              "BASE_MAINNET",
+            ],
         first,
       };
 
@@ -212,42 +217,49 @@ export async function getZapperNFTContracts(
       }
 
       const data = (await response.json()) as ZapperResponse;
-      
-      console.log('Zapper API Response:', JSON.stringify(data, null, 2));
+
+      console.log("Zapper API Response:", JSON.stringify(data, null, 2));
 
       if (!data || !data.data) {
-        console.error('Invalid response structure from Zapper API:', data);
-        throw new Error('Invalid response structure from Zapper API');
+        console.error("Invalid response structure from Zapper API:", data);
+        throw new Error("Invalid response structure from Zapper API");
       }
 
       if (!data.data.nftCollectionsForDeployers) {
-        console.error('No NFT collections data in response:', data);
+        console.error("No NFT collections data in response:", data);
         return [];
       }
 
-      const contractDetails: ContractDetails[] = data.data.nftCollectionsForDeployers.edges
-        .filter(({ node }) => node?.address && typeof node.address === 'string')
-        .map(({ node }) => ({
-          name: node.name,
-          contractAddress: node.address.toLowerCase(),
-          chainId: node.network,
-          imageUrl: node.medias?.logo?.original || node.medias?.logo?.thumbnail || "",
-          bannerImageUrl: node.medias?.banner?.original || node.medias?.banner?.large || "",
-          description: node.description,
-          symbol: node.symbol,
-          nftStandard: node.nftStandard,
-          type: node.type,
-          supply: node.supply,
-          totalSupply: node.totalSupply,
-          holdersCount: node.holdersCount,
-          circulatingSupply: node.circulatingSupply,
-          floorPriceUsd: node.floorPrice?.valueUsd,
-          floorPriceNative: node.floorPrice?.valueWithDenomination,
-          floorPriceCurrency: node.floorPrice?.denomination?.symbol,
-          socialLinks: node.socialLinks,
-        }));
+      const contractDetails: ContractDetails[] =
+        data.data.nftCollectionsForDeployers.edges
+          .filter(
+            ({ node }) => node?.address && typeof node.address === "string",
+          )
+          .map(({ node }) => ({
+            name: node.name,
+            contractAddress: node.address.toLowerCase(),
+            chainId: node.network,
+            imageUrl:
+              node.medias?.logo?.original || node.medias?.logo?.thumbnail || "",
+            bannerImageUrl:
+              node.medias?.banner?.original || node.medias?.banner?.large || "",
+            description: node.description,
+            symbol: node.symbol,
+            nftStandard: node.nftStandard,
+            type: node.type,
+            supply: node.supply,
+            totalSupply: node.totalSupply,
+            holdersCount: node.holdersCount,
+            circulatingSupply: node.circulatingSupply,
+            floorPriceUsd: node.floorPrice?.valueUsd,
+            floorPriceNative: node.floorPrice?.valueWithDenomination,
+            floorPriceCurrency: node.floorPrice?.denomination?.symbol,
+            socialLinks: node.socialLinks,
+          }));
 
-      return chain ? filterCollectionsByChain(contractDetails, chain) : contractDetails;
+      return chain
+        ? filterCollectionsByChain(contractDetails, chain)
+        : contractDetails;
     } catch (error) {
       console.error("Error fetching collection details from Zapper:", error);
       throw error;
@@ -260,6 +272,8 @@ export async function bustCache(cacheKey: string): Promise<void> {
   console.log(`Busted KV cache for ${cacheKey}`);
 }
 
-export async function bustZapperCollectionsCache(address: string): Promise<void> {
+export async function bustZapperCollectionsCache(
+  address: string,
+): Promise<void> {
   await bustCache(generateCacheKey("collections", address));
-} 
+}
