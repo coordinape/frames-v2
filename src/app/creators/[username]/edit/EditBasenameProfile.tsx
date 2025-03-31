@@ -21,6 +21,7 @@ import {
 import Header from "~/app/components/Header";
 import Link from "next/link";
 import { truncateAddress } from "~/app/utils/address";
+import { base } from "wagmi/chains";
 
 interface TagInputProps {
   value: string;
@@ -137,6 +138,8 @@ interface EditBasenameProfileProps {
   username: string;
 }
 
+const BASE_CHAIN_ID = base.id;
+
 export default function EditBasenameProfile({
   username,
 }: EditBasenameProfileProps) {
@@ -163,7 +166,7 @@ export default function EditBasenameProfile({
   const { data: walletClient } = useWalletClient();
   const { switchChain, isPending: isSwitchingNetwork } = useSwitchChain();
   const chainId = useChainId();
-  const isBaseChain = chainId === 8453; // Base chain ID
+  const isBaseChain = chainId === BASE_CHAIN_ID;
 
   useEffect(() => {
     const connectWallet = async () => {
