@@ -10,10 +10,18 @@ import {
   setMultipleTextRecords,
   textRecordsKeysEnabled,
 } from "~/app/creators/[username]/basenames";
-import { useAccount, useConnect, useDisconnect, useWalletClient } from "wagmi";
+import {
+  useAccount,
+  useConnect,
+  useDisconnect,
+  useWalletClient,
+  useChainId,
+  useSwitchChain,
+} from "wagmi";
 import Header from "~/app/components/Header";
 import Link from "next/link";
 import { truncateAddress } from "~/app/utils/address";
+import { base } from "wagmi/chains";
 
 interface TagInputProps {
   value: string;
@@ -130,6 +138,8 @@ interface EditBasenameProfileProps {
   username: string;
 }
 
+const BASE_CHAIN_ID = base.id;
+
 export default function EditBasenameProfile({
   username,
 }: EditBasenameProfileProps) {
@@ -154,13 +164,28 @@ export default function EditBasenameProfile({
   const { connect, connectors } = useConnect();
   const { disconnect } = useDisconnect();
   const { data: walletClient } = useWalletClient();
+  const { switchChain, isPending: isSwitchingNetwork } = useSwitchChain();
+  const chainId = useChainId();
+  const isBaseChain = chainId === BASE_CHAIN_ID;
 
   useEffect(() => {
     const connectWallet = async () => {
       try {
-        const injector = connectors.find((c) => c.id === "injected");
-        if (injector && !isConnected) {
-          connect({ connector: injector });
+        // Check for Frame first
+        const frameConnector = connectors.find(
+          (c) => c.id === "farcasterFrame",
+        );
+        const injectedConnector = connectors.find((c) => c.id === "injected");
+
+        if (!isConnected) {
+          // Try Frame connector first if in Frame context
+          if (frameConnector && window.parent !== window) {
+            connect({ connector: frameConnector });
+          }
+          // Fall back to injected if available
+          else if (injectedConnector) {
+            connect({ connector: injectedConnector });
+          }
         }
       } catch (error) {
         console.error("Failed to connect wallet:", error);
@@ -217,6 +242,11 @@ export default function EditBasenameProfile({
 
     if (!walletClient || !isConnected) {
       setError("Wallet not connected. Please connect your wallet first.");
+      return;
+    }
+
+    if (!isBaseChain) {
+      setError("Please switch to Base network before proceeding.");
       return;
     }
 
@@ -320,20 +350,50 @@ export default function EditBasenameProfile({
             <>
               {!isConnected ? (
                 <div className="mb-6">
-                  <button
-                    onClick={() => {
-                      const injector = connectors.find(
-                        (c) => c.id === "injected",
-                      );
-                      if (injector) connect({ connector: injector });
-                    }}
-                    className="px-4 py-2 bg-white text-blue-600 rounded-lg font-medium hover:bg-blue-50 transition-all"
-                  >
-                    Connect Wallet
-                  </button>
+                  <div className="flex gap-2">
+                    {connectors.map((connector) => (
+                      <button
+                        key={connector.id}
+                        onClick={() => connect({ connector })}
+                        className="px-4 py-2 bg-white text-blue-600 rounded-lg font-medium hover:bg-blue-50 transition-all"
+                        disabled={!connector.ready}
+                      >
+                        {connector.id === "farcasterFrame"
+                          ? "Connect with Farcaster"
+                          : "Connect Wallet"}
+                      </button>
+                    ))}
+                  </div>
                   <p className="mt-2 text-sm text-white/70">
                     Please connect your wallet to edit your profile.
                   </p>
+                </div>
+              ) : !isBaseChain ? (
+                <div className="mb-6 p-4 bg-yellow-500/20 text-yellow-200 rounded-lg">
+                  <p className="mb-2">
+                    Please switch to Base network to continue.
+                  </p>
+                  {switchChain && (
+                    <div className="flex flex-col gap-2">
+                      <button
+                        onClick={() => switchChain({ chainId: 8453 })}
+                        disabled={isSwitchingNetwork}
+                        className="px-4 py-2 bg-yellow-500 text-black rounded-lg font-medium hover:bg-yellow-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {isSwitchingNetwork ? "Switching..." : "Switch to Base"}
+                      </button>
+                      <p className="text-sm text-yellow-200/80">
+                        {isSwitchingNetwork
+                          ? "Please confirm the network switch in your wallet..."
+                          : "If the button doesn't work, please switch networks manually in your wallet."}
+                      </p>
+                    </div>
+                  )}
+                  {!switchChain && (
+                    <p className="text-sm text-yellow-200/80">
+                      Please switch to Base network manually in your wallet.
+                    </p>
+                  )}
                 </div>
               ) : (
                 <div className="mb-6 p-3 bg-white/20 text-white rounded-lg flex justify-between items-center">
