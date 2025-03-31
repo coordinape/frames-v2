@@ -15,8 +15,7 @@ import {
   useConnect,
   useDisconnect,
   useWalletClient,
-  useNetwork,
-  useSwitchNetwork,
+  useChainId,
 } from "wagmi";
 import Header from "~/app/components/Header";
 import Link from "next/link";
@@ -161,10 +160,8 @@ export default function EditBasenameProfile({
   const { connect, connectors } = useConnect();
   const { disconnect } = useDisconnect();
   const { data: walletClient } = useWalletClient();
-  const { chain } = useNetwork();
-  const { switchNetwork } = useSwitchNetwork();
-
-  const isBaseChain = chain?.id === 8453; // Base chain ID
+  const chainId = useChainId();
+  const isBaseChain = chainId === 8453; // Base chain ID
 
   useEffect(() => {
     const connectWallet = async () => {
@@ -369,16 +366,8 @@ export default function EditBasenameProfile({
               ) : !isBaseChain ? (
                 <div className="mb-6 p-4 bg-yellow-500/20 text-yellow-200 rounded-lg">
                   <p className="mb-2">
-                    Please switch to Base network to continue.
+                    Please switch to Base network in your wallet to continue.
                   </p>
-                  {switchNetwork && (
-                    <button
-                      onClick={() => switchNetwork(8453)}
-                      className="px-4 py-2 bg-yellow-500 text-black rounded-lg font-medium hover:bg-yellow-400 transition-all"
-                    >
-                      Switch to Base
-                    </button>
-                  )}
                 </div>
               ) : (
                 <div className="mb-6 p-3 bg-white/20 text-white rounded-lg flex justify-between items-center">
