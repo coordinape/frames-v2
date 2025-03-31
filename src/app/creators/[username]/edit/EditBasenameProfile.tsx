@@ -10,7 +10,14 @@ import {
   setMultipleTextRecords,
   textRecordsKeysEnabled,
 } from "~/app/creators/[username]/basenames";
-import { useAccount, useConnect, useDisconnect, useWalletClient } from "wagmi";
+import {
+  useAccount,
+  useConnect,
+  useDisconnect,
+  useWalletClient,
+  useNetwork,
+  useSwitchNetwork,
+} from "wagmi";
 import Header from "~/app/components/Header";
 import Link from "next/link";
 import { truncateAddress } from "~/app/utils/address";
@@ -154,6 +161,10 @@ export default function EditBasenameProfile({
   const { connect, connectors } = useConnect();
   const { disconnect } = useDisconnect();
   const { data: walletClient } = useWalletClient();
+  const { chain } = useNetwork();
+  const { switchNetwork } = useSwitchNetwork();
+
+  const isBaseChain = chain?.id === 8453; // Base chain ID
 
   useEffect(() => {
     const connectWallet = async () => {
@@ -229,6 +240,11 @@ export default function EditBasenameProfile({
 
     if (!walletClient || !isConnected) {
       setError("Wallet not connected. Please connect your wallet first.");
+      return;
+    }
+
+    if (!isBaseChain) {
+      setError("Please switch to Base network before proceeding.");
       return;
     }
 
@@ -349,6 +365,20 @@ export default function EditBasenameProfile({
                   <p className="mt-2 text-sm text-white/70">
                     Please connect your wallet to edit your profile.
                   </p>
+                </div>
+              ) : !isBaseChain ? (
+                <div className="mb-6 p-4 bg-yellow-500/20 text-yellow-200 rounded-lg">
+                  <p className="mb-2">
+                    Please switch to Base network to continue.
+                  </p>
+                  {switchNetwork && (
+                    <button
+                      onClick={() => switchNetwork(8453)}
+                      className="px-4 py-2 bg-yellow-500 text-black rounded-lg font-medium hover:bg-yellow-400 transition-all"
+                    >
+                      Switch to Base
+                    </button>
+                  )}
                 </div>
               ) : (
                 <div className="mb-6 p-3 bg-white/20 text-white rounded-lg flex justify-between items-center">
