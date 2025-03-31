@@ -158,9 +158,21 @@ export default function EditBasenameProfile({
   useEffect(() => {
     const connectWallet = async () => {
       try {
-        const injector = connectors.find((c) => c.id === "injected");
-        if (injector && !isConnected) {
-          connect({ connector: injector });
+        // Check for Frame first
+        const frameConnector = connectors.find(
+          (c) => c.id === "farcasterFrame",
+        );
+        const injectedConnector = connectors.find((c) => c.id === "injected");
+
+        if (!isConnected) {
+          // Try Frame connector first if in Frame context
+          if (frameConnector && window.parent !== window) {
+            connect({ connector: frameConnector });
+          }
+          // Fall back to injected if available
+          else if (injectedConnector) {
+            connect({ connector: injectedConnector });
+          }
         }
       } catch (error) {
         console.error("Failed to connect wallet:", error);
@@ -320,17 +332,20 @@ export default function EditBasenameProfile({
             <>
               {!isConnected ? (
                 <div className="mb-6">
-                  <button
-                    onClick={() => {
-                      const injector = connectors.find(
-                        (c) => c.id === "injected",
-                      );
-                      if (injector) connect({ connector: injector });
-                    }}
-                    className="px-4 py-2 bg-white text-blue-600 rounded-lg font-medium hover:bg-blue-50 transition-all"
-                  >
-                    Connect Wallet
-                  </button>
+                  <div className="flex gap-2">
+                    {connectors.map((connector) => (
+                      <button
+                        key={connector.id}
+                        onClick={() => connect({ connector })}
+                        className="px-4 py-2 bg-white text-blue-600 rounded-lg font-medium hover:bg-blue-50 transition-all"
+                        disabled={!connector.ready}
+                      >
+                        {connector.id === "farcasterFrame"
+                          ? "Connect with Farcaster"
+                          : "Connect Wallet"}
+                      </button>
+                    ))}
+                  </div>
                   <p className="mt-2 text-sm text-white/70">
                     Please connect your wallet to edit your profile.
                   </p>
