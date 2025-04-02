@@ -109,6 +109,31 @@ export interface ContractDetails {
   twitterUsername?: string;
 }
 
+// Add a function to map OpenSea chain IDs to our format
+function mapChainId(openseaChain: string): string {
+  console.log(`Mapping chain ID: ${openseaChain}`);
+  if (!openseaChain) {
+    console.warn("Received empty chain ID from OpenSea");
+    return "";
+  }
+
+  const normalizedChain = openseaChain.toLowerCase().trim();
+  console.log(`Normalized chain: ${normalizedChain}`);
+
+  const chainMap: Record<string, string> = {
+    base: "BASE_MAINNET",
+    ethereum: "ETHEREUM_MAINNET",
+    polygon: "POLYGON_MAINNET",
+    optimism: "OPTIMISM_MAINNET",
+    arbitrum: "ARBITRUM_MAINNET",
+  };
+
+  const mappedChain =
+    chainMap[normalizedChain] || normalizedChain.toUpperCase();
+  console.log(`Mapped chain: ${mappedChain}`);
+  return mappedChain;
+}
+
 // Add a function to filter collections by chain
 function filterCollectionsByChain(
   collections: ContractDetails[],
@@ -188,14 +213,21 @@ export async function getOpenseaNFTContracts(
 
       const data = await response.json();
 
+      console.log("OpenSea API Response:", JSON.stringify(data, null, 2));
+
       // Extract detailed information from collections
       const contractDetails: ContractDetails[] = data.collections.flatMap(
-        (collection: OpenSeaCollection): ContractDetails[] =>
-          collection.contracts.map(
-            (contract): ContractDetails => ({
+        (collection: OpenSeaCollection): ContractDetails[] => {
+          console.log("Processing collection:", collection.name);
+          return collection.contracts.map((contract): ContractDetails => {
+            const mappedChainId = mapChainId(contract.chain);
+            console.log(
+              `Original chain: ${contract.chain}, Mapped chain: ${mappedChainId}`,
+            );
+            return {
               name: collection.name,
               contractAddress: contract.address,
-              chainId: contract.chain,
+              chainId: mappedChainId,
               imageUrl: collection.image_url,
               bannerImageUrl: collection.banner_image_url,
               description: collection.description,
@@ -203,14 +235,27 @@ export async function getOpenseaNFTContracts(
               projectUrl: collection.project_url,
               discordUrl: collection.discord_url,
               twitterUsername: collection.twitter_username,
-            }),
-          ),
+            };
+          });
+        },
+      );
+
+      console.log(
+        "All contract details before filtering:",
+        JSON.stringify(contractDetails, null, 2),
       );
 
       // Filter by chain if specified
-      return chain
+      const filteredContracts = chain
         ? filterCollectionsByChain(contractDetails, chain)
         : contractDetails;
+
+      console.log(
+        `Filtered contracts for chain ${chain}:`,
+        JSON.stringify(filteredContracts, null, 2),
+      );
+
+      return filteredContracts;
     } catch (error) {
       console.error("Error fetching collection details from OpenSea:", error);
       throw error;

@@ -106,12 +106,10 @@ export default function JoinClient() {
         const basename = resolution?.basename || "";
 
         // Check NFT releases on Base
-        const contracts = await getNFTContracts(address);
-        console.log(`Contracts: ${JSON.stringify(contracts, null, 2)}`);
-        console.log(`NFT Contracts: ${JSON.stringify(contracts, null, 2)}`);
-        const hasNFTsOnBase = contracts.some(
-          (contract) => contract.chainId === "BASE_MAINNET",
-        );
+        const contracts = await getNFTContracts(address, "BASE_MAINNET");
+        console.log("All NFT contracts:", JSON.stringify(contracts, null, 2));
+        const hasNFTsOnBase = contracts.length > 0;
+        console.log("Has NFTs on Base:", hasNFTsOnBase);
 
         setEligibility({
           hasBasename,
@@ -182,10 +180,8 @@ export default function JoinClient() {
       const hasBasename = !!resolution?.basename;
       const basename = resolution?.basename || "";
 
-      const contracts = await getNFTContracts(address);
-      const hasNFTsOnBase = contracts.some(
-        (contract) => contract.chainId === "BASE_MAINNET",
-      );
+      const contracts = await getNFTContracts(address, "BASE_MAINNET");
+      const hasNFTsOnBase = contracts.length > 0;
 
       setEligibility({
         hasBasename,
@@ -251,11 +247,8 @@ export default function JoinClient() {
       const basename = resolution?.basename || "";
 
       // Check NFT releases on Base
-      const contracts = await getNFTContracts(testAddress);
-      console.log(`Contracts: ${JSON.stringify(contracts, null, 2)}`);
-      const hasNFTsOnBase = contracts.some(
-        (contract) => contract.chainId === "BASE_MAINNET",
-      );
+      const contracts = await getNFTContracts(testAddress, "BASE_MAINNET");
+      const hasNFTsOnBase = contracts.length > 0;
 
       setTestEligibility({
         hasBasename,
