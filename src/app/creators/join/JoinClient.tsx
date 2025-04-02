@@ -15,6 +15,7 @@ import {
   joinDirectory,
 } from "~/app/features/directory/actions";
 import Link from "next/link";
+import { bustZapperCollectionsCache } from "~/lib/getZapperNFTContracts";
 
 interface EligibilityStatus {
   hasBasename: boolean;
@@ -30,6 +31,36 @@ const initialEligibility: EligibilityStatus = {
   isLoading: true,
 };
 
+const DEBUG_MODE_KEY = "creators-directory-debug-mode";
+
+function useDebugMode() {
+  const [isDebugMode, setIsDebugMode] = useState(false);
+
+  useEffect(() => {
+    // Check localStorage on mount
+    const debugMode = localStorage.getItem(DEBUG_MODE_KEY) === "true";
+    setIsDebugMode(debugMode);
+
+    // Listen for storage changes (in case debug mode is toggled in another tab)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === DEBUG_MODE_KEY) {
+        setIsDebugMode(e.newValue === "true");
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
+  const toggleDebugMode = () => {
+    const newValue = !isDebugMode;
+    localStorage.setItem(DEBUG_MODE_KEY, String(newValue));
+    setIsDebugMode(newValue);
+  };
+
+  return { isDebugMode, toggleDebugMode };
+}
+
 export default function JoinClient() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
@@ -42,6 +73,12 @@ export default function JoinClient() {
   const [createStatus, setCreateStatus] = useState<
     "idle" | "success" | "error"
   >("idle");
+  const [testAddress, setTestAddress] = useState("");
+  const [testEligibility, setTestEligibility] =
+    useState<EligibilityStatus>(initialEligibility);
+  const [isTestingEligibility, setIsTestingEligibility] = useState(false);
+  const [isClearingCache, setIsClearingCache] = useState(false);
+  const { isDebugMode, toggleDebugMode } = useDebugMode();
 
   // Get wallet connection info
   const { address } = useAccount();
@@ -200,6 +237,72 @@ export default function JoinClient() {
     // Don't set isCreating to false here, as we want to maintain the loading state during navigation
   };
 
+  const checkTestAddressEligibility = async () => {
+    if (!testAddress) return;
+
+    setIsTestingEligibility(true);
+    setTestEligibility((prev) => ({ ...prev, isLoading: true }));
+
+    try {
+      // Check basename ownership
+      const resolution = await resolveBasenameOrAddress(testAddress);
+      const hasBasename = !!resolution?.basename;
+      const basename = resolution?.basename || "";
+
+      // Check NFT releases on Base
+      const contracts = await getNFTContracts(testAddress);
+      const hasNFTsOnBase = contracts.some(
+        (contract) => contract.chainId === "BASE_MAINNET",
+      );
+
+      setTestEligibility({
+        hasBasename,
+        basename,
+        hasNFTsOnBase,
+        isLoading: false,
+      });
+    } catch (error) {
+      console.error("Error checking test address eligibility:", error);
+      setTestEligibility({
+        hasBasename: false,
+        basename: "",
+        hasNFTsOnBase: false,
+        isLoading: false,
+      });
+    } finally {
+      setIsTestingEligibility(false);
+    }
+  };
+
+  const clearTestAddressCache = async () => {
+    if (!testAddress) return;
+
+    setIsClearingCache(true);
+    try {
+      await bustZapperCollectionsCache(testAddress);
+      // Reset the test eligibility to trigger a fresh check
+      setTestEligibility(initialEligibility);
+    } catch (error) {
+      console.error("Error clearing cache:", error);
+    } finally {
+      setIsClearingCache(false);
+    }
+  };
+
+  // Add keyboard shortcut for debug mode
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      // Ctrl/Cmd + Shift + D to toggle debug mode
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "D") {
+        e.preventDefault();
+        toggleDebugMode();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [toggleDebugMode]);
+
   if (!mounted) {
     return null;
   }
@@ -219,6 +322,68 @@ export default function JoinClient() {
             collaboration opportunities.
           </p>
         </div>
+
+        {isDebugMode && (
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xs uppercase tracking-wider opacity-80">
+                Debug Tools
+              </h2>
+              <button
+                onClick={toggleDebugMode}
+                className="text-xs text-white/50 hover:text-white transition-colors"
+              >
+                Exit Debug Mode
+              </button>
+            </div>
+            <div className="flex flex-col">
+              <div className="flex flex-col gap-3">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Enter address or basename"
+                    value={testAddress}
+                    onChange={(e) => setTestAddress(e.target.value)}
+                    className="flex-1 px-4 py-2 bg-white/10 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-white/20"
+                  />
+                  <button
+                    onClick={checkTestAddressEligibility}
+                    disabled={!testAddress || isTestingEligibility}
+                    className="px-4 py-2 bg-white/10 text-white rounded-full text-sm hover:bg-white/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isTestingEligibility ? "Checking..." : "Check"}
+                  </button>
+                  <button
+                    onClick={clearTestAddressCache}
+                    disabled={!testAddress || isClearingCache}
+                    className="px-4 py-2 bg-white/10 text-white rounded-full text-sm hover:bg-white/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isClearingCache ? "Clearing..." : "Clear Cache"}
+                  </button>
+                </div>
+
+                {!testEligibility.isLoading && testAddress && (
+                  <div className="space-y-2 p-3 bg-white/5 rounded-lg text-sm">
+                    <div className="flex justify-between">
+                      <span>Basename:</span>
+                      <span>
+                        {testEligibility.hasBasename
+                          ? testEligibility.basename
+                          : "None"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Has NFTs on Base:</span>
+                      <span>
+                        {testEligibility.hasNFTsOnBase ? "Yes" : "No"}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="flex flex-col">
           <h2 className="text-xs uppercase tracking-wider mb-2 opacity-80">
