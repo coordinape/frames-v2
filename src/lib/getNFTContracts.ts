@@ -82,6 +82,13 @@ export async function getNFTContracts(
       }),
     ]);
 
+    console.log(
+      `OpenSea returned ${openSeaContracts.length} NFT contracts for address ${deployerAddress}`,
+    );
+    console.log(
+      `Zapper returned ${zapperContracts.length} NFT contracts for address ${deployerAddress}`,
+    );
+
     // Create a map to store merged contracts by address
     const contractMap = new Map<string, NFTContractDetails>();
 

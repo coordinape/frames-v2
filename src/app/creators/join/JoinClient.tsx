@@ -70,6 +70,7 @@ export default function JoinClient() {
 
         // Check NFT releases on Base
         const contracts = await getNFTContracts(address);
+        console.log(`NFT Contracts: ${JSON.stringify(contracts, null, 2)}`);
         const hasNFTsOnBase = contracts.some(
           (contract) => contract.chainId === "BASE_MAINNET",
         );
