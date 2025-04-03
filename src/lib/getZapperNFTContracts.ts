@@ -282,7 +282,6 @@ export async function bustZapperCollectionsCache(
   address: string,
 ): Promise<void> {
   await bustCache(generateCacheKey("collections", address));
-  await bustCache(generateCacheKey("owner-collections", address));
 }
 
 export async function getZapperNFTCollectionsForOwners(
