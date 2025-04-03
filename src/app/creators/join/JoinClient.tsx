@@ -15,7 +15,11 @@ import {
   joinDirectory,
 } from "~/app/features/directory/actions";
 import Link from "next/link";
-import { bustZapperCollectionsCache } from "~/lib/getZapperNFTContracts";
+import {
+  bustZapperCollectionsCache,
+  bustZapperOwnerCollectionsCache,
+} from "~/lib/getZapperNFTContracts";
+import { bustOpenSeaCollectionsCache } from "~/lib/getOpenseaNFTContracts";
 
 interface EligibilityStatus {
   hasBasename: boolean;
@@ -106,11 +110,10 @@ export default function JoinClient() {
         const basename = resolution?.basename || "";
 
         // Check NFT releases on Base
-        const contracts = await getNFTContracts(address);
-        console.log(`NFT Contracts: ${JSON.stringify(contracts, null, 2)}`);
-        const hasNFTsOnBase = contracts.some(
-          (contract) => contract.chainId === "BASE_MAINNET",
-        );
+        const contracts = await getNFTContracts(address, "BASE_MAINNET");
+        console.log("All NFT contracts:", JSON.stringify(contracts, null, 2));
+        const hasNFTsOnBase = contracts.length > 0;
+        console.log("Has NFTs on Base:", hasNFTsOnBase);
 
         setEligibility({
           hasBasename,
@@ -181,10 +184,8 @@ export default function JoinClient() {
       const hasBasename = !!resolution?.basename;
       const basename = resolution?.basename || "";
 
-      const contracts = await getNFTContracts(address);
-      const hasNFTsOnBase = contracts.some(
-        (contract) => contract.chainId === "BASE_MAINNET",
-      );
+      const contracts = await getNFTContracts(address, "BASE_MAINNET");
+      const hasNFTsOnBase = contracts.length > 0;
 
       setEligibility({
         hasBasename,
@@ -244,16 +245,28 @@ export default function JoinClient() {
     setTestEligibility((prev) => ({ ...prev, isLoading: true }));
 
     try {
-      // Check basename ownership
+      // First try to resolve the input as either a basename or address
       const resolution = await resolveBasenameOrAddress(testAddress);
-      const hasBasename = !!resolution?.basename;
-      const basename = resolution?.basename || "";
+      if (!resolution?.address) {
+        setTestEligibility({
+          hasBasename: false,
+          basename: "",
+          hasNFTsOnBase: false,
+          isLoading: false,
+        });
+        return;
+      }
 
-      // Check NFT releases on Base
-      const contracts = await getNFTContracts(testAddress);
-      const hasNFTsOnBase = contracts.some(
-        (contract) => contract.chainId === "BASE_MAINNET",
+      // Now we have the address, check basename ownership
+      const hasBasename = !!resolution.basename;
+      const basename = resolution.basename || "";
+
+      // Check NFT releases on Base using the resolved address
+      const contracts = await getNFTContracts(
+        resolution.address,
+        "BASE_MAINNET",
       );
+      const hasNFTsOnBase = contracts.length > 0;
 
       setTestEligibility({
         hasBasename,
@@ -279,7 +292,16 @@ export default function JoinClient() {
 
     setIsClearingCache(true);
     try {
-      await bustZapperCollectionsCache(testAddress);
+      // First resolve the input to get the address
+      const resolution = await resolveBasenameOrAddress(testAddress);
+      if (!resolution?.address) {
+        console.error("Could not resolve address");
+        return;
+      }
+
+      await bustZapperCollectionsCache(resolution.address);
+      await bustOpenSeaCollectionsCache(resolution.address);
+      await bustZapperOwnerCollectionsCache(resolution.address);
       // Reset the test eligibility to trigger a fresh check
       setTestEligibility(initialEligibility);
     } catch (error) {

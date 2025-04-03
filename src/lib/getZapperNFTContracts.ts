@@ -71,6 +71,12 @@ interface ZapperResponse {
       }>;
       pageInfo: PageInfo;
     };
+    nftCollectionsForOwners?: {
+      edges: Array<{
+        node: NFTCollection;
+      }>;
+      pageInfo: PageInfo;
+    };
   };
 }
 
@@ -276,4 +282,154 @@ export async function bustZapperCollectionsCache(
   address: string,
 ): Promise<void> {
   await bustCache(generateCacheKey("collections", address));
+}
+
+export async function getZapperNFTCollectionsForOwners(
+  ownerAddress: string,
+  chain?: string,
+  first: number = 100,
+) {
+  const cacheKey = generateCacheKey("owner-collections", ownerAddress);
+
+  return fetchWithCache<ContractDetails[]>(cacheKey, async () => {
+    try {
+      const query = `
+        query OwnerCollections($owners: [Address!], $networks: [Network!]!, $first: Int, $after: String) {
+          nftCollectionsForOwners(input: { owners: $owners, networks: $networks, first: $first, after: $after }) {
+            edges {
+              node {
+                id
+                address
+                name
+                symbol
+                description
+                network
+                nftStandard
+                type
+                supply
+                totalSupply
+                holdersCount
+                circulatingSupply
+                floorPrice {
+                  valueUsd
+                  valueWithDenomination
+                  denomination {
+                    symbol
+                    network
+                    address
+                  }
+                }
+                medias {
+                  logo {
+                    thumbnail
+                    original
+                  }
+                  banner {
+                    original
+                    large
+                  }
+                }
+                socialLinks {
+                  name
+                  label
+                  url
+                  logoUrl
+                }
+              }
+            }
+            pageInfo {
+              hasNextPage
+              endCursor
+              startCursor
+              hasPreviousPage
+            }
+          }
+        }
+      `;
+
+      const variables = {
+        owners: [ownerAddress],
+        networks: chain
+          ? [chain.toUpperCase()]
+          : [
+              "ETHEREUM_MAINNET",
+              "OPTIMISM_MAINNET",
+              "POLYGON_MAINNET",
+              "ARBITRUM_MAINNET",
+              "BASE_MAINNET",
+            ],
+        first,
+      };
+
+      const response = await fetch("https://public.zapper.xyz/graphql", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-zapper-api-key": process.env.ZAPPER_API_KEY || "",
+        },
+        body: JSON.stringify({
+          query,
+          variables,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Zapper API error: ${response.status}`);
+      }
+
+      const data = (await response.json()) as ZapperResponse;
+
+      console.log("Zapper API Response:", JSON.stringify(data, null, 2));
+
+      if (!data || !data.data) {
+        console.error("Invalid response structure from Zapper API:", data);
+        throw new Error("Invalid response structure from Zapper API");
+      }
+
+      if (!data.data.nftCollectionsForOwners) {
+        console.error("No NFT collections data in response:", data);
+        return [];
+      }
+
+      const contractDetails: ContractDetails[] =
+        data.data.nftCollectionsForOwners.edges
+          .filter(
+            ({ node }) => node?.address && typeof node.address === "string",
+          )
+          .map(({ node }) => ({
+            name: node.name,
+            contractAddress: (node.address as string).toLowerCase(),
+            chainId: node.network,
+            imageUrl:
+              node.medias?.logo?.original || node.medias?.logo?.thumbnail || "",
+            bannerImageUrl:
+              node.medias?.banner?.original || node.medias?.banner?.large || "",
+            description: node.description,
+            symbol: node.symbol,
+            nftStandard: node.nftStandard,
+            type: node.type,
+            supply: node.supply,
+            totalSupply: node.totalSupply,
+            holdersCount: node.holdersCount,
+            circulatingSupply: node.circulatingSupply,
+            floorPriceUsd: node.floorPrice?.valueUsd,
+            floorPriceNative: node.floorPrice?.valueWithDenomination,
+            floorPriceCurrency: node.floorPrice?.denomination?.symbol,
+            socialLinks: node.socialLinks,
+          }));
+
+      return chain
+        ? filterCollectionsByChain(contractDetails, chain)
+        : contractDetails;
+    } catch (error) {
+      console.error("Error fetching collection details from Zapper:", error);
+      throw error;
+    }
+  });
+}
+
+export async function bustZapperOwnerCollectionsCache(
+  address: string,
+): Promise<void> {
+  await bustCache(generateCacheKey("owner-collections", address));
 }
