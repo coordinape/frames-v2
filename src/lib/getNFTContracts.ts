@@ -4,6 +4,7 @@ import {
 } from "./getOpenseaNFTContracts";
 import {
   getZapperNFTContracts,
+  getZapperNFTCollectionsForOwners,
   ContractDetails as ZapperContractDetails,
 } from "./getZapperNFTContracts";
 
@@ -70,23 +71,33 @@ export async function getNFTContracts(
   chain?: string,
 ): Promise<NFTContractDetails[]> {
   try {
-    // Fetch contracts from both sources in parallel
-    const [openSeaContracts, zapperContracts] = await Promise.all([
-      getOpenseaNFTContracts(deployerAddress, chain).catch((error) => {
-        console.error("Error fetching OpenSea contracts:", error);
-        return [];
-      }),
-      getZapperNFTContracts(deployerAddress, chain).catch((error) => {
-        console.error("Error fetching Zapper contracts:", error);
-        return [];
-      }),
-    ]);
+    // Fetch contracts from all three sources in parallel
+    const [openSeaContracts, zapperContracts, zapperOwnerContracts] =
+      await Promise.all([
+        getOpenseaNFTContracts(deployerAddress, chain).catch((error) => {
+          console.error("Error fetching OpenSea contracts:", error);
+          return [];
+        }),
+        getZapperNFTContracts(deployerAddress, chain).catch((error) => {
+          console.error("Error fetching Zapper deployer contracts:", error);
+          return [];
+        }),
+        getZapperNFTCollectionsForOwners(deployerAddress, chain).catch(
+          (error) => {
+            console.error("Error fetching Zapper owner contracts:", error);
+            return [];
+          },
+        ),
+      ]);
 
     console.log(
       `OpenSea returned ${openSeaContracts.length} NFT contracts for address ${deployerAddress}`,
     );
     console.log(
-      `Zapper returned ${zapperContracts.length} NFT contracts for address ${deployerAddress}`,
+      `Zapper deployer returned ${zapperContracts.length} NFT contracts for address ${deployerAddress}`,
+    );
+    console.log(
+      `Zapper owner returned ${zapperOwnerContracts.length} NFT contracts for address ${deployerAddress}`,
     );
 
     // Create a map to store merged contracts by address
@@ -104,7 +115,7 @@ export async function getNFTContracts(
       );
     }
 
-    // Merge or add Zapper contracts
+    // Merge or add Zapper deployer contracts
     for (const contract of zapperContracts) {
       const address = contract.contractAddress.toLowerCase();
       const existing = contractMap.get(address);
@@ -118,7 +129,23 @@ export async function getNFTContracts(
       }
     }
 
-    return Array.from(contractMap.values());
+    // Merge or add Zapper owner contracts
+    for (const contract of zapperOwnerContracts) {
+      const address = contract.contractAddress.toLowerCase();
+      const existing = contractMap.get(address);
+      if (existing) {
+        contractMap.set(
+          address,
+          mergeContractDetails(existing as OpenSeaContractDetails, contract),
+        );
+      } else {
+        contractMap.set(address, mergeContractDetails(undefined, contract));
+      }
+    }
+
+    const results = Array.from(contractMap.values());
+    console.log(`Total unique NFT contracts after merging: ${results.length}`);
+    return results;
   } catch (error) {
     console.error("Error fetching NFT contracts:", error);
     throw error;
