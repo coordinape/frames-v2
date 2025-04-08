@@ -67,8 +67,6 @@ async function getVerifiedAddressesFromNeynar(
 
   const data = (await response.json()) as NeynarUserResponse;
 
-  console.log("DATA: ", JSON.stringify(data));
-
   if (!data.users || data.users.length === 0) {
     throw new Error(`No user found for FID: ${fid}`);
   }

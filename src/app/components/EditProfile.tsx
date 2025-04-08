@@ -13,11 +13,8 @@ export const EditProfile = ({
 }) => {
   const { address: myAddress, isWalletAddress } = useWalletOrFrameAddress();
 
-  // TODO: if !isWalletAddress, show a message to connect wallet
-
   const [owner, setOwner] = useState<boolean>(false);
   useEffect(() => {
-    console.log("myAddress", myAddress, "address", address);
     setOwner(myAddress?.toLowerCase() === address.toLowerCase());
   }, [address, myAddress]);
 

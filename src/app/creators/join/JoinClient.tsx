@@ -100,16 +100,6 @@ export default function JoinClient() {
   }, []);
 
   useEffect(() => {
-    console.log(
-      "ADDRESS",
-      address,
-      "isWalletAddress",
-      isWalletAddress,
-      "isLoadingFrame",
-      isLoadingFrame,
-    );
-  }, [address]);
-  useEffect(() => {
     const checkEligibility = async () => {
       if (!address) {
         setEligibility(initialEligibility);
