@@ -1,8 +1,8 @@
 "use client";
 
-import { useWalletConnection } from "~/components/FrameOrWalletConnection";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useWalletOrFrameAddress } from "~/hooks/useWalletOrFrameAddress";
 
 export const EditProfile = ({
   address,
@@ -11,11 +11,14 @@ export const EditProfile = ({
   address: string;
   basename?: string;
 }) => {
-  const { address: myAddress } = useWalletConnection();
+  const { address: myAddress, isWalletAddress } = useWalletOrFrameAddress();
+
+  // TODO: if !isWalletAddress, show a message to connect wallet
 
   const [owner, setOwner] = useState<boolean>(false);
   useEffect(() => {
-    setOwner(myAddress === address);
+    console.log("myAddress", myAddress, "address", address);
+    setOwner(myAddress?.toLowerCase() === address.toLowerCase());
   }, [address, myAddress]);
 
   if (owner) {

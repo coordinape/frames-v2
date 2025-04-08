@@ -72,9 +72,9 @@ export default function WhoAmI() {
                     {error && (
                       <p className="text-red-500 text-xs">{error.message}</p>
                     )}
-                    {isFrame && (
-                      <p className="text-white/40 text-xs">In Frame</p>
-                    )}
+                    {/*{isFrame && (*/}
+                    {/*  <p className="text-white/40 text-xs">In Frame</p>*/}
+                    {/*)}*/}
                     {isConnecting ? (
                       <p className="text-white/60 text-xs">Connecting...</p>
                     ) : (

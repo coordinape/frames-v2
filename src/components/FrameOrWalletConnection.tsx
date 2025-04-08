@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useConnect, useDisconnect, useAccount } from "wagmi";
 import { config } from "~/components/providers/WagmiProvider";
+import { useWalletOrFrameAddress } from "~/hooks/useWalletOrFrameAddress";
 
 interface FrameOrWalletConnectionProps {
   children: (props: {
@@ -16,11 +17,11 @@ interface FrameOrWalletConnectionProps {
 }
 
 // Hook that handles all wallet connection logic
-export function useWalletConnection() {
+function useWalletConnection() {
   const [error, setError] = useState<Error | null>(null);
 
   // Use wagmi hooks
-  const { address } = useAccount();
+  const { address, isWalletAddress } = useWalletOrFrameAddress();
   const { connect, isPending: isConnecting } = useConnect();
   const { disconnect } = useDisconnect();
 
@@ -61,7 +62,7 @@ export function useWalletConnection() {
 
   return {
     address: effectiveAddress,
-    isFrame: false,
+    isFrame: !isWalletAddress && !!effectiveAddress,
     connectWallet,
     disconnectWallet,
     isConnecting,

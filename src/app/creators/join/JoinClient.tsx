@@ -15,11 +15,15 @@ import {
   joinDirectory,
 } from "~/app/features/directory/actions";
 import Link from "next/link";
+
 import {
   bustZapperCollectionsCache,
   bustZapperOwnerCollectionsCache,
 } from "~/lib/getZapperNFTContracts";
 import { bustOpenSeaCollectionsCache } from "~/lib/getOpenseaNFTContracts";
+
+import { getBestAddressForFid } from "~/app/features/directory/neynar";
+import { useWalletOrFrameAddress } from "~/hooks/useWalletOrFrameAddress";
 
 interface EligibilityStatus {
   hasBasename: boolean;
@@ -83,9 +87,10 @@ export default function JoinClient() {
   const [isTestingEligibility, setIsTestingEligibility] = useState(false);
   const [isClearingCache, setIsClearingCache] = useState(false);
   const { isDebugMode, toggleDebugMode } = useDebugMode();
+  const { address, isWalletAddress, isLoadingFrame } =
+    useWalletOrFrameAddress();
 
   // Get wallet connection info
-  const { address } = useAccount();
   const { disconnect } = useDisconnect();
   const { connect } = useConnect();
 
@@ -94,6 +99,16 @@ export default function JoinClient() {
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    console.log(
+      "ADDRESS",
+      address,
+      "isWalletAddress",
+      isWalletAddress,
+      "isLoadingFrame",
+      isLoadingFrame,
+    );
+  }, [address]);
   useEffect(() => {
     const checkEligibility = async () => {
       if (!address) {
@@ -154,14 +169,11 @@ export default function JoinClient() {
     }
   }, [isSDKLoaded, mounted]);
 
-  const userAddress = address || context?.user?.fid?.toString();
-  const userName =
-    context?.user?.username ||
-    (eligibility.hasBasename
-      ? eligibility.basename
-      : userAddress
-        ? truncateAddress(userAddress)
-        : "");
+  const userName = eligibility.hasBasename
+    ? eligibility.basename
+    : address
+      ? truncateAddress(address)
+      : "";
   const allRequirementsMet =
     eligibility.hasBasename && eligibility.hasNFTsOnBase;
 
@@ -475,13 +487,13 @@ export default function JoinClient() {
           </ul>
         </div>
 
-        {userAddress && (
+        {address && (
           <div className="flex flex-col">
             <h2 className="text-xs uppercase tracking-wider mb-2 opacity-80">
               Connected as
             </h2>
             <div className="flex gap-4 w-full justify-between">
-              {userAddress && (
+              {address && (
                 <div className="flex items-center justify-center text-sm gap-2">
                   <div className="flex items-center">
                     {context?.user?.pfpUrl && (
@@ -495,18 +507,20 @@ export default function JoinClient() {
                   </div>
                 </div>
               )}
-              <button
-                className="px-4 py-1 bg-white/10 text-white text-xs rounded-full cursor-pointer hover:bg-white/20 transition-colors"
-                onClick={() => disconnect()}
-              >
-                Disconnect
-              </button>
+              {isWalletAddress && (
+                <button
+                  className="px-4 py-1 bg-white/10 text-white text-xs rounded-full cursor-pointer hover:bg-white/20 transition-colors"
+                  onClick={() => disconnect()}
+                >
+                  Disconnect
+                </button>
+              )}
             </div>
           </div>
         )}
 
         <div className="space-y-3">
-          {!userAddress ? (
+          {!address ? (
             <button
               className="w-full px-4 py-3 bg-white text-sm text-base-blue rounded-full cursor-pointer hover:bg-white/90 transition-colors"
               onClick={() => connect({ connector: config.connectors[0] })}
