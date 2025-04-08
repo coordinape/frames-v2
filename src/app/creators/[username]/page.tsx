@@ -159,7 +159,6 @@ export const revalidate = 300;
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { username } = await params;
 
-  console.log(username);
   return {
     title: `Creators Profile for ${username}`,
     openGraph: {
