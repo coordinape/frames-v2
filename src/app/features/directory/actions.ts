@@ -159,7 +159,9 @@ export async function getCreator(
 
     try {
       // Get NFT contracts
-      const contracts = await getNFTContracts(creator.address, "BASE_MAINNET");
+      const contracts = await getNFTContracts(creator.address, "BASE_MAINNET", {
+        excludeNoImage: true,
+      });
       console.log("getNFTContracts", JSON.stringify(contracts, null, 2));
 
       // Resolve basename
