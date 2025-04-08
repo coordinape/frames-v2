@@ -42,7 +42,6 @@ export default function WhoAmI() {
       <FrameOrWalletConnection>
         {({
           address,
-          isFrame,
           connectWallet,
           disconnectWallet,
           isConnecting,

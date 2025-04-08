@@ -7,6 +7,12 @@ interface NeynarVerifiedAddress {
   verified: boolean;
 }
 
+interface NeynarVerifiedAccount {
+  platform: string;
+  username: string;
+  verified: boolean;
+}
+
 interface NeynarUser {
   object: string;
   fid: number;
@@ -30,7 +36,7 @@ interface NeynarUser {
       sol_address: string | null;
     };
   };
-  verified_accounts: any[];
+  verified_accounts: NeynarVerifiedAccount[];
   power_badge: boolean;
 }
 

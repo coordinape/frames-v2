@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import sdk, { type Context } from "@farcaster/frame-sdk";
 import Header from "~/app/components/Header";
-import { useAccount, useDisconnect, useConnect } from "wagmi";
+import { useDisconnect, useConnect } from "wagmi";
 import { config } from "~/components/providers/WagmiProvider";
 import { resolveBasenameOrAddress } from "~/app/hooks/useBasenameResolver";
 import { getNFTContracts } from "~/lib/getNFTContracts";
@@ -22,7 +22,6 @@ import {
 } from "~/lib/getZapperNFTContracts";
 import { bustOpenSeaCollectionsCache } from "~/lib/getOpenseaNFTContracts";
 
-import { getBestAddressForFid } from "~/app/features/directory/neynar";
 import { useWalletOrFrameAddress } from "~/hooks/useWalletOrFrameAddress";
 
 interface EligibilityStatus {
@@ -87,8 +86,7 @@ export default function JoinClient() {
   const [isTestingEligibility, setIsTestingEligibility] = useState(false);
   const [isClearingCache, setIsClearingCache] = useState(false);
   const { isDebugMode, toggleDebugMode } = useDebugMode();
-  const { address, isWalletAddress, isLoadingFrame } =
-    useWalletOrFrameAddress();
+  const { address, isWalletAddress } = useWalletOrFrameAddress();
 
   // Get wallet connection info
   const { disconnect } = useDisconnect();
