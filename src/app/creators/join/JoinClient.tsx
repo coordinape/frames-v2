@@ -109,7 +109,17 @@ export default function JoinClient() {
       setEligibility((prev) => ({ ...prev, isLoading: true }));
 
       try {
-        // Check basename ownership
+        // Check if already a member first
+        const exists = await addressIsMember(address);
+        if (exists) {
+          // Get basename for redirect
+          const resolution = await resolveBasenameOrAddress(address);
+          const basename = resolution?.basename || address;
+          router.push(`/creators/${basename}`);
+          return;
+        }
+
+        // If not a member, continue with eligibility checks
         const resolution = await resolveBasenameOrAddress(address);
         const hasBasename = !!resolution?.basename;
         const basename = resolution?.basename || "";
@@ -140,7 +150,7 @@ export default function JoinClient() {
     if (mounted && address) {
       checkEligibility();
     }
-  }, [address, mounted]);
+  }, [address, mounted, router]);
 
   useEffect(() => {
     const load = async () => {
