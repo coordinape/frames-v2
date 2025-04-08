@@ -183,7 +183,7 @@ export async function getOpenseaNFTContracts(
 ) {
   const cacheKey = generateCacheKey("collections", deployerAddress);
 
-  return fetchWithCache<ContractDetails[]>(cacheKey, async () => {
+  return fetchWithCache<ContractDetails[]>(cacheKey + "mooooo", async () => {
     try {
       // First get the username
       const username = await getOpenSeaUsernameFromAddress(deployerAddress);

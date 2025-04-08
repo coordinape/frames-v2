@@ -11,6 +11,7 @@ import Gives from "./Gives";
 import InfoCard from "./InfoCard";
 import { FrameSDK } from "~/app/components/FrameSDK";
 import { APP_BASE_URL } from "~/lib/constants";
+import { RefreshButton } from "~/app/creators/[username]/RefreshButton";
 
 interface Props {
   params: Promise<{
@@ -134,6 +135,7 @@ export default async function ProfilePage({ params }: Props) {
           address={resolution?.address || ""}
           openSeaCollections={creator.openSeaData?.collections || []}
         />
+        {resolution?.address && <RefreshButton address={resolution.address} />}
       </div>
     </>
   );
