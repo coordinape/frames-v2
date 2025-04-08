@@ -29,6 +29,7 @@ export interface NFTContractDetails {
   floorPriceUsd?: number;
   floorPriceNative?: number;
   floorPriceCurrency?: string;
+  apiOriginSource?: string;
   socialLinks?: Array<{
     name: string;
     label: string;
@@ -63,12 +64,16 @@ function mergeContractDetails(
       floorPriceCurrency: other.floorPriceCurrency,
       socialLinks: other.socialLinks,
     }),
+    apiOriginSource: openSeaContract ? "OpenSea" : "Zapper",
   };
 }
 
 export async function getNFTContracts(
   deployerAddress: string,
   chain?: string,
+  options: {
+    excludeNoImage?: boolean;
+  } = { excludeNoImage: false },
 ): Promise<NFTContractDetails[]> {
   try {
     // Fetch contracts from all three sources in parallel
@@ -143,7 +148,18 @@ export async function getNFTContracts(
       }
     }
 
-    const results = Array.from(contractMap.values());
+    let results = Array.from(contractMap.values());
+
+    // Filter out NFTs without images if the option is enabled
+    if (options.excludeNoImage) {
+      results = results.filter(
+        (nft) => nft.imageUrl && nft.imageUrl.trim() !== "",
+      );
+      console.log(
+        `Filtered out ${contractMap.size - results.length} NFTs without images`,
+      );
+    }
+
     console.log(`Total unique NFT contracts after merging: ${results.length}`);
     return results;
   } catch (error) {

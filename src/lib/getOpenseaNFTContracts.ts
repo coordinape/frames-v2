@@ -34,12 +34,12 @@ async function fetchWithCache<T>(
 
   const cachedData = await kv.get(cacheKey);
   if (cachedData) {
-    console.log(`Cache hit for ${cacheKey}`);
+    // console.log(`Cache hit for ${cacheKey}`);
     // console.log({ cachedData });
     return cachedData as T;
   }
 
-  console.log(`Cache miss for ${cacheKey}`);
+  // console.log(`Cache miss for ${cacheKey}`);
   const data = await fetchFn();
   await kv.set(cacheKey, data, { ex: CACHE_DURATION });
   return data;
@@ -205,7 +205,7 @@ export async function getOpenseaNFTContracts(
         },
       );
 
-      console.log("response", JSON.stringify(response, null, 2));
+      console.log("OpenSea response", JSON.stringify(response, null, 2));
 
       if (!response.ok) {
         throw new Error(`OpenSea API error: ${response.status}`);

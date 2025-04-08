@@ -91,11 +91,11 @@ async function fetchWithCache<T>(
 ): Promise<T> {
   const cachedData = await kv.get(cacheKey);
   if (cachedData) {
-    console.log(`Cache hit for ${cacheKey}`);
+    // console.log(`Cache hit for ${cacheKey}`);
     return cachedData as T;
   }
 
-  console.log(`Cache miss for ${cacheKey}`);
+  // console.log(`Cache miss for ${cacheKey}`);
   const data = await fetchFn();
   await kv.set(cacheKey, data, { ex: CACHE_DURATION });
   return data;
