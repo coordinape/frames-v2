@@ -13,6 +13,7 @@ interface FrameOrWalletConnectionProps {
     disconnectWallet: () => void;
     isConnecting: boolean;
     error: Error | null;
+    isWalletAddress: boolean;
   }) => React.ReactNode;
 }
 
@@ -63,6 +64,7 @@ function useWalletConnection() {
   return {
     address: effectiveAddress,
     isFrame: !isWalletAddress && !!effectiveAddress,
+    isWalletAddress,
     connectWallet,
     disconnectWallet,
     isConnecting,

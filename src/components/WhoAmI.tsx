@@ -47,6 +47,7 @@ export default function WhoAmI() {
           disconnectWallet,
           isConnecting,
           error,
+          isWalletAddress,
         }) => {
           const creator = address
             ? creators.find(
@@ -117,12 +118,14 @@ export default function WhoAmI() {
                               {truncateAddress(address)}
                             </p>
                           )}
-                          <button
-                            onClick={disconnectWallet}
-                            className="px-4 py-1 bg-white/10 text-white text-xs rounded-full cursor-pointer hover:bg-white/20 transition-colors"
-                          >
-                            Disconnect
-                          </button>
+                          {isWalletAddress && (
+                            <button
+                              onClick={disconnectWallet}
+                              className="px-4 py-1 bg-white/10 text-white text-xs rounded-full cursor-pointer hover:bg-white/20 transition-colors"
+                            >
+                              Disconnect
+                            </button>
+                          )}
                         </div>
                       </>
                     )}

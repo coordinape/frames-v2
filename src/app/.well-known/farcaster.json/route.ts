@@ -1,5 +1,7 @@
+import { APP_BASE_URL } from "~/lib/constants";
+
 export async function GET() {
-  const appUrl = process.env.NEXT_PUBLIC_URL;
+  const appUrl = `https://${APP_BASE_URL}`;
 
   const config = {
     accountAssociation: {

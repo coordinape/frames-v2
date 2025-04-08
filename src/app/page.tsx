@@ -9,7 +9,7 @@ const frame = {
     title: "Launch Frame",
     action: {
       type: "launch_frame",
-      name: "Coordinape Frames v2 Demo",
+      name: "Based Creators Directory",
       url: APP_BASE_URL,
       splashImageUrl: `${APP_BASE_URL}/splash.png`,
       splashBackgroundColor: "#0053ff",
@@ -21,10 +21,10 @@ export const revalidate = 300;
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "Coordinape Frames v2 Demo",
+    title: "Based Creators Directory",
     openGraph: {
-      title: "Coordinape Frames v2 Demo",
-      description: "A Coordinape Frames v2 demo app.",
+      title: "Based Creators Directory",
+      description: "Based Creators Directory.",
     },
     other: {
       "fc:frame": JSON.stringify(frame),
