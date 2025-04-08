@@ -1,14 +1,13 @@
 import { useAccount } from "wagmi";
 import { useEffect, useState } from "react";
 import { getBestAddressForFid } from "~/app/features/directory/neynar";
-import sdk, { type Context } from "@farcaster/frame-sdk";
+import sdk from "@farcaster/frame-sdk";
 
 export function useWalletOrFrameAddress() {
   const { address: walletAddress } = useAccount();
   const [frameAddress, setFrameAddress] = useState<string | null>(null);
   const [isLoadingFrame, setIsLoadingFrame] = useState(true);
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
-  const [context, setContext] = useState<Context.FrameContext>();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -18,7 +17,6 @@ export function useWalletOrFrameAddress() {
   useEffect(() => {
     const load = async () => {
       const context = await sdk.context;
-      setContext(context);
       console.log("Join Frame: Calling ready");
       sdk.actions.ready({});
       if (context?.user?.fid) {

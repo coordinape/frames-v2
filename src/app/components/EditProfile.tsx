@@ -11,7 +11,7 @@ export const EditProfile = ({
   address: string;
   basename?: string;
 }) => {
-  const { address: myAddress, isWalletAddress } = useWalletOrFrameAddress();
+  const { address: myAddress } = useWalletOrFrameAddress();
 
   const [owner, setOwner] = useState<boolean>(false);
   useEffect(() => {

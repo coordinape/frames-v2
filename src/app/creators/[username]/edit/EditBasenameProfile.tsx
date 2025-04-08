@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import {
   Basename,
@@ -172,7 +172,7 @@ export default function EditBasenameProfile({
   const chainId = useChainId();
   const isBaseChain = chainId === BASE_CHAIN_ID;
 
-  const connectWallet = async () => {
+  const connectWallet = useCallback(async () => {
     try {
       // Check for Frame first
       const frameConnector = connectors.find((c) => c.id === "farcasterFrame");
@@ -201,11 +201,19 @@ export default function EditBasenameProfile({
         "Failed to connect to wallet. Please make sure you have a wallet installed and connected to Base network.",
       );
     }
-  };
+  }, [
+    connect,
+    connectors,
+    isConnected,
+    basename,
+    address,
+    setMismatchedAddress,
+    setError,
+  ]);
 
   useEffect(() => {
     connectWallet();
-  }, [connect, connectors, isConnected]);
+  }, [connect, connectors, isConnected, connectWallet]);
 
   useEffect(() => {
     const fetchTextRecords = async () => {

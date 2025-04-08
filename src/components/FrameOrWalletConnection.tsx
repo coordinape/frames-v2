@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useConnect, useDisconnect, useAccount } from "wagmi";
+import { useConnect, useDisconnect } from "wagmi";
 import { config } from "~/components/providers/WagmiProvider";
 import { useWalletOrFrameAddress } from "~/hooks/useWalletOrFrameAddress";
 
