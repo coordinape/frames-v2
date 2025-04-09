@@ -28,12 +28,12 @@ export interface OpenSeaCollection {
   contractAddress?: string;
 }
 
-export interface OpenSeaData {
+export interface NFTData {
   collections: OpenSeaCollection[];
 }
 
-export interface CreatorWithOpenSeaData extends Creator {
-  openSeaData?: OpenSeaData;
+export interface CreatorWithNFTData extends Creator {
+  nftData?: NFTData;
   resolution?: BasenameResolution | null;
 }
 

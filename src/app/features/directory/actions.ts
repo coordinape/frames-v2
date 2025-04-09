@@ -5,7 +5,7 @@ import { gql } from "@apollo/client";
 import { getNFTContracts } from "~/lib/getNFTContracts";
 import {
   Creator,
-  CreatorWithOpenSeaData,
+  CreatorWithNFTData,
   Give,
   GroupedGives,
   SortedGiveGroup,
@@ -103,11 +103,11 @@ export async function joinDirectory(
 /**
  * Fetches a single creator from the directory by their Ethereum address
  * @param address Ethereum address of the creator to fetch
- * @returns Promise<CreatorWithOpenSeaData | null> The creator with their OpenSea data or null if not found
+ * @returns Promise<CreatorWithNFTData | null> The creator with their NFT data or null if not found
  */
 export async function getCreator(
   address: string,
-): Promise<CreatorWithOpenSeaData | null> {
+): Promise<CreatorWithNFTData | null> {
   try {
     const { data } = await getApolloClientAuthed().query({
       query: gql`
@@ -180,7 +180,7 @@ export async function getCreator(
       return {
         ...creator,
         resolution: formattedResolution,
-        openSeaData: {
+        nftData: {
           collections: contracts.map((contract) => ({
             id: contract.contractAddress,
             name: contract.name,
@@ -195,7 +195,7 @@ export async function getCreator(
       };
     } catch (error) {
       console.error(`Failed to fetch data for ${creator.address}:`, error);
-      // Return creator without OpenSea data if there's an error
+      // Return creator without NFT data if there's an error
       return {
         ...creator,
         resolution: null,
@@ -209,9 +209,9 @@ export async function getCreator(
 
 /**
  * Fetches all creators from the directory
- * @returns Promise<Array<CreatorWithOpenSeaData>> Array of creators with their OpenSea data and basename resolution
+ * @returns Promise<Array<CreatorWithNFTData>> Array of creators with their NFT data and basename resolution
  */
-export async function getCreators(): Promise<CreatorWithOpenSeaData[]> {
+export async function getCreators(): Promise<CreatorWithNFTData[]> {
   try {
     const { data } = await getApolloClientAuthed().query({
       query: gql`
@@ -264,8 +264,8 @@ export async function getCreators(): Promise<CreatorWithOpenSeaData[]> {
       }),
     );
 
-    // Fetch OpenSea data and resolve basenames for each creator on the server side
-    const creatorsWithOpenSeaData: CreatorWithOpenSeaData[] = await Promise.all(
+    // Fetch NFT data and resolve basenames for each creator on the server side
+    const creatorsWithNFTData: CreatorWithNFTData[] = await Promise.all(
       creators.map(async (creator: Creator) => {
         try {
           // Get NFT contracts
@@ -287,7 +287,7 @@ export async function getCreators(): Promise<CreatorWithOpenSeaData[]> {
           return {
             ...creator,
             resolution: formattedResolution,
-            openSeaData: {
+            nftData: {
               collections: contracts.map((contract) => ({
                 id: contract.contractAddress,
                 name: contract.name,
@@ -302,7 +302,7 @@ export async function getCreators(): Promise<CreatorWithOpenSeaData[]> {
           };
         } catch (error) {
           console.error(`Failed to fetch data for ${creator.address}:`, error);
-          // Return creator without OpenSea data if there's an error
+          // Return creator without NFT data if there's an error
           return {
             ...creator,
             resolution: null,
@@ -311,7 +311,7 @@ export async function getCreators(): Promise<CreatorWithOpenSeaData[]> {
       }),
     );
 
-    return creatorsWithOpenSeaData;
+    return creatorsWithNFTData;
   } catch (error) {
     console.error("Error fetching creators:", error);
     return [];

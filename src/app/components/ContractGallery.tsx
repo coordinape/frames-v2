@@ -2,19 +2,18 @@ import { OpenSeaCollection } from "~/app/features/directory/types";
 
 interface ContractGalleryProps {
   address: string;
-  openSeaCollections?: OpenSeaCollection[];
+  nftCollections: OpenSeaCollection[];
   maxItems?: number;
   showDetails?: boolean;
 }
 
 export default function ContractGallery({
-  openSeaCollections = [],
-  maxItems,
+  address,
+  nftCollections,
+  maxItems = 3,
   showDetails = true,
 }: ContractGalleryProps) {
-  const displayCollections = maxItems
-    ? openSeaCollections.slice(0, maxItems)
-    : openSeaCollections;
+  const displayCollections = nftCollections.slice(0, maxItems);
 
   return (
     <div className="space-y-8">
