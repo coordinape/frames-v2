@@ -24,7 +24,9 @@ export default function ContractGallery({
               Latest onchain work
             </h3>
           )}
-          <div className="grid grid-cols-2 gap-4">
+          <div
+            className={`grid ${maxItems === 3 ? "grid-cols-3" : "grid-cols-2"} gap-4`}
+          >
             {displayCollections.map((collection, index) => (
               <div
                 key={collection.id || index}
