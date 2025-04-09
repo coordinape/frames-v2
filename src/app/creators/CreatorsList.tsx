@@ -7,6 +7,7 @@ import { CreatorWithOpenSeaData } from "~/app/features/directory/types";
 import Header from "../components/Header";
 import Link from "next/link";
 import ShareButton from "../components/ShareButton";
+import ContractGallery from "~/app/components/ContractGallery";
 
 export default function CreatorsList() {
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
@@ -180,45 +181,13 @@ export default function CreatorsList() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-2 mt-4">
-                {creator.openSeaData?.collections &&
-                creator.openSeaData.collections.length > 0 ? (
-                  creator.openSeaData.collections
-                    .slice(0, 3)
-                    .map((collection, index) => (
-                      <div
-                        key={collection.id || index}
-                        className="aspect-square overflow-hidden rounded-lg"
-                      >
-                        {collection.imageUrl ? (
-                          <img
-                            src={collection.imageUrl}
-                            alt={collection.name || "Collection"}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <span className="text-blue-100 text-xs">
-                              No Image
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    ))
-                ) : (
-                  <>
-                    {[1, 2, 3].map((i) => (
-                      <div
-                        key={i}
-                        className="bg-white/10 aspect-square overflow-hidden rounded-lg flex items-center justify-center"
-                      >
-                        <span className="text-white/80 text-xs font-medium">
-                          No NFT
-                        </span>
-                      </div>
-                    ))}
-                  </>
-                )}
+              <div className="pt-4">
+                <ContractGallery
+                  address={creator.address}
+                  openSeaCollections={creator.openSeaData?.collections || []}
+                  maxItems={3}
+                  showDetails={false}
+                />
               </div>
             </div>
           </Link>
