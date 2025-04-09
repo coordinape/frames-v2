@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { getBestAddressForFid } from "~/app/features/directory/neynar";
 import sdk from "@farcaster/frame-sdk";
 
+const USE_FRAME_ADDRESS = false;
+
 export function useWalletOrFrameAddress() {
   const { address: walletAddress } = useAccount();
   const [frameAddress, setFrameAddress] = useState<string | null>(null);
@@ -19,7 +21,7 @@ export function useWalletOrFrameAddress() {
       const context = await sdk.context;
       console.log("Join Frame: Calling ready");
       sdk.actions.ready({});
-      if (context?.user?.fid) {
+      if (USE_FRAME_ADDRESS && context?.user?.fid) {
         const bestAddress = await getBestAddressForFid(`${context.user.fid}`);
         setFrameAddress(bestAddress);
       }
