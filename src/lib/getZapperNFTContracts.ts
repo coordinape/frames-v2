@@ -119,6 +119,7 @@ export interface ContractDetails {
   floorPriceNative?: number;
   floorPriceCurrency?: string;
   socialLinks: SocialLink[];
+  fetchedAt: string; // ISO timestamp in UTC
 }
 
 function filterCollectionsByChain(
@@ -261,6 +262,7 @@ export async function getZapperNFTContracts(
             floorPriceNative: node.floorPrice?.valueWithDenomination,
             floorPriceCurrency: node.floorPrice?.denomination?.symbol,
             socialLinks: node.socialLinks,
+            fetchedAt: new Date().toISOString(),
           }));
 
       return chain
@@ -416,6 +418,11 @@ export async function getZapperNFTCollectionsForOwners(
             floorPriceNative: node.floorPrice?.valueWithDenomination,
             floorPriceCurrency: node.floorPrice?.denomination?.symbol,
             socialLinks: node.socialLinks,
+            fetchedAt: new Date(
+              new Date().toLocaleString("en-US", {
+                timeZone: "America/Los_Angeles",
+              }),
+            ).toISOString(),
           }));
 
       return chain

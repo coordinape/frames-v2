@@ -1,6 +1,10 @@
 "use server";
 
 import { bustAllOpenSeaCaches } from "~/lib/getOpenseaNFTContracts";
+import {
+  bustZapperCollectionsCache,
+  bustZapperOwnerCollectionsCache,
+} from "~/lib/getZapperNFTContracts";
 import { kv } from "@vercel/kv";
 
 const REFRESH_COOLDOWN = 60; // 1 minute cooldown in seconds
@@ -23,6 +27,8 @@ export async function refreshRequirementsCache(address: string) {
 
     // Bust all OpenSea related caches for this address
     await bustAllOpenSeaCaches(address);
+    await bustZapperCollectionsCache(address);
+    await bustZapperOwnerCollectionsCache(address);
     return { success: true };
   } catch (error) {
     console.error("Failed to refresh cache:", error);

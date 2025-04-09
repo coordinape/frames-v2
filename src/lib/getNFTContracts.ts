@@ -30,6 +30,7 @@ export interface NFTContractDetails {
   floorPriceNative?: number;
   floorPriceCurrency?: string;
   apiOriginSource?: string;
+  fetchedAt: string; // Timestamp string in PST
   socialLinks?: Array<{
     name: string;
     label: string;
@@ -65,6 +66,7 @@ function mergeContractDetails(
       socialLinks: other.socialLinks,
     }),
     apiOriginSource: openSeaContract ? "OpenSea" : "Zapper",
+    fetchedAt: Date.now().toString(), // Add current timestamp in milliseconds
   };
 }
 
