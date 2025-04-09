@@ -107,6 +107,7 @@ export interface ContractDetails {
   projectUrl?: string;
   discordUrl?: string;
   twitterUsername?: string;
+  fetchedAt: string; // ISO timestamp in UTC
 }
 
 // Add a function to map OpenSea chain IDs to our format
@@ -235,6 +236,7 @@ export async function getOpenseaNFTContracts(
               projectUrl: collection.project_url,
               discordUrl: collection.discord_url,
               twitterUsername: collection.twitter_username,
+              fetchedAt: new Date().toISOString(),
             };
           });
         },

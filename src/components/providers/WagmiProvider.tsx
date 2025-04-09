@@ -16,6 +16,7 @@ export const config = createConfig({
     [unichain.id]: http(),
   },
   connectors:
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     typeof window !== "undefined" && (window as any).ethereum
       ? [injected()]
       : [farcasterFrame()],

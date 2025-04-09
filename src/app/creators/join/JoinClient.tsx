@@ -15,58 +15,12 @@ import {
   joinDirectory,
 } from "~/app/features/directory/actions";
 import Link from "next/link";
-
 import {
-  bustZapperCollectionsCache,
-  bustZapperOwnerCollectionsCache,
-} from "~/lib/getZapperNFTContracts";
-import { bustOpenSeaCollectionsCache } from "~/lib/getOpenseaNFTContracts";
-
+  useDebugMode,
+  type EligibilityStatus,
+  initialEligibility,
+} from "./useDebugMode";
 import { useWalletOrFrameAddress } from "~/hooks/useWalletOrFrameAddress";
-
-interface EligibilityStatus {
-  hasBasename: boolean;
-  basename: string;
-  hasNFTsOnBase: boolean;
-  isLoading: boolean;
-}
-
-const initialEligibility: EligibilityStatus = {
-  hasBasename: false,
-  basename: "",
-  hasNFTsOnBase: false,
-  isLoading: true,
-};
-
-const DEBUG_MODE_KEY = "creators-directory-debug-mode";
-
-function useDebugMode() {
-  const [isDebugMode, setIsDebugMode] = useState(false);
-
-  useEffect(() => {
-    // Check localStorage on mount
-    const debugMode = localStorage.getItem(DEBUG_MODE_KEY) === "true";
-    setIsDebugMode(debugMode);
-
-    // Listen for storage changes (in case debug mode is toggled in another tab)
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === DEBUG_MODE_KEY) {
-        setIsDebugMode(e.newValue === "true");
-      }
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
-  }, []);
-
-  const toggleDebugMode = () => {
-    const newValue = !isDebugMode;
-    localStorage.setItem(DEBUG_MODE_KEY, String(newValue));
-    setIsDebugMode(newValue);
-  };
-
-  return { isDebugMode, toggleDebugMode };
-}
 
 export default function JoinClient() {
   const router = useRouter();
@@ -80,17 +34,24 @@ export default function JoinClient() {
   const [createStatus, setCreateStatus] = useState<
     "idle" | "success" | "error"
   >("idle");
-  const [testAddress, setTestAddress] = useState("");
-  const [testEligibility, setTestEligibility] =
-    useState<EligibilityStatus>(initialEligibility);
-  const [isTestingEligibility, setIsTestingEligibility] = useState(false);
-  const [isClearingCache, setIsClearingCache] = useState(false);
-  const { isDebugMode, toggleDebugMode } = useDebugMode();
   const { address, isWalletAddress } = useWalletOrFrameAddress();
 
   // Get wallet connection info
   const { disconnect } = useDisconnect();
   const { connect } = useConnect();
+
+  // Get debug mode functionality
+  const {
+    isDebugMode,
+    toggleDebugMode,
+    testAddress,
+    setTestAddress,
+    testEligibility,
+    isTestingEligibility,
+    isClearingCache,
+    checkTestAddressEligibility,
+    clearTestAddressCache,
+  } = useDebugMode();
 
   // Handle mounting to prevent hydration mismatch
   useEffect(() => {
@@ -246,79 +207,6 @@ export default function JoinClient() {
       setCreateStatus("error");
     }
     // Don't set isCreating to false here, as we want to maintain the loading state during navigation
-  };
-
-  const checkTestAddressEligibility = async () => {
-    if (!testAddress) return;
-
-    setIsTestingEligibility(true);
-    setTestEligibility((prev) => ({ ...prev, isLoading: true }));
-
-    try {
-      // First try to resolve the input as either a basename or address
-      const resolution = await resolveBasenameOrAddress(testAddress);
-      if (!resolution?.address) {
-        setTestEligibility({
-          hasBasename: false,
-          basename: "",
-          hasNFTsOnBase: false,
-          isLoading: false,
-        });
-        return;
-      }
-
-      // Now we have the address, check basename ownership
-      const hasBasename = !!resolution.basename;
-      const basename = resolution.basename || "";
-
-      // Check NFT releases on Base using the resolved address
-      const contracts = await getNFTContracts(
-        resolution.address,
-        "BASE_MAINNET",
-      );
-      const hasNFTsOnBase = contracts.length > 0;
-
-      setTestEligibility({
-        hasBasename,
-        basename,
-        hasNFTsOnBase,
-        isLoading: false,
-      });
-    } catch (error) {
-      console.error("Error checking test address eligibility:", error);
-      setTestEligibility({
-        hasBasename: false,
-        basename: "",
-        hasNFTsOnBase: false,
-        isLoading: false,
-      });
-    } finally {
-      setIsTestingEligibility(false);
-    }
-  };
-
-  const clearTestAddressCache = async () => {
-    if (!testAddress) return;
-
-    setIsClearingCache(true);
-    try {
-      // First resolve the input to get the address
-      const resolution = await resolveBasenameOrAddress(testAddress);
-      if (!resolution?.address) {
-        console.error("Could not resolve address");
-        return;
-      }
-
-      await bustZapperCollectionsCache(resolution.address);
-      await bustOpenSeaCollectionsCache(resolution.address);
-      await bustZapperOwnerCollectionsCache(resolution.address);
-      // Reset the test eligibility to trigger a fresh check
-      setTestEligibility(initialEligibility);
-    } catch (error) {
-      console.error("Error clearing cache:", error);
-    } finally {
-      setIsClearingCache(false);
-    }
   };
 
   // Add keyboard shortcut for debug mode
