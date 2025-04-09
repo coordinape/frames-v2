@@ -242,7 +242,7 @@ export default function JoinClient() {
             collaboration opportunities.
           </p>
           <Link
-            href={`/creators/`}
+            href="/creators/"
             className="px-8 py-2 bg-white/10 text-white text-sm rounded-full cursor-pointer hover:bg-white/20 transition-colors inline-flex items-center"
           >
             View Creators Directory
