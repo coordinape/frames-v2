@@ -44,7 +44,7 @@ export default function ContractGallery({
                         <img
                           src={collection.imageUrl}
                           alt={collection.name || "Collection"}
-                          className="w-full h-full object-cover rounded-md"
+                          className="w-full h-full object-cover rounded-md aspect-square"
                         />
                       </a>
                     ) : (
@@ -52,7 +52,7 @@ export default function ContractGallery({
                         <img
                           src={collection.imageUrl}
                           alt={collection.name || "Collection"}
-                          className="w-full h-full object-cover rounded-md"
+                          className="w-full h-full object-cover rounded-md aspect-square"
                         />
                       </div>
                     )
