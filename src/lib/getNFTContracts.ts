@@ -75,7 +75,7 @@ export async function getNFTContracts(
   chain?: string,
   options: {
     excludeNoImage?: boolean;
-  } = { excludeNoImage: false },
+  } = { excludeNoImage: true },
 ): Promise<NFTContractDetails[]> {
   try {
     // Fetch contracts from all three sources in parallel

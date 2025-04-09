@@ -35,18 +35,27 @@ export default function ContractGallery({
               >
                 <div className="aspect-square overflow-hidden">
                   {collection.imageUrl ? (
-                    <a
-                      href={showDetails ? collection.openseaUrl : undefined}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={!showDetails ? "cursor-default" : ""}
-                    >
-                      <img
-                        src={collection.imageUrl}
-                        alt={collection.name || "Collection"}
-                        className="w-full h-full object-cover rounded-md"
-                      />
-                    </a>
+                    showDetails ? (
+                      <a
+                        href={collection.openseaUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <img
+                          src={collection.imageUrl}
+                          alt={collection.name || "Collection"}
+                          className="w-full h-full object-cover rounded-md aspect-square"
+                        />
+                      </a>
+                    ) : (
+                      <div className="cursor-default">
+                        <img
+                          src={collection.imageUrl}
+                          alt={collection.name || "Collection"}
+                          className="w-full h-full object-cover rounded-md aspect-square"
+                        />
+                      </div>
+                    )
                   ) : (
                     <div className="w-full h-full bg-blue-800 flex items-center justify-center">
                       <span className="text-blue-100 text-sm">No Image</span>
