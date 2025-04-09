@@ -9,6 +9,14 @@ import Link from "next/link";
 import ShareButton from "../components/ShareButton";
 import ContractGallery from "~/app/components/ContractGallery";
 
+// Helper function to check if a creator has NFT images
+const hasNFTImages = (creator: CreatorWithNFTData): boolean => {
+  return (
+    creator.nftData?.collections?.some((collection) => collection.imageUrl) ??
+    false
+  );
+};
+
 export default function CreatorsList() {
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -39,7 +47,15 @@ export default function CreatorsList() {
         setLoading(true);
         // Get creators with OpenSea data and basename resolution already included from the server action
         const creatorsWithData = await getCreators();
-        setCreators(creatorsWithData);
+        // Sort creators - prioritize those with NFT images
+        const sortedCreators = creatorsWithData.sort((a, b) => {
+          const aHasImages = hasNFTImages(a);
+          const bHasImages = hasNFTImages(b);
+
+          if (aHasImages === bHasImages) return 0;
+          return aHasImages ? -1 : 1;
+        });
+        setCreators(sortedCreators);
       } catch (err) {
         console.error("Failed to fetch creators:", err);
         setError("Failed to load creators. Please try again later.");
