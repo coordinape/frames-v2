@@ -16,7 +16,7 @@ export const config = createConfig({
     [unichain.id]: http(),
   },
   connectors:
-    typeof window !== "undefined" && (window as any).ethereum
+    typeof window !== "undefined" && (window as unknown).ethereum
       ? [injected()]
       : [farcasterFrame()],
 });
