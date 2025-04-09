@@ -4,9 +4,14 @@ import { useState } from "react";
 import {
   getZapperNFTContracts,
   getZapperNFTCollectionsForOwners,
+  ContractDetails as ZapperContractDetails,
 } from "~/lib/getZapperNFTContracts";
-import { getOpenseaNFTContracts } from "~/lib/getOpenseaNFTContracts";
+import {
+  getOpenseaNFTContracts,
+  ContractDetails as OpenSeaContractDetails,
+} from "~/lib/getOpenseaNFTContracts";
 import { resolveBasenameOrAddress } from "~/app/hooks/useBasenameResolver";
+import { NFTContractDetails } from "~/lib/getNFTContracts";
 
 function getTimeAgo(timestamp: string): string {
   const date = new Date(timestamp);
@@ -33,7 +38,7 @@ function getTimeAgo(timestamp: string): string {
   return "just now";
 }
 
-function findOldestFetchTime(data: any[]): string | null {
+function findOldestFetchTime(data: NFTContractDetails[]): string | null {
   if (!Array.isArray(data) || data.length === 0) return null;
 
   const timestamps = data
@@ -42,9 +47,10 @@ function findOldestFetchTime(data: any[]): string | null {
 
   if (timestamps.length === 0) return null;
 
-  return timestamps.reduce((oldest, current) =>
+  const oldestTimestamp = timestamps.reduce((oldest, current) =>
     current < oldest ? current : oldest,
   );
+  return oldestTimestamp;
 }
 
 export default function NFTContractDebugger({
@@ -52,9 +58,15 @@ export default function NFTContractDebugger({
 }: {
   testAddress: string;
 }) {
-  const [zapperDeployerData, setZapperDeployerData] = useState<any>(null);
-  const [zapperOwnerData, setZapperOwnerData] = useState<any>(null);
-  const [openSeaData, setOpenSeaData] = useState<any>(null);
+  const [zapperDeployerData, setZapperDeployerData] = useState<
+    ZapperContractDetails[] | null
+  >(null);
+  const [zapperOwnerData, setZapperOwnerData] = useState<
+    ZapperContractDetails[] | null
+  >(null);
+  const [openSeaData, setOpenSeaData] = useState<
+    OpenSeaContractDetails[] | null
+  >(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resolvedAddress, setResolvedAddress] = useState<string | null>(null);
@@ -98,7 +110,13 @@ export default function NFTContractDebugger({
     }
   };
 
-  const ResultSection = ({ title, data }: { title: string; data: any }) => {
+  const ResultSection = ({
+    title,
+    data,
+  }: {
+    title: string;
+    data: NFTContractDetails[] | null;
+  }) => {
     const count = data?.length || 0;
     const hasResults = count > 0;
 
