@@ -44,7 +44,7 @@ export async function GET(
   }
 
   const displayName = creator.resolution?.basename || creator.name;
-  const collections = creator.openSeaData?.collections || [];
+  const collections = creator.nftData?.collections || [];
 
   // Take up to 4 collections to display
   const displayCollections = collections.slice(0, 5);

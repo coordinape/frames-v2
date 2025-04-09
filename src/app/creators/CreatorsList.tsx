@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import sdk from "@farcaster/frame-sdk";
 import { getCreators } from "~/app/features/directory/actions";
-import { CreatorWithOpenSeaData } from "~/app/features/directory/types";
+import { CreatorWithNFTData } from "~/app/features/directory/types";
 import Header from "../components/Header";
 import Link from "next/link";
 import ShareButton from "../components/ShareButton";
@@ -12,7 +12,7 @@ import ContractGallery from "~/app/components/ContractGallery";
 export default function CreatorsList() {
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [creators, setCreators] = useState<CreatorWithOpenSeaData[]>([]);
+  const [creators, setCreators] = useState<CreatorWithNFTData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -184,7 +184,7 @@ export default function CreatorsList() {
               <div className="pt-4">
                 <ContractGallery
                   address={creator.address}
-                  openSeaCollections={creator.openSeaData?.collections || []}
+                  nftCollections={creator.nftData?.collections || []}
                   maxItems={3}
                   showDetails={false}
                 />

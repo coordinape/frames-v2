@@ -133,7 +133,7 @@ export default async function ProfilePage({ params }: Props) {
         {resolution?.address && <Gives address={resolution.address} />}
         <ContractGallery
           address={resolution?.address || ""}
-          openSeaCollections={creator.openSeaData?.collections || []}
+          nftCollections={creator.nftData?.collections || []}
         />
         {resolution?.address && <RefreshButton address={resolution.address} />}
       </div>
