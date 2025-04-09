@@ -50,7 +50,7 @@ export const RefreshButton = ({ address }: { address: string }) => {
         <p className="text-sm text-amber-400 text-center">{refreshError}</p>
       )}
       <button
-        className="w-full py-3 bg-white text-base-blue rounded-full hover:bg-white/90 transition-colors disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
+        className="w-full py-2 bg-white text-base-blue text-sm rounded-full hover:bg-white/90 transition-colors disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
         onClick={handleRefresh}
         disabled={refreshLoading || !!refreshError}
       >

@@ -10,8 +10,9 @@ import ShareButton from "~/app/components/ShareButton";
 import Gives from "./Gives";
 import InfoCard from "./InfoCard";
 import { FrameSDK } from "~/app/components/FrameSDK";
-import { APP_BASE_URL } from "~/lib/constants";
+import { APP_BASE_URL, APP_PUBLIC_URL } from "~/lib/constants";
 import { RefreshButton } from "~/app/creators/[username]/RefreshButton";
+import { BasenameTextRecordKeys } from "./basenames";
 
 interface Props {
   params: Promise<{
@@ -57,6 +58,9 @@ export default async function ProfilePage({ params }: Props) {
     );
   }
   const displayName = creator.resolution?.basename || creator.name;
+  const creatorProfileProdUrl = `${APP_PUBLIC_URL}/creators/${displayName}`;
+  const farcasterUsername =
+    resolution?.textRecords[BasenameTextRecordKeys.Farcaster];
 
   return (
     <>
@@ -131,6 +135,15 @@ export default async function ProfilePage({ params }: Props) {
         </div>
         {resolution?.address && <InfoCard address={resolution.address} />}
         {resolution?.address && <Gives address={resolution.address} />}
+        {resolution?.address && farcasterUsername && (
+          <Link
+            href={`https://warpcast.com/~/compose?text=${encodeURIComponent(`@givebot ${farcasterUsername} #create ${encodeURIComponent(creatorProfileProdUrl)}`)}&embeds[]=${encodeURIComponent(creatorProfileProdUrl)}`}
+            target="_blank"
+            className="px-3 py-2 text-sm bg-white text-base-blue rounded-full cursor-pointer hover:bg-white/90 transition-colors items-center mt-[-20px] text-center"
+          >
+            Send <span className="font-bold">#create</span> GIVE
+          </Link>
+        )}
         <ContractGallery
           address={resolution?.address || ""}
           nftCollections={creator.nftData?.collections || []}
