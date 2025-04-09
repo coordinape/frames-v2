@@ -1,4 +1,5 @@
 import { getGivesForCreator } from "~/app/features/directory/actions";
+import AboutGiveModal from "~/components/AboutGiveModal";
 
 interface GivesProps {
   address: string;
@@ -14,8 +15,9 @@ export default async function Gives({ address }: GivesProps) {
 
   return (
     <div className="space-y-2">
-      <h3 className="text-xl font-bold text-white base-pixel">
+      <h3 className="text-xl font-bold text-white base-pixel flex items-center flex-wrap gap-2 justify-between">
         Coordinape GIVE Skills
+        <AboutGiveModal />
       </h3>
       <div className="flex flex-wrap gap-2">
         {gives.map((giveGroup, index) => (
