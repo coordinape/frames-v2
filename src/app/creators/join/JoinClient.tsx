@@ -231,16 +231,22 @@ export default function JoinClient() {
     <>
       <Header logoOnly />
       <div className="flex flex-col gap-10">
-        <div className="flex flex-col gap-4 text-center">
+        <div className="flex flex-col gap-4 text-center items-center">
           <h1 className="font-mono text-6xl font-bold base-pixel">
             Create
             <br />
             on Base
           </h1>
           <p className="opacity-90">
-            Get listed on thecreators directory for better discovery and
+            Get listed on the creators directory for better discovery and
             collaboration opportunities.
           </p>
+          <Link
+            href="/creators/"
+            className="px-8 py-2 bg-white/10 text-white text-sm rounded-full cursor-pointer hover:bg-white/20 transition-colors inline-flex items-center"
+          >
+            View Creators Directory
+          </Link>
         </div>
 
         {isDebugMode && (
