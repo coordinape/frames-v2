@@ -59,9 +59,13 @@ export default async function ProfilePage({ params }: Props) {
   }
   const displayName = creator.resolution?.basename || creator.name;
   const creatorProfileProdUrl = `${APP_PUBLIC_URL}/creators/${displayName}`;
-  const farcasterUsername =
+  const farcasterUsername = (
     resolution?.textRecords[BasenameTextRecordKeys.Farcaster] ||
-    creator.farcasterUsername;
+    creator.farcasterUsername
+  )
+    ?.replace("@", "")
+    ?.split("/")
+    ?.pop();
 
   return (
     <>
@@ -140,7 +144,7 @@ export default async function ProfilePage({ params }: Props) {
         )}
         {resolution?.address && farcasterUsername && (
           <Link
-            href={`https://warpcast.com/~/compose?text=${encodeURIComponent(`@givebot ${farcasterUsername} #create ${encodeURIComponent(creatorProfileProdUrl)}`)}&embeds[]=${encodeURIComponent(creatorProfileProdUrl)}`}
+            href={`https://warpcast.com/~/compose?text=${encodeURIComponent(`@givebot @${farcasterUsername} #create ${encodeURIComponent(creatorProfileProdUrl)}`)}&embeds[]=${encodeURIComponent(creatorProfileProdUrl)}`}
             target="_blank"
             className="px-3 py-2 text-sm bg-white text-base-blue rounded-full cursor-pointer hover:bg-white/90 transition-colors items-center mt-[-16px] text-center"
           >
