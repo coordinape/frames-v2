@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import PlausibleProvider from "next-plausible";
+
 import "~/app/globals.css";
 
 export const metadata: Metadata = {
@@ -17,7 +19,9 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <PlausibleProvider domain="dir.coordinape.com">
+        <body>{children}</body>
+      </PlausibleProvider>
     </html>
   );
 }
