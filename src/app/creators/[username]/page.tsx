@@ -60,7 +60,8 @@ export default async function ProfilePage({ params }: Props) {
   const displayName = creator.resolution?.basename || creator.name;
   const creatorProfileProdUrl = `${APP_PUBLIC_URL}/creators/${displayName}`;
   const farcasterUsername =
-    resolution?.textRecords[BasenameTextRecordKeys.Farcaster];
+    resolution?.textRecords[BasenameTextRecordKeys.Farcaster] ||
+    creator.farcasterUsername;
 
   return (
     <>
