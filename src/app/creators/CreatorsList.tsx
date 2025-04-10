@@ -116,7 +116,11 @@ export default function CreatorsList() {
           Creators
         </h1>
         <p className="text-white">Explore the top creators on base</p>
-        <Link href={PATHS.COORDINAPE} target="_blank">
+        <Link
+          href={PATHS.COORDINAPE}
+          target="_blank"
+          className="cursor-pointer"
+        >
           <img
             src="/images/coordinape-x-base.png"
             alt="Coordinape x Base"
@@ -165,20 +169,23 @@ export default function CreatorsList() {
               BasenameTextRecordKeys.Farcaster
             ] ||
               creator.farcasterUsername) && (
-              <>
-                {creator.resolution?.textRecords?.[
-                  BasenameTextRecordKeys.Farcaster
-                ] || "no farcaster in textRecords"}
-                <span>---------</span>
-                {creator.farcasterUsername || "no farcaster in co"}
-                <Link
-                  href={`https://warpcast.com/~/compose?text=${encodeURIComponent(`@givebot @${creator.resolution?.basename || creator.farcasterUsername} #create ${encodeURIComponent(`${APP_PUBLIC_URL}/creators/${creator.resolution?.basename || creator.farcasterUsername}`)}`)}&embeds[]=${encodeURIComponent(`${APP_PUBLIC_URL}/creators/${creator.resolution?.basename || creator.farcasterUsername}`)}`}
-                  target="_blank"
-                  className="bg-white/10 text-xs rounded-full px-3 py-1 text-white absolute top-6 right-4"
-                >
-                  GIVE <span className="font-bold"> #create</span>
-                </Link>
-              </>
+              <Link
+                href={`https://warpcast.com/~/compose?text=${encodeURIComponent(
+                  `@givebot @${(
+                    creator.resolution?.textRecords?.[
+                      BasenameTextRecordKeys.Farcaster
+                    ] || creator.farcasterUsername
+                  )
+                    ?.replace("@", "")
+                    ?.replace(" ", "")
+                    ?.split("/")
+                    ?.pop()} #create ${encodeURIComponent(`${APP_PUBLIC_URL}/creators/${creator.resolution?.basename || creator.resolution?.address}`)}`,
+                )}&embeds[]=${encodeURIComponent(`${APP_PUBLIC_URL}/creators/${creator.resolution?.basename || creator.resolution?.address}`)}`}
+                target="_blank"
+                className="bg-white/10 text-xs rounded-full px-3 py-1 text-white absolute top-6 right-4 cursor-pointer hover:bg-white/20 transition-all"
+              >
+                GIVE <span className="font-bold"> #create</span>
+              </Link>
             )}
             <Link
               href={`/creators/${
