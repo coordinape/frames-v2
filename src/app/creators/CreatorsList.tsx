@@ -108,11 +108,18 @@ export default function CreatorsList() {
     <>
       <Header />
 
-      <div className="text-center mb-10">
+      <div className="text-center mb-10 flex flex-col items-center justify-center gap-2">
         <h1 className="text-5xl font-bold text-white mb-4 base-pixel">
           Creators
         </h1>
-        <p className="text-white">Explore the top creators on base.</p>
+        <p className="text-white">Explore the top creators on base</p>
+        <div className="flex justify-center gap-4">
+          <img
+            src="/images/coordinape-x-base.png"
+            alt="Coordinape x Base"
+            className="h-6"
+          />
+        </div>
       </div>
 
       <div className="relative mb-10">
@@ -150,63 +157,54 @@ export default function CreatorsList() {
 
       <div className="space-y-4">
         {filteredCreators.map((creator) => (
-          <Link
-            href={`/creators/${
-              creator.resolution?.basename || creator.address
-            }`}
-            key={creator.id}
-            className="block"
-          >
-            <div className="border-2 border-white/20 rounded-xl p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  {creator.avatar ? (
-                    <img
-                      src={creator.avatar}
-                      alt={creator.name}
-                      className="w-10 h-10 rounded-full mr-3"
-                    />
-                  ) : (
-                    <div className="bg-white/70 w-10 h-10 rounded-full flex items-center justify-center mr-3">
-                      <span className="text-blue-700">
-                        {creator.name.charAt(0)}
-                      </span>
+          <div key={creator.id} className="relative">
+            <Link
+              href="https://docs.google.com/"
+              target="_blank"
+              className="bg-white/10 text-xs rounded-full px-3 py-1 text-white absolute top-6 right-4"
+            >
+              GIVE <span className="font-bold"> #create</span>
+            </Link>
+            <Link
+              href={`/creators/${
+                creator.resolution?.basename || creator.address
+              }`}
+              className="block"
+            >
+              <div className="border-2 border-white/20 rounded-xl p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    {creator.avatar ? (
+                      <img
+                        src={creator.avatar}
+                        alt={creator.name}
+                        className="w-10 h-10 rounded-full mr-3"
+                      />
+                    ) : (
+                      <div className="bg-white/70 w-10 h-10 rounded-full flex items-center justify-center mr-3">
+                        <span className="text-blue-700">
+                          {creator.name.charAt(0)}
+                        </span>
+                      </div>
+                    )}
+                    <div>
+                      <h2 className="text-white">
+                        {creator.resolution?.basename || creator.name}
+                      </h2>
                     </div>
-                  )}
-                  <div>
-                    <h2 className="text-white">
-                      {creator.resolution?.basename || creator.name}
-                    </h2>
                   </div>
                 </div>
-                <div className="opacity-40">
-                  <svg
-                    className="w-6 h-6 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M9 5l7 7-7 7"
-                    ></path>
-                  </svg>
+                <div className="pt-4">
+                  <ContractGallery
+                    address={creator.address}
+                    nftCollections={creator.nftData?.collections || []}
+                    maxItems={3}
+                    showDetails={false}
+                  />
                 </div>
               </div>
-
-              <div className="pt-4">
-                <ContractGallery
-                  address={creator.address}
-                  nftCollections={creator.nftData?.collections || []}
-                  maxItems={3}
-                  showDetails={false}
-                />
-              </div>
-            </div>
-          </Link>
+            </Link>
+          </div>
         ))}
       </div>
     </>
