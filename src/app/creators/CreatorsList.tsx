@@ -8,6 +8,9 @@ import Header from "../components/Header";
 import Link from "next/link";
 import ShareButton from "../components/ShareButton";
 import ContractGallery from "~/app/components/ContractGallery";
+import { PATHS } from "~/constants/paths";
+import { APP_PUBLIC_URL } from "~/lib/constants";
+import { BasenameTextRecordKeys } from "./[username]/basenames";
 
 // Helper function to check if a creator has NFT images
 const hasNFTImages = (creator: CreatorWithNFTData): boolean => {
@@ -108,11 +111,22 @@ export default function CreatorsList() {
     <>
       <Header />
 
-      <div className="text-center mb-10">
+      <div className="text-center mb-10 flex flex-col items-center justify-center gap-2">
         <h1 className="text-5xl font-bold text-white mb-4 base-pixel">
           Creators
         </h1>
-        <p className="text-white">Explore the top creators on base.</p>
+        <p className="text-white">Explore the top creators on base</p>
+        <Link
+          href={PATHS.COORDINAPE}
+          target="_blank"
+          className="cursor-pointer"
+        >
+          <img
+            src="/images/coordinape-x-base.png"
+            alt="Coordinape x Base"
+            className="h-6"
+          />
+        </Link>
       </div>
 
       <div className="relative mb-10">
@@ -150,63 +164,69 @@ export default function CreatorsList() {
 
       <div className="space-y-4">
         {filteredCreators.map((creator) => (
-          <Link
-            href={`/creators/${
-              creator.resolution?.basename || creator.address
-            }`}
-            key={creator.id}
-            className="block"
-          >
-            <div className="border-2 border-white/20 rounded-xl p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  {creator.avatar ? (
-                    <img
-                      src={creator.avatar}
-                      alt={creator.name}
-                      className="w-10 h-10 rounded-full mr-3"
-                    />
-                  ) : (
-                    <div className="bg-white/70 w-10 h-10 rounded-full flex items-center justify-center mr-3">
-                      <span className="text-blue-700">
-                        {creator.name.charAt(0)}
-                      </span>
+          <div key={creator.id} className="relative">
+            {(creator.resolution?.textRecords?.[
+              BasenameTextRecordKeys.Farcaster
+            ] ||
+              creator.farcasterUsername) && (
+              <Link
+                href={`https://warpcast.com/~/compose?text=${encodeURIComponent(
+                  `@givebot @${(
+                    creator.resolution?.textRecords?.[
+                      BasenameTextRecordKeys.Farcaster
+                    ] || creator.farcasterUsername
+                  )
+                    ?.replace("@", "")
+                    ?.replace(" ", "")
+                    ?.split("/")
+                    ?.pop()} #create ${encodeURIComponent(`${APP_PUBLIC_URL}/creators/${creator.resolution?.basename || creator.resolution?.address}`)}`,
+                )}&embeds[]=${encodeURIComponent(`${APP_PUBLIC_URL}/creators/${creator.resolution?.basename || creator.resolution?.address}`)}`}
+                target="_blank"
+                className="bg-white/10 text-xs rounded-full px-3 py-1 text-white absolute top-6 right-4 cursor-pointer hover:bg-white/20 transition-all"
+              >
+                GIVE <span className="font-bold"> #create</span>
+              </Link>
+            )}
+            <Link
+              href={`/creators/${
+                creator.resolution?.basename || creator.address
+              }`}
+              className="block"
+            >
+              <div className="border-2 border-white/20 rounded-xl p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    {creator.avatar ? (
+                      <img
+                        src={creator.avatar}
+                        alt={creator.name}
+                        className="w-10 h-10 rounded-full mr-3"
+                      />
+                    ) : (
+                      <div className="bg-white/70 w-10 h-10 rounded-full flex items-center justify-center mr-3">
+                        <span className="text-blue-700">
+                          {creator.name.charAt(0)}
+                        </span>
+                      </div>
+                    )}
+                    <div>
+                      <h2 className="text-white">
+                        {creator.resolution?.basename || creator.name}
+                      </h2>
                     </div>
-                  )}
-                  <div>
-                    <h2 className="text-white">
-                      {creator.resolution?.basename || creator.name}
-                    </h2>
                   </div>
                 </div>
-                <div className="opacity-40">
-                  <svg
-                    className="w-6 h-6 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M9 5l7 7-7 7"
-                    ></path>
-                  </svg>
+                <div className="pt-4">
+                  <ContractGallery
+                    address={creator.address}
+                    nftCollections={creator.nftData?.collections || []}
+                    maxItems={3}
+                    showDetails={false}
+                  />
                 </div>
               </div>
-
-              <div className="pt-4">
-                <ContractGallery
-                  address={creator.address}
-                  nftCollections={creator.nftData?.collections || []}
-                  maxItems={3}
-                  showDetails={false}
-                />
-              </div>
-            </div>
-          </Link>
+            </Link>
+          </div>
         ))}
       </div>
     </>

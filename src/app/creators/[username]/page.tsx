@@ -58,12 +58,13 @@ export default async function ProfilePage({ params }: Props) {
     );
   }
   const displayName = creator.resolution?.basename || creator.name;
-  const creatorProfileProdUrl = `${APP_PUBLIC_URL}/creators/${displayName}`;
+  const creatorProfileProdUrl = `${APP_PUBLIC_URL}/creators/${creator.resolution?.basename || creator.address}`;
   const farcasterUsername = (
     resolution?.textRecords[BasenameTextRecordKeys.Farcaster] ||
     creator.farcasterUsername
   )
     ?.replace("@", "")
+    ?.replace(" ", "")
     ?.split("/")
     ?.pop();
 
