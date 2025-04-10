@@ -10,7 +10,7 @@ interface ContractGalleryProps {
 export default function ContractGallery({
   address,
   nftCollections,
-  maxItems = 3,
+  maxItems,
   showDetails = true,
 }: ContractGalleryProps) {
   const displayCollections = nftCollections.slice(0, maxItems);
