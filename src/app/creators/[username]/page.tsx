@@ -135,12 +135,14 @@ export default async function ProfilePage({ params }: Props) {
           <p className="text-white/80 text-xs font-mono">{creator.address}</p>
         </div>
         {resolution?.address && <InfoCard address={resolution.address} />}
-        {resolution?.address && <Gives address={resolution.address} />}
+        {resolution?.address && farcasterUsername && (
+          <Gives address={resolution.address} />
+        )}
         {resolution?.address && farcasterUsername && (
           <Link
             href={`https://warpcast.com/~/compose?text=${encodeURIComponent(`@givebot ${farcasterUsername} #create ${encodeURIComponent(creatorProfileProdUrl)}`)}&embeds[]=${encodeURIComponent(creatorProfileProdUrl)}`}
             target="_blank"
-            className="px-3 py-2 text-sm bg-white text-base-blue rounded-full cursor-pointer hover:bg-white/90 transition-colors items-center mt-[-20px] text-center"
+            className="px-3 py-2 text-sm bg-white text-base-blue rounded-full cursor-pointer hover:bg-white/90 transition-colors items-center mt-[-16px] text-center"
           >
             Send <span className="font-bold">#create</span> GIVE
           </Link>

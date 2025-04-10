@@ -1,6 +1,7 @@
 import { Address } from "viem";
 import { resolveBasenameOrAddress } from "~/app/hooks/useBasenameResolver";
 import { BasenameTextRecordKeys } from "./basenames";
+import { getCreator } from "~/app/features/directory/actions";
 
 interface InfoCardProps {
   address: Address;
@@ -8,6 +9,9 @@ interface InfoCardProps {
 
 export default async function InfoCard({ address }: InfoCardProps) {
   const resolution = await resolveBasenameOrAddress(address);
+  const creator = resolution?.address
+    ? await getCreator(resolution.address)
+    : null;
 
   if (!resolution) {
     return null;
@@ -123,7 +127,9 @@ export default async function InfoCard({ address }: InfoCardProps) {
         </svg>
       ),
       label: "Farcaster",
-      value: resolution.textRecords[BasenameTextRecordKeys.Farcaster],
+      value:
+        resolution.textRecords[BasenameTextRecordKeys.Farcaster] ||
+        creator?.farcasterUsername,
       href: (value: string) => `https://warpcast.com/${value}`,
     },
   ];
@@ -149,21 +155,22 @@ export default async function InfoCard({ address }: InfoCardProps) {
               </h3>
             </div>
           )}
-
-          <div className="flex flex-wrap gap-4">
-            {availableContactMethods.map((method) => (
-              <a
-                key={method.key}
-                href={method.href(method.value!)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 text-sm text-white hover:text-white/90 transition-colors"
-              >
-                {method.icon}
-                <span>{method.label}</span>
-              </a>
-            ))}
-          </div>
+          {availableContactMethods.length > 0 && (
+            <div className="flex flex-wrap gap-4">
+              {availableContactMethods.map((method) => (
+                <a
+                  key={method.key}
+                  href={method.href(method.value!)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-sm text-white hover:text-white/90 transition-colors"
+                >
+                  {method.icon}
+                  <span>{method.label}</span>
+                </a>
+              ))}
+            </div>
+          )}
           {creativeMediumValue && (
             <div className="text-white">
               <div className="text-xl mb-2 base-pixel">Creative Medium</div>
