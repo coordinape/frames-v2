@@ -9,6 +9,8 @@ import Link from "next/link";
 import ShareButton from "../components/ShareButton";
 import ContractGallery from "~/app/components/ContractGallery";
 import { PATHS } from "~/constants/paths";
+import { APP_PUBLIC_URL } from "~/lib/constants";
+import { BasenameTextRecordKeys } from "./[username]/basenames";
 
 // Helper function to check if a creator has NFT images
 const hasNFTImages = (creator: CreatorWithNFTData): boolean => {
@@ -159,13 +161,25 @@ export default function CreatorsList() {
       <div className="space-y-4">
         {filteredCreators.map((creator) => (
           <div key={creator.id} className="relative">
-            <Link
-              href={PATHS.COORDINAPE}
-              target="_blank"
-              className="bg-white/10 text-xs rounded-full px-3 py-1 text-white absolute top-6 right-4"
-            >
-              GIVE <span className="font-bold"> #create</span>
-            </Link>
+            {(creator.resolution?.textRecords?.[
+              BasenameTextRecordKeys.Farcaster
+            ] ||
+              creator.farcasterUsername) && (
+              <>
+                {creator.resolution?.textRecords?.[
+                  BasenameTextRecordKeys.Farcaster
+                ] || "no farcaster in textRecords"}
+                <span>---------</span>
+                {creator.farcasterUsername || "no farcaster in co"}
+                <Link
+                  href={`https://warpcast.com/~/compose?text=${encodeURIComponent(`@givebot @${creator.resolution?.basename || creator.farcasterUsername} #create ${encodeURIComponent(`${APP_PUBLIC_URL}/creators/${creator.resolution?.basename || creator.farcasterUsername}`)}`)}&embeds[]=${encodeURIComponent(`${APP_PUBLIC_URL}/creators/${creator.resolution?.basename || creator.farcasterUsername}`)}`}
+                  target="_blank"
+                  className="bg-white/10 text-xs rounded-full px-3 py-1 text-white absolute top-6 right-4"
+                >
+                  GIVE <span className="font-bold"> #create</span>
+                </Link>
+              </>
+            )}
             <Link
               href={`/creators/${
                 creator.resolution?.basename || creator.address

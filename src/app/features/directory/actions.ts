@@ -237,6 +237,9 @@ export async function getCreators(): Promise<CreatorWithNFTData[]> {
               name
               avatar
               description
+              farcaster_account {
+                username
+              }
             }
           }
         }
@@ -255,6 +258,9 @@ export async function getCreators(): Promise<CreatorWithNFTData[]> {
           name?: string;
           avatar?: string;
           description?: string;
+          farcaster_account?: {
+            username?: string;
+          };
         };
       }) => ({
         id: user.id,
@@ -266,6 +272,7 @@ export async function getCreators(): Promise<CreatorWithNFTData[]> {
             : `https://coordinape-prod.s3.amazonaws.com/${user.profile.avatar}`
           : "",
         description: user.profile?.description || "",
+        farcasterUsername: user.profile?.farcaster_account?.username || "",
       }),
     );
 
