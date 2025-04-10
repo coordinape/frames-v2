@@ -159,7 +159,7 @@ export default function CreatorsList() {
         {filteredCreators.map((creator) => (
           <div key={creator.id} className="relative">
             <Link
-              href="https://docs.google.com/"
+              href="https://coordinape.com/"
               target="_blank"
               className="bg-white/10 text-xs rounded-full px-3 py-1 text-white absolute top-6 right-4"
             >
