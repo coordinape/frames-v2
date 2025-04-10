@@ -8,6 +8,7 @@ import Header from "../components/Header";
 import Link from "next/link";
 import ShareButton from "../components/ShareButton";
 import ContractGallery from "~/app/components/ContractGallery";
+import { PATHS } from "~/constants/paths";
 
 // Helper function to check if a creator has NFT images
 const hasNFTImages = (creator: CreatorWithNFTData): boolean => {
@@ -113,13 +114,13 @@ export default function CreatorsList() {
           Creators
         </h1>
         <p className="text-white">Explore the top creators on base</p>
-        <div className="flex justify-center gap-4">
+        <Link href={PATHS.COORDINAPE} target="_blank">
           <img
             src="/images/coordinape-x-base.png"
             alt="Coordinape x Base"
             className="h-6"
           />
-        </div>
+        </Link>
       </div>
 
       <div className="relative mb-10">
@@ -159,7 +160,7 @@ export default function CreatorsList() {
         {filteredCreators.map((creator) => (
           <div key={creator.id} className="relative">
             <Link
-              href="https://coordinape.com/"
+              href={PATHS.COORDINAPE}
               target="_blank"
               className="bg-white/10 text-xs rounded-full px-3 py-1 text-white absolute top-6 right-4"
             >
