@@ -11,7 +11,7 @@ function JoinDirectoryButton() {
   return (
     <Link
       href="/creators/join"
-      className="px-4 py-1 bg-white text-base-blue text-xs rounded-full ml-2 hover:bg-white/90 transition-colors"
+      className="px-3 py-1 bg-white text-base-blue text-xs rounded-full ml-2 hover:bg-white/90 transition-colors"
     >
       Join the Directory
     </Link>

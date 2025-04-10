@@ -10,6 +10,7 @@ export interface Creator {
   name: string;
   avatar?: string;
   description?: string;
+  farcasterUsername?: string;
 }
 
 export interface BasenameResolution {

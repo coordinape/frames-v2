@@ -128,6 +128,9 @@ export async function getCreator(
               name
               avatar
               description
+              farcaster_account {
+                username
+              }
             }
           }
         }
@@ -155,6 +158,7 @@ export async function getCreator(
           : `https://coordinape-prod.s3.amazonaws.com/${user.profile.avatar}`
         : "",
       description: user.profile?.description || "",
+      farcasterUsername: user.profile?.farcaster_account?.username || "",
     };
 
     try {
@@ -199,6 +203,7 @@ export async function getCreator(
       return {
         ...creator,
         resolution: null,
+        nftData: { collections: [] },
       };
     }
   } catch (error) {

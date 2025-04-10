@@ -8,7 +8,6 @@ interface ContractGalleryProps {
 }
 
 export default function ContractGallery({
-  address,
   nftCollections,
   maxItems,
   showDetails = true,
