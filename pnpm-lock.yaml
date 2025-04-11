@@ -21,11 +21,11 @@ dependencies:
     specifier: ^0.0.16
     version: 0.0.16(typescript@5.7.3)
   '@farcaster/frame-sdk':
-    specifier: ^0.0.29
-    version: 0.0.29(typescript@5.7.3)(zod@3.24.2)
+    specifier: ^0.0.34
+    version: 0.0.34(typescript@5.7.3)(zod@3.24.2)
   '@farcaster/frame-wagmi-connector':
     specifier: ^0.0.17
-    version: 0.0.17(@farcaster/frame-sdk@0.0.29)(@wagmi/core@2.16.5)(viem@2.23.5)
+    version: 0.0.17(@farcaster/frame-sdk@0.0.34)(@wagmi/core@2.16.5)(viem@2.23.5)
   '@radix-ui/react-label':
     specifier: ^2.1.2
     version: 2.1.2(@types/react-dom@18.3.5)(@types/react@18.3.18)(react-dom@18.3.1)(react@18.3.1)
@@ -388,6 +388,15 @@ packages:
       - typescript
     dev: false
 
+  /@farcaster/frame-core@0.0.31(typescript@5.7.3):
+    resolution: {integrity: sha512-sZHG4Jt9aXqzdod+WksNtIKGgSuxBxJ2i3Fx1uAzeK29L1W/Osfsp3ZCpilEOjNHB9iRTqtGH7VKp3CPf312hA==}
+    dependencies:
+      ox: 0.4.4(typescript@5.7.3)(zod@3.24.2)
+      zod: 3.24.2
+    transitivePeerDependencies:
+      - typescript
+    dev: false
+
   /@farcaster/frame-node@0.0.16(typescript@5.7.3):
     resolution: {integrity: sha512-clyKNfayf85kQnjLowi3J66qMsFrtvqbb42UHNaGeTgVpRruNZH3ZAcvsbSP0HV+4+wgbywxQdXgfQwvdSqrMA==}
     dependencies:
@@ -399,10 +408,10 @@ packages:
       - typescript
     dev: false
 
-  /@farcaster/frame-sdk@0.0.29(typescript@5.7.3)(zod@3.24.2):
-    resolution: {integrity: sha512-Veom3+tPTOlzKmCSQoZgMG8pe+E95SzB2uK6DP9b7lMSvSQ2Q1eavB8sF3G7IeAqHlAot8GZ2ayF0uRKWqaonA==}
+  /@farcaster/frame-sdk@0.0.34(typescript@5.7.3)(zod@3.24.2):
+    resolution: {integrity: sha512-szPyiP3EWyX/CBskDIb4QF+X+lB4vy8mtyWwZfInBw/yXD/k73bFxAtzH88BVsTFI1220T6Erb35sJeme04tMQ==}
     dependencies:
-      '@farcaster/frame-core': 0.0.27(typescript@5.7.3)
+      '@farcaster/frame-core': 0.0.31(typescript@5.7.3)
       comlink: 4.4.2
       eventemitter3: 5.0.1
       ox: 0.4.4(typescript@5.7.3)(zod@3.24.2)
@@ -411,14 +420,14 @@ packages:
       - zod
     dev: false
 
-  /@farcaster/frame-wagmi-connector@0.0.17(@farcaster/frame-sdk@0.0.29)(@wagmi/core@2.16.5)(viem@2.23.5):
+  /@farcaster/frame-wagmi-connector@0.0.17(@farcaster/frame-sdk@0.0.34)(@wagmi/core@2.16.5)(viem@2.23.5):
     resolution: {integrity: sha512-/BswDtPINOpYUf6+tVgMhWILbG3TMwyXUHS7wX72ZWzgMbCce5vc8eBxob70AVXYaIm1ZMD6QBuW55HwxWFsdw==}
     peerDependencies:
       '@farcaster/frame-sdk': ^0.0.29
       '@wagmi/core': ^2.14.1
       viem: ^2.21.55
     dependencies:
-      '@farcaster/frame-sdk': 0.0.29(typescript@5.7.3)(zod@3.24.2)
+      '@farcaster/frame-sdk': 0.0.34(typescript@5.7.3)(zod@3.24.2)
       '@wagmi/core': 2.16.5(@types/react@18.3.18)(react@18.3.1)(typescript@5.7.3)(use-sync-external-store@1.4.0)(viem@2.23.5)
       viem: 2.23.5(typescript@5.7.3)(zod@3.24.2)
     dev: false

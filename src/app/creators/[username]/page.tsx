@@ -13,6 +13,8 @@ import { FrameSDK } from "~/app/components/FrameSDK";
 import { APP_BASE_URL, APP_PUBLIC_URL } from "~/lib/constants";
 import { RefreshButton } from "~/app/creators/[username]/RefreshButton";
 import { BasenameTextRecordKeys } from "./basenames";
+import { castCreateGive } from "~/app/features/directory/castCreateGive";
+import { GiveButton } from "~/app/creators/[username]/GiveButton";
 
 interface Props {
   params: Promise<{
@@ -143,15 +145,11 @@ export default async function ProfilePage({ params }: Props) {
         {resolution?.address && farcasterUsername && (
           <Gives address={resolution.address} />
         )}
-        {resolution?.address && farcasterUsername && (
-          <Link
-            href={`https://warpcast.com/~/compose?text=${encodeURIComponent(`@givebot @${farcasterUsername} #create - I'm sending you #create GIVE for being a great creator. ${encodeURIComponent(creatorProfileProdUrl)}`)}&embeds[]=${encodeURIComponent(creatorProfileProdUrl)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-3 py-2 text-sm bg-white text-base-blue rounded-full cursor-pointer hover:bg-white/90 transition-colors items-center mt-[-16px] text-center"
-          >
-            Send <span className="font-bold">#create</span> GIVE
-          </Link>
+        {resolution?.basename && farcasterUsername && (
+          <GiveButton
+            farcasterUsername={farcasterUsername}
+            baseName={resolution.basename || ""}
+          />
         )}
         <ContractGallery
           address={resolution?.address || ""}
