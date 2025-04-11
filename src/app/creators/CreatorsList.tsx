@@ -122,8 +122,8 @@ export default function CreatorsList() {
           className="cursor-pointer"
         >
           <img
-            src="/images/coordinape-x-base.png"
-            alt="Coordinape x Base"
+            src="/images/coordinape-x-base-x-creators.png"
+            alt="Coordinape x Base x Creators"
             className="h-6"
           />
         </Link>
@@ -169,24 +169,30 @@ export default function CreatorsList() {
               BasenameTextRecordKeys.Farcaster
             ] ||
               creator.farcasterUsername) && (
-              <Link
-                href={`https://warpcast.com/~/compose?text=${encodeURIComponent(
-                  `@givebot @${(
-                    creator.resolution?.textRecords?.[
-                      BasenameTextRecordKeys.Farcaster
-                    ] || creator.farcasterUsername
-                  )
-                    ?.replace("@", "")
-                    ?.replace(" ", "")
-                    ?.split("/")
-                    ?.pop()} #create ${encodeURIComponent(`${APP_PUBLIC_URL}/creators/${creator.resolution?.basename || creator.resolution?.address}`)}`,
-                )}&embeds[]=${encodeURIComponent(`${APP_PUBLIC_URL}/creators/${creator.resolution?.basename || creator.resolution?.address}`)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-white/10 text-xs rounded-full px-3 py-1 text-white absolute top-5 right-3 cursor-pointer hover:bg-white/20 transition-all"
-              >
-                GIVE <span className="font-bold"> #create</span>
-              </Link>
+              <div className="relative group">
+                <Link
+                  href={`https://warpcast.com/~/compose?text=${encodeURIComponent(
+                    `@givebot @${(
+                      creator.resolution?.textRecords?.[
+                        BasenameTextRecordKeys.Farcaster
+                      ] || creator.farcasterUsername
+                    )
+                      ?.replace("@", "")
+                      ?.replace(" ", "")
+                      ?.split("/")
+                      ?.pop()} #create - I'm sending you #create GIVE for being a great creator. ${encodeURIComponent(`${APP_PUBLIC_URL}/creators/${creator.resolution?.basename || creator.resolution?.address}`)}`,
+                  )}&embeds[]=${encodeURIComponent(`${APP_PUBLIC_URL}/creators/${creator.resolution?.basename || creator.resolution?.address}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-[#2664FF] text-xs rounded-full px-3 py-1 text-white absolute top-5 right-3 cursor-pointer hover:bg-[#5485FF] transition-all"
+                >
+                  GIVE <span className="font-bold"> #create</span>
+                </Link>
+                <div className="absolute mb-2 hidden group-hover:block bg-black text-white text-xs rounded p-3 right-3 top-12 w-40 shadow-lg shadow-black/20">
+                  Attest your support for this creator with{" "}
+                  <span className="font-bold">#create</span> on Warpcast
+                </div>
+              </div>
             )}
             <Link
               href={`/creators/${
