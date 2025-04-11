@@ -9,8 +9,8 @@ import Link from "next/link";
 import ShareButton from "../components/ShareButton";
 import ContractGallery from "~/app/components/ContractGallery";
 import { PATHS } from "~/constants/paths";
-import { APP_PUBLIC_URL } from "~/lib/constants";
 import { BasenameTextRecordKeys } from "./[username]/basenames";
+import { castCreateGive } from "~/app/features/directory/castCreateGive";
 
 // Helper function to check if a creator has NFT images
 const hasNFTImages = (creator: CreatorWithNFTData): boolean => {
@@ -163,78 +163,75 @@ export default function CreatorsList() {
       </div>
 
       <div className="space-y-4">
-        {filteredCreators.map((creator) => (
-          <div key={creator.id} className="relative">
-            {(creator.resolution?.textRecords?.[
+        {filteredCreators.map((creator) => {
+          const farcasterUserName =
+            creator.resolution?.textRecords?.[
               BasenameTextRecordKeys.Farcaster
-            ] ||
-              creator.farcasterUsername) && (
-              <div className="relative group">
-                <Link
-                  href={`https://warpcast.com/~/compose?text=${encodeURIComponent(
-                    `@givebot @${(
-                      creator.resolution?.textRecords?.[
-                        BasenameTextRecordKeys.Farcaster
-                      ] || creator.farcasterUsername
-                    )
-                      ?.replace("@", "")
-                      ?.replace(" ", "")
-                      ?.split("/")
-                      ?.pop()} #create - I'm sending you #create GIVE for being a great creator. ${encodeURIComponent(`${APP_PUBLIC_URL}/creators/${creator.resolution?.basename || creator.resolution?.address}`)}`,
-                  )}&embeds[]=${encodeURIComponent(`${APP_PUBLIC_URL}/creators/${creator.resolution?.basename || creator.resolution?.address}`)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-[#2664FF] text-xs rounded-full px-3 py-1 text-white absolute top-5 right-3 cursor-pointer hover:bg-[#5485FF] transition-all"
-                >
-                  GIVE <span className="font-bold"> #create</span>
-                </Link>
-                <div className="absolute mb-2 hidden group-hover:block bg-black text-white text-xs rounded p-3 right-3 top-12 w-40 shadow-lg shadow-black/20">
-                  Attest your support for this creator with{" "}
-                  <span className="font-bold">#create</span> on Warpcast
-                </div>
-              </div>
-            )}
-            <Link
-              href={`/creators/${
-                creator.resolution?.basename || creator.address
-              }`}
-              className="block"
-            >
-              <div className="border-2 border-white/20 rounded-xl p-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    {creator.avatar ? (
-                      <img
-                        src={creator.avatar}
-                        alt={creator.name}
-                        className="w-9 h-9 rounded-full mr-3"
-                      />
-                    ) : (
-                      <div className="bg-white/70 w-9 h-9 rounded-full flex items-center justify-center mr-3">
-                        <span className="text-blue-700">
-                          {creator.name.charAt(0)}
-                        </span>
-                      </div>
-                    )}
-                    <div>
-                      <h2 className="text-white">
-                        {creator.resolution?.basename || creator.name}
-                      </h2>
-                    </div>
+            ] || creator.farcasterUsername;
+
+          const baseNameOrAddress =
+            creator.resolution?.basename || creator.resolution?.address;
+
+          return (
+            <div key={creator.id} className="relative">
+              {baseNameOrAddress && farcasterUserName && (
+                <div className="relative group">
+                  <span
+                    className="bg-[#2664FF] text-xs rounded-full px-3 py-1 text-white absolute top-5 right-3 cursor-pointer hover:bg-[#5485FF] transition-all"
+                    onClick={() =>
+                      castCreateGive(farcasterUserName, baseNameOrAddress)
+                    }
+                  >
+                    GIVE <span className="font-bold"> #create</span>
+                  </span>
+                  <div className="absolute mb-2 hidden group-hover:block bg-black text-white text-xs rounded p-3 right-3 top-12 w-40 shadow-lg shadow-black/20">
+                    Attest your support for this creator with{" "}
+                    <span className="font-bold">#create</span> on Warpcast
                   </div>
                 </div>
-                <div className="pt-4">
-                  <ContractGallery
-                    address={creator.address}
-                    nftCollections={creator.nftData?.collections || []}
-                    maxItems={3}
-                    showDetails={false}
-                  />
+              )}
+              <Link
+                href={`/creators/${
+                  creator.resolution?.basename || creator.address
+                }`}
+                className="block"
+              >
+                <div className="border-2 border-white/20 rounded-xl p-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      {creator.avatar ? (
+                        <img
+                          src={creator.avatar}
+                          alt={creator.name}
+                          className="w-9 h-9 rounded-full mr-3"
+                        />
+                      ) : (
+                        <div className="bg-white/70 w-9 h-9 rounded-full flex items-center justify-center mr-3">
+                          <span className="text-blue-700">
+                            {creator.name.charAt(0)}
+                          </span>
+                        </div>
+                      )}
+                      <div>
+                        <h2 className="text-white">
+                          {creator.resolution?.basename || creator.name}
+                        </h2>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="pt-4">
+                    <ContractGallery
+                      address={creator.address}
+                      nftCollections={creator.nftData?.collections || []}
+                      maxItems={3}
+                      showDetails={false}
+                    />
+                  </div>
                 </div>
-              </div>
-            </Link>
-          </div>
-        ))}
+              </Link>
+            </div>
+          );
+        })}
       </div>
     </>
   );
