@@ -25,18 +25,15 @@ export const castCreateGive = async (
   const url = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${link}`;
   // open this in a new tab, or use warpcast intent
   if (inFrame) {
-    alert("trying to compose");
     try {
       const res = await sdk.actions.composeCast({
         text,
         embeds: [link],
       });
-      alert("success:" + JSON.stringify(res));
     } catch (e) {
       alert("Error composing cast: " + JSON.stringify(e));
     }
   } else {
-    alert("non frame open the window");
     window.open(url, "_blank");
   }
 };
