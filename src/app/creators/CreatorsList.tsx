@@ -182,7 +182,8 @@ export default function CreatorsList() {
                     ?.pop()} #create ${encodeURIComponent(`${APP_PUBLIC_URL}/creators/${creator.resolution?.basename || creator.resolution?.address}`)}`,
                 )}&embeds[]=${encodeURIComponent(`${APP_PUBLIC_URL}/creators/${creator.resolution?.basename || creator.resolution?.address}`)}`}
                 target="_blank"
-                className="bg-white/10 text-xs rounded-full px-3 py-1 text-white absolute top-6 right-4 cursor-pointer hover:bg-white/20 transition-all"
+                rel="noopener noreferrer"
+                className="bg-white/10 text-xs rounded-full px-3 py-1 text-white absolute top-5 right-3 cursor-pointer hover:bg-white/20 transition-all"
               >
                 GIVE <span className="font-bold"> #create</span>
               </Link>
@@ -193,17 +194,17 @@ export default function CreatorsList() {
               }`}
               className="block"
             >
-              <div className="border-2 border-white/20 rounded-xl p-4">
+              <div className="border-2 border-white/20 rounded-xl p-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
                     {creator.avatar ? (
                       <img
                         src={creator.avatar}
                         alt={creator.name}
-                        className="w-10 h-10 rounded-full mr-3"
+                        className="w-9 h-9 rounded-full mr-3"
                       />
                     ) : (
-                      <div className="bg-white/70 w-10 h-10 rounded-full flex items-center justify-center mr-3">
+                      <div className="bg-white/70 w-9 h-9 rounded-full flex items-center justify-center mr-3">
                         <span className="text-blue-700">
                           {creator.name.charAt(0)}
                         </span>
