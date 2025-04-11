@@ -32,8 +32,8 @@ export const castCreateGive = async (
         embeds: [link],
       });
       alert("success:" + JSON.stringify(res));
-    } catch (e: unknown) {
-      alert("Error composing cast: " + e.message);
+    } catch (e) {
+      alert("Error composing cast: " + JSON.stringify(e));
     }
   } else {
     alert("non frame open the window");
