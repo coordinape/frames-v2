@@ -1,3 +1,5 @@
+"use client";
+
 import { APP_PUBLIC_URL } from "~/lib/constants";
 import sdk from "@farcaster/frame-sdk";
 
@@ -17,19 +19,24 @@ export const castCreateGive = async (
     .replace("@", "")
     .replace(" ", "")
     .split("/")
-    .pop()} #create - I'm sending you #create GIVE for being a great creator. ${encodeURIComponent(`${APP_PUBLIC_URL}/creators/${basenameOrAddress}`)}`;
+    .pop()} #create - I'm sending you #create GIVE for being a great creator. ${APP_PUBLIC_URL}/creators/${basenameOrAddress}}`;
 
-  const link = encodeURIComponent(
-    `${APP_PUBLIC_URL}/creators/${basenameOrAddress}`,
-  );
+  const link = `${APP_PUBLIC_URL}/creators/${basenameOrAddress}`;
   const url = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${link}`;
   // open this in a new tab, or use warpcast intent
   if (inFrame) {
-    sdk.actions.composeCast({
-      text: "OKAY" + text,
-      embeds: [link],
-    });
+    alert("trying to compose");
+    try {
+      const res = await sdk.actions.composeCast({
+        text,
+        embeds: [link],
+      });
+      alert("success:" + JSON.stringify(res));
+    } catch (e: unknown) {
+      alert("Error composing cast: " + e.message);
+    }
   } else {
+    alert("non frame open the window");
     window.open(url, "_blank");
   }
 };
