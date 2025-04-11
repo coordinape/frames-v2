@@ -32,7 +32,10 @@ export const castCreateGive = async (
       });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
-      alert(`Error: ${e.message}\nStack: ${e.stack}`);
+      alert(
+        "Problem casting - update the warpcast app and then kill/restart it",
+      );
+      console.error(e);
     }
   } else {
     window.open(url, "_blank");
