@@ -122,8 +122,8 @@ export default function CreatorsList() {
           className="cursor-pointer"
         >
           <img
-            src="/images/coordinape-x-base.png"
-            alt="Coordinape x Base"
+            src="/images/coordinape-x-base-x-creators.png"
+            alt="Coordinape x Base x Creators"
             className="h-6"
           />
         </Link>
