@@ -180,7 +180,7 @@ export default function CreatorsList() {
                       ?.replace("@", "")
                       ?.replace(" ", "")
                       ?.split("/")
-                      ?.pop()} #create ${encodeURIComponent(`${APP_PUBLIC_URL}/creators/${creator.resolution?.basename || creator.resolution?.address}`)}`,
+                      ?.pop()} #create - I'm sending you #create GIVE for being a great creator. ${encodeURIComponent(`${APP_PUBLIC_URL}/creators/${creator.resolution?.basename || creator.resolution?.address}`)}`,
                   )}&embeds[]=${encodeURIComponent(`${APP_PUBLIC_URL}/creators/${creator.resolution?.basename || creator.resolution?.address}`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
