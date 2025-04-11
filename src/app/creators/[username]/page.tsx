@@ -125,8 +125,8 @@ export default async function ProfilePage({ params }: Props) {
                 displayName.length > 25
                   ? "text-xl"
                   : displayName.length > 20
-                    ? "text-2xl"
-                    : "text-3xl"
+                    ? "text-1xl"
+                    : "text-2xl"
               }`}
             >
               {displayName}
@@ -147,6 +147,7 @@ export default async function ProfilePage({ params }: Props) {
           <Link
             href={`https://warpcast.com/~/compose?text=${encodeURIComponent(`@givebot @${farcasterUsername} #create ${encodeURIComponent(creatorProfileProdUrl)}`)}&embeds[]=${encodeURIComponent(creatorProfileProdUrl)}`}
             target="_blank"
+            rel="noopener noreferrer"
             className="px-3 py-2 text-sm bg-white text-base-blue rounded-full cursor-pointer hover:bg-white/90 transition-colors items-center mt-[-16px] text-center"
           >
             Send <span className="font-bold">#create</span> GIVE
