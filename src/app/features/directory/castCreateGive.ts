@@ -19,7 +19,7 @@ export const castCreateGive = async (
     .replace("@", "")
     .replace(" ", "")
     .split("/")
-    .pop()} #create - I'm sending you #create GIVE for being a great creator.\n\n ${APP_PUBLIC_URL}/creators/${basenameOrAddress}}`;
+    .pop()} #create - I'm sending you #create GIVE for being a great creator.\n\n${APP_PUBLIC_URL}/creators/${basenameOrAddress}`;
 
   const link = `${APP_PUBLIC_URL}/creators/${basenameOrAddress}`;
   const url = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${link}`;
