@@ -184,7 +184,7 @@ export default function CreatorsList() {
                   )}&embeds[]=${encodeURIComponent(`${APP_PUBLIC_URL}/creators/${creator.resolution?.basename || creator.resolution?.address}`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-white/10 text-xs rounded-full px-3 py-1 text-white absolute top-5 right-3 cursor-pointer hover:bg-white/20 transition-all"
+                  className="bg-[#2664FF] text-xs rounded-full px-3 py-1 text-white absolute top-5 right-3 cursor-pointer hover:bg-[#5485FF] transition-all"
                 >
                   GIVE <span className="font-bold"> #create</span>
                 </Link>
