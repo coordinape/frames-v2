@@ -112,6 +112,12 @@ export default function AboutGiveModal() {
                 />
               </a>
             </div>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="absolute bottom-4 right-4 text-white/60 hover:text-white/80 text-xs font-sans font-normal uppercase"
+            >
+              Close
+            </button>
           </div>
         </div>
       )}
