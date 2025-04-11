@@ -9,7 +9,6 @@ import Link from "next/link";
 import ShareButton from "../components/ShareButton";
 import ContractGallery from "~/app/components/ContractGallery";
 import { PATHS } from "~/constants/paths";
-import { APP_PUBLIC_URL } from "~/lib/constants";
 import { BasenameTextRecordKeys } from "./[username]/basenames";
 import { castCreateGive } from "~/app/features/directory/castCreateGive";
 
@@ -30,7 +29,7 @@ export default function CreatorsList() {
 
   useEffect(() => {
     const load = async () => {
-      const ctx = await sdk.context;
+      await sdk.context;
       console.log("Directory Frame: Calling ready");
       sdk.actions.ready({});
     };
