@@ -26,12 +26,13 @@ export const castCreateGive = async (
   // open this in a new tab, or use warpcast intent
   if (inFrame) {
     try {
-      const res = await sdk.actions.composeCast({
+      await sdk.actions.composeCast({
         text,
         embeds: [link],
       });
-    } catch (e) {
-      alert("Error composing cast: " + JSON.stringify(e));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (e: any) {
+      alert(`Error: ${e.message}\nStack: ${e.stack}`);
     }
   } else {
     window.open(url, "_blank");
