@@ -10,10 +10,9 @@ import ShareButton from "~/app/components/ShareButton";
 import Gives from "./Gives";
 import InfoCard from "./InfoCard";
 import { FrameSDK } from "~/app/components/FrameSDK";
-import { APP_BASE_URL, APP_PUBLIC_URL } from "~/lib/constants";
+import { APP_BASE_URL } from "~/lib/constants";
 import { RefreshButton } from "~/app/creators/[username]/RefreshButton";
 import { BasenameTextRecordKeys } from "./basenames";
-import { castCreateGive } from "~/app/features/directory/castCreateGive";
 import { GiveButton } from "~/app/creators/[username]/GiveButton";
 
 interface Props {
@@ -60,7 +59,6 @@ export default async function ProfilePage({ params }: Props) {
     );
   }
   const displayName = creator.resolution?.basename || creator.name;
-  const creatorProfileProdUrl = `${APP_PUBLIC_URL}/creators/${creator.resolution?.basename || creator.address}`;
   const farcasterUsername = (
     resolution?.textRecords[BasenameTextRecordKeys.Farcaster] ||
     creator.farcasterUsername
