@@ -27,7 +27,9 @@ export default function AboutGiveModal() {
           <line x1="12" y1="16" x2="12" y2="12" />
           <line x1="12" y1="8" x2="12" y2="8" />
         </svg>
-        <div className="text-xs font-sans font-normal">What is GIVE?</div>
+        <div className="text-xs font-sans font-normal whitespace-nowrap">
+          What is GIVE?
+        </div>
       </button>
 
       {isOpen && (

@@ -286,6 +286,9 @@ export async function getCreators(): Promise<CreatorWithNFTData[]> {
           // Resolve basename
           const resolution = await resolveBasenameOrAddress(creator.address);
 
+          // Get gives data
+          const gives = await getGivesForCreator(creator.address);
+
           // Transform the resolution to match the BasenameResolution interface
           const formattedResolution = resolution
             ? {
@@ -299,6 +302,7 @@ export async function getCreators(): Promise<CreatorWithNFTData[]> {
           return {
             ...creator,
             resolution: formattedResolution,
+            gives: gives,
             nftData: {
               collections: contracts.map((contract) => ({
                 id: contract.contractAddress,
@@ -318,6 +322,7 @@ export async function getCreators(): Promise<CreatorWithNFTData[]> {
           return {
             ...creator,
             resolution: null,
+            gives: [],
           };
         }
       }),

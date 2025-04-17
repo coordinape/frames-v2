@@ -36,6 +36,7 @@ export interface NFTData {
 export interface CreatorWithNFTData extends Creator {
   nftData?: NFTData;
   resolution?: BasenameResolution | null;
+  gives?: SortedGiveGroup[];
 }
 
 export interface Give {
