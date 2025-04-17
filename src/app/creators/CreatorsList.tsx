@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import sdk from "@farcaster/frame-sdk";
 import { getCreators } from "~/app/features/directory/actions";
 import { CreatorWithNFTData } from "~/app/features/directory/types";
@@ -22,7 +22,7 @@ const hasNFTImages = (creator: CreatorWithNFTData): boolean => {
   );
 };
 
-export default function CreatorsList() {
+function CreatorsListInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
@@ -325,5 +325,21 @@ export default function CreatorsList() {
         })}
       </div>
     </>
+  );
+}
+
+export default function CreatorsList() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-white text-xl base-pixel">
+            Loading creators...
+          </div>
+        </div>
+      }
+    >
+      <CreatorsListInner />
+    </Suspense>
   );
 }
