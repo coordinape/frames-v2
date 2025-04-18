@@ -1,5 +1,6 @@
 import { getGivesForCreator } from "~/app/features/directory/actions";
 import AboutGiveModal from "~/components/AboutGiveModal";
+import Link from "next/link";
 
 interface GivesProps {
   address: string;
@@ -23,14 +24,12 @@ export default async function Gives({ address }: GivesProps) {
               className="inline-flex items-center bg-white/10 hover:bg-white/15 rounded-full px-3 py-1 text-sm"
             >
               {giveGroup.skill ? (
-                <a
-                  href={`https://coordinape.com/give/skill/${giveGroup.skill.toLowerCase()}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  href={`/creators?search=${encodeURIComponent(giveGroup.skill)}&type=give`}
                   className="text-white/90 hover:text-white"
                 >
                   {giveGroup.skill}
-                </a>
+                </Link>
               ) : (
                 <span className="text-white/90">Uncategorized</span>
               )}
