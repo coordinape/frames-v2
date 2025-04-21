@@ -2,7 +2,6 @@ import { Address } from "viem";
 import { resolveBasenameOrAddress } from "~/app/hooks/useBasenameResolver";
 import { BasenameTextRecordKeys } from "./basenames";
 import { getCreator } from "~/app/features/directory/actions";
-import Link from "next/link";
 import SkillTag from "~/components/SkillTag";
 
 interface InfoCardProps {
