@@ -11,8 +11,12 @@ import ContractGallery from "~/app/components/ContractGallery";
 import { PATHS } from "~/constants/paths";
 import { BasenameTextRecordKeys } from "./[username]/basenames";
 import { castCreateGive } from "~/app/features/directory/castCreateGive";
-import { useSearchParams, useRouter } from "next/navigation";
 import AboutGiveModal from "~/components/AboutGiveModal";
+
+interface CreatorsListProps {
+  initialSearchQuery?: string;
+  initialSearchType?: string;
+}
 
 // Helper function to check if a creator has NFT images
 const hasNFTImages = (creator: CreatorWithNFTData): boolean => {
@@ -22,14 +26,13 @@ const hasNFTImages = (creator: CreatorWithNFTData): boolean => {
   );
 };
 
-export default function CreatorsList() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
+export default function CreatorsList({
+  initialSearchQuery = "",
+  initialSearchType = "",
+}: CreatorsListProps) {
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(
-    searchParams.get("search") || "",
-  );
-  const [searchType, setSearchType] = useState(searchParams.get("type") || "");
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
+  const [searchType, setSearchType] = useState(initialSearchType);
   const [creators, setCreators] = useState<CreatorWithNFTData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -76,18 +79,6 @@ export default function CreatorsList() {
 
     fetchCreators();
   }, []);
-
-  useEffect(() => {
-    // Update search query and type when URL parameters change
-    const searchFromUrl = searchParams.get("search");
-    const typeFromUrl = searchParams.get("type");
-    if (searchFromUrl) {
-      setSearchQuery(searchFromUrl);
-    }
-    if (typeFromUrl) {
-      setSearchType(typeFromUrl);
-    }
-  }, [searchParams]);
 
   const filteredCreators = creators.filter((creator) => {
     if (!searchQuery) return true;
@@ -183,7 +174,6 @@ export default function CreatorsList() {
             onChange={(e) => {
               setSearchQuery(e.target.value);
               setSearchType("");
-              router.push("/creators");
             }}
           />
           {searchQuery && (
@@ -191,7 +181,6 @@ export default function CreatorsList() {
               onClick={() => {
                 setSearchQuery("");
                 setSearchType("");
-                router.push("/creators");
               }}
               className="text-white/60 hover:text-white transition-colors cursor-pointer"
               aria-label="Clear search"

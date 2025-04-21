@@ -2,8 +2,20 @@ import { Metadata } from "next";
 import CreatorsList from "./CreatorsList";
 import { APP_BASE_URL } from "~/lib/constants";
 
-export default function DirectoryPage() {
-  return <CreatorsList />;
+export interface CreatorsPageProps {
+  searchParams?: {
+    search?: string;
+    type?: string;
+  };
+}
+
+export default function CreatorsPage({ searchParams }: CreatorsPageProps) {
+  return (
+    <CreatorsList
+      initialSearchQuery={searchParams?.search || ""}
+      initialSearchType={searchParams?.type || ""}
+    />
+  );
 }
 
 // const appUrl = process.env.NEXT_PUBLIC_URL;

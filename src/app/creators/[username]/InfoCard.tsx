@@ -3,6 +3,7 @@ import { resolveBasenameOrAddress } from "~/app/hooks/useBasenameResolver";
 import { BasenameTextRecordKeys } from "./basenames";
 import { getCreator } from "~/app/features/directory/actions";
 import Link from "next/link";
+import SkillTag from "~/components/SkillTag";
 
 interface InfoCardProps {
   address: Address;
@@ -177,13 +178,12 @@ export default async function InfoCard({ address }: InfoCardProps) {
               <div className="text-xl mb-2 base-pixel">Creative Medium</div>
               <div className="flex flex-wrap gap-2">
                 {creativeMediumTags.map((tag, index) => (
-                  <Link
+                  <SkillTag
                     key={index}
-                    href={`/creators?search=${encodeURIComponent(tag)}&type=medium`}
-                    className="flex items-center px-2 py-1 bg-white/10 rounded-md hover:bg-white/20 transition-colors cursor-pointer"
-                  >
-                    <span className="text-white text-sm">{tag}</span>
-                  </Link>
+                    skill={tag}
+                    type="medium"
+                    className="rounded-md !bg-white/10 hover:!bg-white/20"
+                  />
                 ))}
               </div>
             </div>
