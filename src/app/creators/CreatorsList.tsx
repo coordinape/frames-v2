@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState } from "react";
 import sdk from "@farcaster/frame-sdk";
 import { getCreators } from "~/app/features/directory/actions";
 import { CreatorWithNFTData } from "~/app/features/directory/types";
@@ -140,12 +140,21 @@ function SearchSection({
 }
 
 export default function CreatorsList() {
+  const searchParams = useSearchParams();
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchType, setSearchType] = useState("");
   const [creators, setCreators] = useState<CreatorWithNFTData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Initialize search state from URL params after mount
+  useEffect(() => {
+    if (searchParams) {
+      setSearchQuery(searchParams.get("search") || "");
+      setSearchType(searchParams.get("type") || "");
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const load = async () => {
@@ -168,9 +177,7 @@ export default function CreatorsList() {
     async function fetchCreators() {
       try {
         setLoading(true);
-        // Get creators with OpenSea data and basename resolution already included from the server action
         const creatorsWithData = await getCreators();
-        // Sort creators - prioritize those with NFT images
         const sortedCreators = creatorsWithData.sort((a, b) => {
           const aHasImages = hasNFTImages(a);
           const bHasImages = hasNFTImages(b);
@@ -211,7 +218,6 @@ export default function CreatorsList() {
 
     const query = searchQuery.toLowerCase();
 
-    // If searchType is "give", only search in GIVE skills
     if (searchType === "give") {
       return (
         creator.gives?.some((giveGroup) =>
@@ -220,13 +226,11 @@ export default function CreatorsList() {
       );
     }
 
-    // Helper function to check and log matches
     const checkMatch = (field: string, value: string | undefined | null) => {
       if (!value) return false;
       return value.toLowerCase().includes(query);
     };
 
-    // For other search types, search across all fields
     return (
       checkMatch("name", creator.name) ||
       checkMatch("description", creator.description) ||
@@ -260,18 +264,12 @@ export default function CreatorsList() {
         </Link>
       </div>
 
-      <Suspense
-        fallback={
-          <div className="h-24 w-full animate-pulse bg-gray-800/50 rounded-xl" />
-        }
-      >
-        <SearchSection
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          searchType={searchType}
-          setSearchType={setSearchType}
-        />
-      </Suspense>
+      <SearchSection
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        searchType={searchType}
+        setSearchType={setSearchType}
+      />
 
       <div className="flex items-center justify-between mb-4">
         <p className="text-white font-medium text-sm">
