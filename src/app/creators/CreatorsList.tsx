@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import sdk from "@farcaster/frame-sdk";
 import { getCreators } from "~/app/features/directory/actions";
 import { CreatorWithNFTData } from "~/app/features/directory/types";
@@ -22,32 +22,58 @@ const hasNFTImages = (creator: CreatorWithNFTData): boolean => {
   );
 };
 
-// Search component that uses useSearchParams
-function SearchSection({
-  searchQuery,
-  setSearchQuery,
-  searchType,
-  setSearchType,
+// Client component that handles search functionality
+function SearchAndFilterSection({
+  creators,
+  onFilteredCreatorsChange,
 }: {
-  searchQuery: string;
-  setSearchQuery: (query: string) => void;
-  searchType: string;
-  setSearchType: (type: string) => void;
+  creators: CreatorWithNFTData[];
+  onFilteredCreatorsChange: (creators: CreatorWithNFTData[]) => void;
 }) {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get("search") || "",
+  );
+  const [searchType, setSearchType] = useState(searchParams.get("type") || "");
 
   useEffect(() => {
-    // Update search query and type when URL parameters change
-    const searchFromUrl = searchParams.get("search");
-    const typeFromUrl = searchParams.get("type");
-    if (searchFromUrl) {
-      setSearchQuery(searchFromUrl);
-    }
-    if (typeFromUrl) {
-      setSearchType(typeFromUrl);
-    }
-  }, [searchParams, setSearchQuery, setSearchType]);
+    setSearchQuery(searchParams.get("search") || "");
+    setSearchType(searchParams.get("type") || "");
+  }, [searchParams]);
+
+  useEffect(() => {
+    const filteredCreators = creators.filter((creator) => {
+      if (!searchQuery) return true;
+
+      const query = searchQuery.toLowerCase();
+
+      if (searchType === "give") {
+        return (
+          creator.gives?.some((giveGroup) =>
+            giveGroup.skill.toLowerCase().includes(query),
+          ) ?? false
+        );
+      }
+
+      const checkMatch = (field: string, value: string | undefined | null) => {
+        if (!value) return false;
+        return value.toLowerCase().includes(query);
+      };
+
+      return (
+        checkMatch("name", creator.name) ||
+        checkMatch("description", creator.description) ||
+        checkMatch("address", creator.address) ||
+        Object.entries(creator.resolution?.textRecords || {}).some(
+          ([key, value]) => checkMatch(key, value),
+        ) ||
+        creator.gives?.some((giveGroup) => checkMatch("skill", giveGroup.skill))
+      );
+    });
+
+    onFilteredCreatorsChange(filteredCreators);
+  }, [creators, searchQuery, searchType, onFilteredCreatorsChange]);
 
   return (
     <div className="relative mb-10">
@@ -140,21 +166,13 @@ function SearchSection({
 }
 
 export default function CreatorsList() {
-  const searchParams = useSearchParams();
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchType, setSearchType] = useState("");
   const [creators, setCreators] = useState<CreatorWithNFTData[]>([]);
+  const [filteredCreators, setFilteredCreators] = useState<
+    CreatorWithNFTData[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // Initialize search state from URL params after mount
-  useEffect(() => {
-    if (searchParams) {
-      setSearchQuery(searchParams.get("search") || "");
-      setSearchType(searchParams.get("type") || "");
-    }
-  }, [searchParams]);
 
   useEffect(() => {
     const load = async () => {
@@ -186,6 +204,7 @@ export default function CreatorsList() {
           return aHasImages ? -1 : 1;
         });
         setCreators(sortedCreators);
+        setFilteredCreators(sortedCreators);
       } catch (err) {
         console.error("Failed to fetch creators:", err);
         setError("Failed to load creators. Please try again later.");
@@ -213,35 +232,6 @@ export default function CreatorsList() {
     );
   }
 
-  const filteredCreators = creators.filter((creator) => {
-    if (!searchQuery) return true;
-
-    const query = searchQuery.toLowerCase();
-
-    if (searchType === "give") {
-      return (
-        creator.gives?.some((giveGroup) =>
-          giveGroup.skill.toLowerCase().includes(query),
-        ) ?? false
-      );
-    }
-
-    const checkMatch = (field: string, value: string | undefined | null) => {
-      if (!value) return false;
-      return value.toLowerCase().includes(query);
-    };
-
-    return (
-      checkMatch("name", creator.name) ||
-      checkMatch("description", creator.description) ||
-      checkMatch("address", creator.address) ||
-      Object.entries(creator.resolution?.textRecords || {}).some(
-        ([key, value]) => checkMatch(key, value),
-      ) ||
-      creator.gives?.some((giveGroup) => checkMatch("skill", giveGroup.skill))
-    );
-  });
-
   return (
     <>
       <Header />
@@ -264,12 +254,16 @@ export default function CreatorsList() {
         </Link>
       </div>
 
-      <SearchSection
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        searchType={searchType}
-        setSearchType={setSearchType}
-      />
+      <Suspense
+        fallback={
+          <div className="h-24 w-full animate-pulse bg-gray-800/50 rounded-xl" />
+        }
+      >
+        <SearchAndFilterSection
+          creators={creators}
+          onFilteredCreatorsChange={setFilteredCreators}
+        />
+      </Suspense>
 
       <div className="flex items-center justify-between mb-4">
         <p className="text-white font-medium text-sm">
