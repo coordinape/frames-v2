@@ -10,12 +10,18 @@ interface SearchParams {
 export default function CreatorsPage({
   searchParams = {},
 }: {
-  searchParams: SearchParams;
+  searchParams: { [key: string]: string | string[] | undefined };
 }) {
+  const typedParams: SearchParams = {
+    search:
+      typeof searchParams.search === "string" ? searchParams.search : undefined,
+    type: typeof searchParams.type === "string" ? searchParams.type : undefined,
+  };
+
   return (
     <CreatorsList
-      initialSearchQuery={searchParams.search || ""}
-      initialSearchType={searchParams.type || ""}
+      initialSearchQuery={typedParams.search || ""}
+      initialSearchType={typedParams.type || ""}
     />
   );
 }
