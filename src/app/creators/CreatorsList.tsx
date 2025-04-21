@@ -22,16 +22,67 @@ const hasNFTImages = (creator: CreatorWithNFTData): boolean => {
   );
 };
 
-// Client component that handles search functionality
-function SearchAndFilterSection({
-  creators,
-  onFilteredCreatorsChange,
+function SearchBar({
+  value,
+  onChange,
+  onClear,
 }: {
-  creators: CreatorWithNFTData[];
-  onFilteredCreatorsChange: (creators: CreatorWithNFTData[]) => void;
+  value: string;
+  onChange: (value: string) => void;
+  onClear: () => void;
 }) {
-  const searchParams = useSearchParams();
+  return (
+    <div className="flex items-center bg-white/10 backdrop-blur-sm rounded-full border border-white/20 px-4">
+      <svg
+        className="w-5 h-5 text-white"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+        ></path>
+      </svg>
+      <input
+        type="text"
+        placeholder="Search creators by name, creative medium, etc..."
+        className="w-full bg-transparent border-none text-white py-3 px-2 focus:outline-none"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+      {value && (
+        <button
+          onClick={onClear}
+          className="text-white/60 hover:text-white transition-colors cursor-pointer"
+          aria-label="Clear search"
+        >
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      )}
+    </div>
+  );
+}
+
+function SearchSection() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState(
     searchParams.get("search") || "",
   );
@@ -42,94 +93,29 @@ function SearchAndFilterSection({
     setSearchType(searchParams.get("type") || "");
   }, [searchParams]);
 
-  useEffect(() => {
-    const filteredCreators = creators.filter((creator) => {
-      if (!searchQuery) return true;
+  const handleSearch = (value: string) => {
+    setSearchQuery(value);
+    setSearchType("");
+    const params = new URLSearchParams();
+    if (value) {
+      params.set("search", value);
+    }
+    router.push(`/creators${params.toString() ? `?${params.toString()}` : ""}`);
+  };
 
-      const query = searchQuery.toLowerCase();
-
-      if (searchType === "give") {
-        return (
-          creator.gives?.some((giveGroup) =>
-            giveGroup.skill.toLowerCase().includes(query),
-          ) ?? false
-        );
-      }
-
-      const checkMatch = (field: string, value: string | undefined | null) => {
-        if (!value) return false;
-        return value.toLowerCase().includes(query);
-      };
-
-      return (
-        checkMatch("name", creator.name) ||
-        checkMatch("description", creator.description) ||
-        checkMatch("address", creator.address) ||
-        Object.entries(creator.resolution?.textRecords || {}).some(
-          ([key, value]) => checkMatch(key, value),
-        ) ||
-        creator.gives?.some((giveGroup) => checkMatch("skill", giveGroup.skill))
-      );
-    });
-
-    onFilteredCreatorsChange(filteredCreators);
-  }, [creators, searchQuery, searchType, onFilteredCreatorsChange]);
+  const handleClear = () => {
+    setSearchQuery("");
+    setSearchType("");
+    router.push("/creators");
+  };
 
   return (
     <div className="relative mb-10">
-      <div className="flex items-center bg-white/10 backdrop-blur-sm rounded-full border border-white/20 px-4">
-        <svg
-          className="w-5 h-5 text-white"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          ></path>
-        </svg>
-        <input
-          type="text"
-          placeholder="Search creators by name, creative medium, etc..."
-          className="w-full bg-transparent border-none text-white py-3 px-2 focus:outline-none"
-          value={searchQuery}
-          onChange={(e) => {
-            setSearchQuery(e.target.value);
-            setSearchType("");
-            router.push("/creators");
-          }}
-        />
-        {searchQuery && (
-          <button
-            onClick={() => {
-              setSearchQuery("");
-              setSearchType("");
-              router.push("/creators");
-            }}
-            className="text-white/60 hover:text-white transition-colors cursor-pointer"
-            aria-label="Clear search"
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-        )}
-      </div>
+      <SearchBar
+        value={searchQuery}
+        onChange={handleSearch}
+        onClear={handleClear}
+      />
       {searchQuery && searchType === "give" && (
         <div className="mt-2 flex justify-between gap-2 bg-gray-800/90 rounded-lg p-4 mt-4">
           <div className="flex flex-col justify-between w-full gap-3 relative">
@@ -166,11 +152,9 @@ function SearchAndFilterSection({
 }
 
 export default function CreatorsList() {
+  const searchParams = useSearchParams();
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
   const [creators, setCreators] = useState<CreatorWithNFTData[]>([]);
-  const [filteredCreators, setFilteredCreators] = useState<
-    CreatorWithNFTData[]
-  >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -204,7 +188,6 @@ export default function CreatorsList() {
           return aHasImages ? -1 : 1;
         });
         setCreators(sortedCreators);
-        setFilteredCreators(sortedCreators);
       } catch (err) {
         console.error("Failed to fetch creators:", err);
         setError("Failed to load creators. Please try again later.");
@@ -231,6 +214,38 @@ export default function CreatorsList() {
       </div>
     );
   }
+
+  const searchQuery = searchParams.get("search") || "";
+  const searchType = searchParams.get("type") || "";
+
+  const filteredCreators = creators.filter((creator) => {
+    if (!searchQuery) return true;
+
+    const query = searchQuery.toLowerCase();
+
+    if (searchType === "give") {
+      return (
+        creator.gives?.some((giveGroup) =>
+          giveGroup.skill.toLowerCase().includes(query),
+        ) ?? false
+      );
+    }
+
+    const checkMatch = (field: string, value: string | undefined | null) => {
+      if (!value) return false;
+      return value.toLowerCase().includes(query);
+    };
+
+    return (
+      checkMatch("name", creator.name) ||
+      checkMatch("description", creator.description) ||
+      checkMatch("address", creator.address) ||
+      Object.entries(creator.resolution?.textRecords || {}).some(
+        ([key, value]) => checkMatch(key, value),
+      ) ||
+      creator.gives?.some((giveGroup) => checkMatch("skill", giveGroup.skill))
+    );
+  });
 
   return (
     <>
@@ -259,10 +274,7 @@ export default function CreatorsList() {
           <div className="h-24 w-full animate-pulse bg-gray-800/50 rounded-xl" />
         }
       >
-        <SearchAndFilterSection
-          creators={creators}
-          onFilteredCreatorsChange={setFilteredCreators}
-        />
+        <SearchSection />
       </Suspense>
 
       <div className="flex items-center justify-between mb-4">
