@@ -26,6 +26,7 @@ export const castCreateGive = async (
   // open this in a new tab, or use warpcast intent
   if (inFrame) {
     try {
+      // @ts-ignore Property 'composeCast' does not exist on type
       await sdk.actions.composeCast({
         text,
         embeds: [link],

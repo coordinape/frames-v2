@@ -232,10 +232,19 @@ export async function getBasename(address: Address) {
 
 export async function getAddressFromBasename(basename: Basename) {
   try {
-    const address = await baseClient.getEnsAddress({
-      name: basename,
-      universalResolverAddress: BASENAME_L2_RESOLVER_ADDRESS,
-    });
+    // First normalize the basename to ensure consistent processing
+    const normalizedBasename = normalize(basename);
+
+    // Apply the namehash algorithm to get the node
+    const node = namehash(normalizedBasename);
+
+    // Call addr function directly instead of using getEnsAddress
+    const address = (await baseClient.readContract({
+      abi: L2ResolverAbi,
+      address: BASENAME_L2_RESOLVER_ADDRESS,
+      functionName: "addr",
+      args: [node],
+    })) as Address;
 
     if (!address) {
       throw new Error(`No address found for basename: ${basename}`);
