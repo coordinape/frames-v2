@@ -2,18 +2,20 @@ import { Metadata } from "next";
 import CreatorsList from "./CreatorsList";
 import { APP_BASE_URL } from "~/lib/constants";
 
-export interface CreatorsPageProps {
-  searchParams?: {
-    search?: string;
-    type?: string;
-  };
+interface SearchParams {
+  search?: string;
+  type?: string;
 }
 
-export default function CreatorsPage({ searchParams }: CreatorsPageProps) {
+export default function CreatorsPage({
+  searchParams = {},
+}: {
+  searchParams: SearchParams;
+}) {
   return (
     <CreatorsList
-      initialSearchQuery={searchParams?.search || ""}
-      initialSearchType={searchParams?.type || ""}
+      initialSearchQuery={searchParams.search || ""}
+      initialSearchType={searchParams.type || ""}
     />
   );
 }
