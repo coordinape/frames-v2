@@ -55,7 +55,6 @@ export async function cacheBasenameResolution(
  */
 export async function bustBasenameCache(input: string): Promise<void> {
   const normalizedInput = input.toLowerCase();
-  const isBasename = normalizedInput.endsWith(".base.eth");
 
   // Get the cached resolution first to be able to bust both sides of the mapping
   const cached = await getCachedBasenameResolution(normalizedInput);

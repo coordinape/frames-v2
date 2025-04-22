@@ -62,7 +62,11 @@ async function batchProcessCreators(
           ),
         ]);
 
-        const [contracts, resolution, gives] = result as [any[], any, any[]];
+        const [contracts, resolution, gives] = result as [
+          Awaited<ReturnType<typeof getNFTContracts>>,
+          Awaited<ReturnType<typeof resolveBasenameOrAddress>>,
+          Awaited<ReturnType<typeof getGivesForCreator>>,
+        ];
 
         const formattedResolution = resolution
           ? {

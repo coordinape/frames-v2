@@ -242,7 +242,7 @@ function CreatorsListInner() {
                   creator.resolution?.basename || creator.address
                 }`}
                 className="block"
-                onClick={(e) => {
+                onClick={() => {
                   // Let the Link handle the navigation
                   document.startViewTransition(() => {
                     router.push(
