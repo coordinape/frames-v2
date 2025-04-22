@@ -1,0 +1,19 @@
+---
+description: usetildeimports
+globs: *.tsx,*.ts
+alwaysApply: false
+---
+
+# Imports always use tilde for absolute imports
+
+
+GOOD:
+```tsx
+import { addressIsMember } from "~/app/features/directory/actions";
+```
+
+
+BAD:
+```tsx
+import { addressIsMember } from "./actions";
+```

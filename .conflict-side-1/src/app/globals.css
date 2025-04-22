@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "BasePixel-Low";
+  src:
+    url("/fonts/BasePixel-LowResolution.woff2") format("woff2"),
+    url("/fonts/BasePixel-LowResolution.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "BasePixel-Medium";
+  src:
+    url("/fonts/BasePixel-MediumResolution.woff2") format("woff2"),
+    url("/fonts/BasePixel-MediumResolution.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+.base-pixel {
+  font-family: "BasePixel-Low", sans-serif;
+  letter-spacing: 0.02em;
+}
+.base-pixel-display {
+  font-family: "BasePixel-Medium", sans-serif;
+  letter-spacing: 0.025em;
+}
+
+.bg-base-blue {
+  background-color: #0053ff !important;
+}
+.text-base-blue {
+  color: #0053ff !important;
+}
+
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities; */
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --primary-blue: #0053ff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: "Inter", Helvetica, Arial, sans-serif;
+}
+
+@layer base {
+  :root {
+    --radius: 0.5rem;
+  }
+}
+
+.font-pixel {
+  font-family: "PixelFont", monospace;
+  letter-spacing: 0.05em;
+}
+
+/* Fallback pixel-like styling if the custom font isn't available */
+.font-pixel-fallback {
+  font-family: monospace;
+  letter-spacing: 0.1em;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.1);
+  image-rendering: pixelated;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-family: "Inter", sans-serif;
+}
