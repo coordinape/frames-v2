@@ -24,7 +24,7 @@ export default function ShareButton({ text = "Share" }: { text?: string }) {
       )}
       <button
         onClick={handleShare}
-        className="flex items-center gap-1.5 px-4 py-1 text-xs bg-white/10 text-white text-xs rounded-full cursor-pointer hover:bg-white/20 transition-colors"
+        className="flex items-center gap-1.5 px-3 py-1 text-xs bg-white/10 text-white text-xs rounded-full cursor-pointer hover:bg-white/20 transition-colors"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

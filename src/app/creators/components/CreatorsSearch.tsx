@@ -32,7 +32,7 @@ export function CreatorsSearch({
   };
 
   return (
-    <div className="relative mb-10">
+    <div className="relative mb-1">
       <div className="flex items-center bg-white/10 backdrop-blur-sm rounded-full border border-white/20 px-4">
         <svg
           className="w-5 h-5 text-white"

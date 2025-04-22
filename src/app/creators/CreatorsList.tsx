@@ -36,6 +36,7 @@ function CreatorsListInner() {
     searchParams.get("search") || "",
   );
   const [searchType, setSearchType] = useState(searchParams.get("type") || "");
+  const [sortOption, setSortOption] = useState("recent");
   const [creators, setCreators] = useState<CreatorWithNFTData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -155,6 +156,47 @@ function CreatorsListInner() {
     );
   });
 
+  const sortCreators = (creatorsToSort: CreatorWithNFTData[]) => {
+    let sorted = [...creatorsToSort];
+
+    switch (sortOption) {
+      case "nfts":
+        sorted.sort((a, b) => {
+          const aCount = a.nftData?.collections?.length || 0;
+          const bCount = b.nftData?.collections?.length || 0;
+          return bCount - aCount;
+        });
+        break;
+      case "gives":
+        sorted.sort((a, b) => {
+          const aCount =
+            a.gives?.reduce((sum, group) => sum + group.count, 0) || 0;
+          const bCount =
+            b.gives?.reduce((sum, group) => sum + group.count, 0) || 0;
+          return bCount - aCount;
+        });
+        break;
+      case "alphabetical":
+        sorted.sort((a, b) => {
+          const aName = (a.resolution?.basename || a.name).toLowerCase();
+          const bName = (b.resolution?.basename || b.name).toLowerCase();
+          return aName.localeCompare(bName);
+        });
+        break;
+      case "reverse-alphabetical":
+        sorted.sort((a, b) => {
+          const aName = (a.resolution?.basename || a.name).toLowerCase();
+          const bName = (b.resolution?.basename || b.name).toLowerCase();
+          return bName.localeCompare(aName);
+        });
+        break;
+      default: // "recent"
+        // Keep original order for recent
+        break;
+    }
+    return sorted;
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -200,17 +242,30 @@ function CreatorsListInner() {
           onSearchChange={setSearchQuery}
           onSearchTypeChange={setSearchType}
         />
+        <p className="text-white/40 text-xs text-center mb-5 italic">
+          {filteredCreators.length} creators
+        </p>
       </Suspense>
 
       <div className="flex items-center justify-between mb-4">
-        <p className="text-white font-medium text-sm">
-          {filteredCreators.length} CREATORS FOUND
-        </p>
+        <div className="flex items-center gap-2 bg-white/10 text-white rounded-full px-2 py-1 text-xs">
+          <select
+            value={sortOption}
+            onChange={(e) => setSortOption(e.target.value)}
+            className="focus:outline-none pr-1 bg-transparent"
+          >
+            <option value="recent">Newest</option>
+            <option value="nfts">Most NFTs</option>
+            <option value="gives">GIVE Received</option>
+            <option value="alphabetical">A to Z</option>
+            <option value="reverse-alphabetical">Z to A</option>
+          </select>
+        </div>
         <ShareButton text="Share Directory" />
       </div>
 
       <div className="space-y-4">
-        {filteredCreators.map((creator) => {
+        {sortCreators(filteredCreators).map((creator) => {
           const farcasterUserName =
             creator.resolution?.textRecords?.[
               BasenameTextRecordKeys.Farcaster
