@@ -37,7 +37,6 @@ function CreatorsListInner() {
   );
   const [searchType, setSearchType] = useState(searchParams.get("type") || "");
   const [sortOption, setSortOption] = useState("recent");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [creators, setCreators] = useState<CreatorWithNFTData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -165,7 +164,7 @@ function CreatorsListInner() {
         sorted.sort((a, b) => {
           const aCount = a.nftData?.collections?.length || 0;
           const bCount = b.nftData?.collections?.length || 0;
-          return sortDirection === "desc" ? bCount - aCount : aCount - bCount;
+          return bCount - aCount;
         });
         break;
       case "gives":
@@ -174,16 +173,14 @@ function CreatorsListInner() {
             a.gives?.reduce((sum, group) => sum + group.count, 0) || 0;
           const bCount =
             b.gives?.reduce((sum, group) => sum + group.count, 0) || 0;
-          return sortDirection === "desc" ? bCount - aCount : aCount - bCount;
+          return bCount - aCount;
         });
         break;
       case "alphabetical":
         sorted.sort((a, b) => {
           const aName = (a.resolution?.basename || a.name).toLowerCase();
           const bName = (b.resolution?.basename || b.name).toLowerCase();
-          return sortDirection === "desc"
-            ? bName.localeCompare(aName)
-            : aName.localeCompare(bName);
+          return aName.localeCompare(bName);
         });
         break;
       case "reverse-alphabetical":
@@ -194,10 +191,7 @@ function CreatorsListInner() {
         });
         break;
       default: // "recent"
-        // For recent, we'll reverse the array if ascending is selected
-        if (sortDirection === "asc") {
-          sorted.reverse();
-        }
+        // Keep original order for recent
         break;
     }
     return sorted;
