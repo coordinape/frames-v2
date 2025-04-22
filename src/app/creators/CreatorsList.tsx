@@ -13,7 +13,6 @@ import { BasenameTextRecordKeys } from "./[username]/basenames";
 import { castCreateGive } from "~/app/features/directory/castCreateGive";
 import { useSearchParams, useRouter } from "next/navigation";
 import { CreatorsSearch } from "./components/CreatorsSearch";
-import AboutGiveModal from "~/components/AboutGiveModal";
 
 // Helper function for logging with timestamps
 const logWithTime = (message: string) => {
