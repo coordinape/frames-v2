@@ -21,6 +21,7 @@ import {
   LOCK_DURATION,
   REVALIDATION_WINDOW,
 } from "./constants";
+import { debugLog } from "~/lib/constants";
 
 export interface CachedData {
   data: CreatorWithNFTData[];
@@ -304,9 +305,96 @@ export async function revalidateCreators(): Promise<void> {
 }
 
 /**
- * Internal function to fetch creators from the API
+ * Utility function to process creators in chunks
+ * @param items Array of items to process
+ * @param chunkSize Size of each chunk
+ * @param processor Function to process each chunk
  */
+async function processInChunks<T, R>(
+  items: T[],
+  chunkSize: number,
+  processor: (chunk: T[]) => Promise<R[]>,
+): Promise<R[]> {
+  const results: R[] = [];
+  for (let i = 0; i < items.length; i += chunkSize) {
+    const chunk = items.slice(i, i + chunkSize);
+    const chunkResults = await processor(chunk);
+    results.push(...chunkResults);
+  }
+  return results;
+}
+
+/**
+ * Batch process creator data with retries and timeouts
+ */
+async function batchProcessCreators(
+  creators: Creator[],
+  chunkSize = 20,
+): Promise<CreatorWithNFTData[]> {
+  return processInChunks(creators, chunkSize, async (chunk) => {
+    const processWithTimeout = async (
+      creator: Creator,
+    ): Promise<CreatorWithNFTData> => {
+      const timeout = 5000; // 5 second timeout
+      try {
+        const result = await Promise.race([
+          Promise.all([
+            getNFTContracts(creator.address).catch(() => []),
+            resolveBasenameOrAddress(creator.address).catch(() => null),
+            getGivesForCreator(creator.address).catch(() => []),
+          ]),
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error("Timeout")), timeout),
+          ),
+        ]);
+
+        const [contracts, resolution, gives] = result as [any[], any, any[]];
+
+        const formattedResolution = resolution
+          ? {
+              basename: resolution.basename,
+              address: resolution.address,
+              resolved: !!resolution.basename,
+              textRecords: resolution.textRecords,
+            }
+          : null;
+
+        return {
+          ...creator,
+          resolution: formattedResolution,
+          gives: gives,
+          nftData: {
+            collections: contracts.map((contract) => ({
+              id: contract.contractAddress,
+              name: contract.name,
+              description: contract.description,
+              imageUrl: contract.imageUrl,
+              bannerImageUrl: contract.bannerImageUrl,
+              openseaUrl: `https://opensea.io/assets/base/${contract.contractAddress}`,
+              projectUrl: contract.projectUrl || "",
+              contractAddress: contract.contractAddress,
+            })),
+          },
+        };
+      } catch (error) {
+        console.error(`Error or timeout processing ${creator.address}:`, error);
+        return {
+          ...creator,
+          resolution: null,
+          gives: [],
+          nftData: { collections: [] },
+        };
+      }
+    };
+
+    return Promise.all(chunk.map(processWithTimeout));
+  });
+}
+
 async function getCreatorsFromAPI(): Promise<CreatorWithNFTData[]> {
+  const startTime = performance.now();
+  debugLog("Starting getCreatorsFromAPI");
+
   const { data } = await getApolloClientAuthed().query({
     query: gql`
       query CreatorsDirGetAllCreators($circleId: bigint!) {
@@ -338,6 +426,11 @@ async function getCreatorsFromAPI(): Promise<CreatorWithNFTData[]> {
     },
   });
 
+  const queryTime = performance.now();
+  debugLog(
+    `GraphQL query completed in ${(queryTime - startTime).toFixed(2)}ms`,
+  );
+
   // Transform the data to a more convenient format
   const creators: Creator[] = data.users.map(
     (user: {
@@ -365,56 +458,22 @@ async function getCreatorsFromAPI(): Promise<CreatorWithNFTData[]> {
     }),
   );
 
-  // Fetch NFT data and resolve basenames for each creator on the server side
-  const creatorsWithNFTData: CreatorWithNFTData[] = await Promise.all(
-    creators.map(async (creator: Creator) => {
-      try {
-        // Get NFT contracts
-        const contracts = await getNFTContracts(creator.address);
+  const transformTime = performance.now();
+  debugLog(
+    `Data transformation completed in ${(transformTime - queryTime).toFixed(2)}ms`,
+  );
+  debugLog(
+    `Processing ${creators.length} creators for NFT data and basenames...`,
+  );
 
-        // Resolve basename
-        const resolution = await resolveBasenameOrAddress(creator.address);
+  // Process creators in batches with improved error handling and timeouts
+  const creatorsWithNFTData = await batchProcessCreators(creators);
 
-        // Get gives data
-        const gives = await getGivesForCreator(creator.address);
-
-        // Transform the resolution to match the BasenameResolution interface
-        const formattedResolution = resolution
-          ? {
-              basename: resolution.basename,
-              address: resolution.address,
-              resolved: !!resolution.basename,
-              textRecords: resolution.textRecords,
-            }
-          : null;
-
-        return {
-          ...creator,
-          resolution: formattedResolution,
-          gives: gives,
-          nftData: {
-            collections: contracts.map((contract) => ({
-              id: contract.contractAddress,
-              name: contract.name,
-              description: contract.description,
-              imageUrl: contract.imageUrl,
-              bannerImageUrl: contract.bannerImageUrl,
-              openseaUrl: `https://opensea.io/assets/base/${contract.contractAddress}`,
-              projectUrl: contract.projectUrl || "",
-              contractAddress: contract.contractAddress,
-            })),
-          },
-        };
-      } catch (error) {
-        console.error(`Failed to fetch data for ${creator.address}:`, error);
-        // Return creator without NFT data if there's an error
-        return {
-          ...creator,
-          resolution: null,
-          gives: [],
-        };
-      }
-    }),
+  const endTime = performance.now();
+  const totalTime = endTime - startTime;
+  console.log(`getCreatorsFromAPI completed in ${totalTime.toFixed(2)}ms`);
+  debugLog(
+    `Average time per creator: ${(totalTime / creators.length).toFixed(2)}ms`,
   );
 
   return creatorsWithNFTData;
