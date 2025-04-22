@@ -14,7 +14,7 @@ import type { CacheDebugInfo } from "./cache-actions";
 export default function CreatorsListInfo() {
   const [info, setInfo] = useState<CacheDebugInfo | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [currentTime, setCurrentTime] = useState(Date.now());
+  const [, setCurrentTime] = useState(Date.now());
   const [expiryTime, setExpiryTime] = useState<Date | null>(null);
   const [revalidationTime, setRevalidationTime] = useState<Date | null>(null);
 

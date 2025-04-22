@@ -6,6 +6,7 @@ import {
   CREATORS_CACHE_KEY,
   REVALIDATION_LOCK_KEY,
 } from "~/app/features/directory/constants";
+import { type CachedData } from "~/app/features/directory/actions";
 
 export interface CacheDebugInfo {
   cacheExists: boolean;
@@ -40,7 +41,7 @@ export async function getCacheInfo(): Promise<CacheDebugInfo> {
   return {
     cacheExists: !!cacheExists,
     ttl: ttl as number,
-    creatorCount: cacheData ? (cacheData as any).data?.length : null,
+    creatorCount: cacheData ? (cacheData as CachedData).data.length : null,
     lockExists: !!lockExists,
     lockTTL: lockTTL as number,
     lastRevalidationTime: lastRevalidationTime as number | null,

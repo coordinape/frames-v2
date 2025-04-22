@@ -22,7 +22,7 @@ import {
   REVALIDATION_WINDOW,
 } from "./constants";
 
-interface CachedData {
+export interface CachedData {
   data: CreatorWithNFTData[];
 }
 
