@@ -1,7 +1,5 @@
-import { APP_BASE_URL } from "~/lib/constants";
-
 export async function GET() {
-  const appUrl = `https://${APP_BASE_URL}`;
+  const appUrl = `https://dir.coordinape.com`;
 
   const config = {
     accountAssociation: {
