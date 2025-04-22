@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getCacheInfo, forceRevalidate } from "./cache-actions";
+import { getCacheInfo } from "./cache-actions";
+import { revalidateCreators } from "~/app/features/directory/actions";
 import {
   CACHE_DURATION,
   LOCK_DURATION,
@@ -13,7 +14,7 @@ import type { CacheDebugInfo } from "./cache-actions";
 export default function CreatorsListInfo() {
   const [info, setInfo] = useState<CacheDebugInfo | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [currentTime, setCurrentTime] = useState(Date.now());
+  const [, setCurrentTime] = useState(Date.now());
   const [expiryTime, setExpiryTime] = useState<Date | null>(null);
   const [revalidationTime, setRevalidationTime] = useState<Date | null>(null);
 
@@ -48,7 +49,7 @@ export default function CreatorsListInfo() {
   const handleRevalidate = async () => {
     setIsRefreshing(true);
     try {
-      await forceRevalidate();
+      await revalidateCreators();
       await refreshInfo();
     } catch (error) {
       console.error("Failed to revalidate:", error);

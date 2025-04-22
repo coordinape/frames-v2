@@ -2,11 +2,11 @@
 "use server";
 
 import { kv } from "@vercel/kv";
-import { revalidateCreators } from "~/app/features/directory/actions";
 import {
   CREATORS_CACHE_KEY,
   REVALIDATION_LOCK_KEY,
 } from "~/app/features/directory/constants";
+import { type CachedData } from "~/app/features/directory/actions";
 
 export interface CacheDebugInfo {
   cacheExists: boolean;
@@ -41,16 +41,9 @@ export async function getCacheInfo(): Promise<CacheDebugInfo> {
   return {
     cacheExists: !!cacheExists,
     ttl: ttl as number,
-    creatorCount: cacheData ? (cacheData as any).data?.length : null,
+    creatorCount: cacheData ? (cacheData as CachedData).data.length : null,
     lockExists: !!lockExists,
     lockTTL: lockTTL as number,
     lastRevalidationTime: lastRevalidationTime as number | null,
   };
-}
-
-/**
- * Force a revalidation of the creators cache
- */
-export async function forceRevalidate(): Promise<void> {
-  await revalidateCreators();
 }
