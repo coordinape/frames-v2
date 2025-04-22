@@ -256,7 +256,7 @@ function CreatorsListInner() {
           >
             <option value="recent">Newest</option>
             <option value="nfts">Most NFTs</option>
-            <option value="gives">GIVE received</option>
+            <option value="gives">GIVE Received</option>
             <option value="alphabetical">A to Z</option>
             <option value="reverse-alphabetical">Z to A</option>
           </select>
