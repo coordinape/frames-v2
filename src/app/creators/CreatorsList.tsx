@@ -14,6 +14,11 @@ import { castCreateGive } from "~/app/features/directory/castCreateGive";
 import { useSearchParams } from "next/navigation";
 import { CreatorsSearch } from "./components/CreatorsSearch";
 
+// Helper function for logging with timestamps
+const logWithTime = (message: string) => {
+  console.log(`[${new Date().toISOString()}] ${message}`);
+};
+
 // Helper function to check if a creator has NFT images
 const hasNFTImages = (creator: CreatorWithNFTData): boolean => {
   return (
@@ -23,6 +28,7 @@ const hasNFTImages = (creator: CreatorWithNFTData): boolean => {
 };
 
 function CreatorsListInner() {
+  logWithTime("CreatorsListInner component initialized");
   const searchParams = useSearchParams();
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
   const [searchQuery, setSearchQuery] = useState(
@@ -35,16 +41,25 @@ function CreatorsListInner() {
 
   useEffect(() => {
     const load = async () => {
+      logWithTime("Starting SDK context load");
+      const startTime = performance.now();
       await sdk.context;
+      const endTime = performance.now();
+      logWithTime(
+        `SDK context loaded in ${(endTime - startTime).toFixed(2)}ms`,
+      );
+
       console.log("Directory Frame: Calling ready");
       sdk.actions.ready({});
+      logWithTime("SDK ready action called");
     };
 
     if (sdk && !isSDKLoaded) {
-      console.log("Directory Frame: Calling load");
+      logWithTime("Initializing SDK load");
       setIsSDKLoaded(true);
       load();
       return () => {
+        logWithTime("Cleaning up SDK listeners");
         sdk.removeAllListeners();
       };
     }
@@ -53,10 +68,21 @@ function CreatorsListInner() {
   useEffect(() => {
     async function fetchCreators() {
       try {
+        logWithTime("Starting creators fetch");
+        const fetchStartTime = performance.now();
         setLoading(true);
+
         // Get creators with OpenSea data and basename resolution already included from the server action
         const creatorsWithData = await getCreators();
+        const fetchEndTime = performance.now();
+        logWithTime(
+          `Creators fetched in ${(fetchEndTime - fetchStartTime).toFixed(2)}ms`,
+        );
+
+        logWithTime(`Retrieved ${creatorsWithData.length} creators`);
+
         // Sort creators - prioritize those with NFT images
+        const sortStartTime = performance.now();
         const sortedCreators = creatorsWithData.sort((a, b) => {
           const aHasImages = hasNFTImages(a);
           const bHasImages = hasNFTImages(b);
@@ -64,12 +90,20 @@ function CreatorsListInner() {
           if (aHasImages === bHasImages) return 0;
           return aHasImages ? -1 : 1;
         });
+        const sortEndTime = performance.now();
+        logWithTime(
+          `Creators sorted in ${(sortEndTime - sortStartTime).toFixed(2)}ms`,
+        );
+
         setCreators(sortedCreators);
+        logWithTime("Creators state updated");
       } catch (err) {
         console.error("Failed to fetch creators:", err);
+        logWithTime("Error occurred while fetching creators");
         setError("Failed to load creators. Please try again later.");
       } finally {
         setLoading(false);
+        logWithTime("Loading state set to false");
       }
     }
 
