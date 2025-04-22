@@ -292,7 +292,7 @@ export async function getCreators(): Promise<CreatorWithNFTData[]> {
 /**
  * Background revalidation function that updates the cache
  */
-async function revalidateCreators(): Promise<void> {
+export async function revalidateCreators(): Promise<void> {
   try {
     const freshData = await getCreatorsFromAPI();
 
