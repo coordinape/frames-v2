@@ -11,7 +11,7 @@ import ContractGallery from "~/app/components/ContractGallery";
 import { PATHS } from "~/constants/paths";
 import { BasenameTextRecordKeys } from "./[username]/basenames";
 import { castCreateGive } from "~/app/features/directory/castCreateGive";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { CreatorsSearch } from "./components/CreatorsSearch";
 
 // Helper function for logging with timestamps
@@ -30,6 +30,7 @@ const hasNFTImages = (creator: CreatorWithNFTData): boolean => {
 function CreatorsListInner() {
   logWithTime("CreatorsListInner component initialized");
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
   const [searchQuery, setSearchQuery] = useState(
     searchParams.get("search") || "",
@@ -241,6 +242,16 @@ function CreatorsListInner() {
                   creator.resolution?.basename || creator.address
                 }`}
                 className="block"
+                onClick={(e) => {
+                  // Let the Link handle the navigation
+                  document.startViewTransition(() => {
+                    router.push(
+                      `/creators/${
+                        creator.resolution?.basename || creator.address
+                      }`,
+                    );
+                  });
+                }}
               >
                 <div className="border-2 border-white/20 rounded-xl p-3">
                   <div className="flex items-center justify-between">
