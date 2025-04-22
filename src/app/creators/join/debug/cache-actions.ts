@@ -2,7 +2,6 @@
 "use server";
 
 import { kv } from "@vercel/kv";
-import { revalidateCreators } from "~/app/features/directory/actions";
 import {
   CREATORS_CACHE_KEY,
   REVALIDATION_LOCK_KEY,
@@ -46,11 +45,4 @@ export async function getCacheInfo(): Promise<CacheDebugInfo> {
     lockTTL: lockTTL as number,
     lastRevalidationTime: lastRevalidationTime as number | null,
   };
-}
-
-/**
- * Force a revalidation of the creators cache
- */
-export async function forceRevalidate(): Promise<void> {
-  await revalidateCreators();
 }

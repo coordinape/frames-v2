@@ -7,6 +7,7 @@ import {
   getZapperNFTCollectionsForOwners,
   ContractDetails as ZapperContractDetails,
 } from "./getZapperNFTContracts";
+import { debugLog, debugError } from "./constants";
 
 export interface NFTContractDetails {
   name: string;
@@ -82,28 +83,28 @@ export async function getNFTContracts(
     const [openSeaContracts, zapperContracts, zapperOwnerContracts] =
       await Promise.all([
         getOpenseaNFTContracts(deployerAddress, chain).catch((error) => {
-          console.error("Error fetching OpenSea contracts:", error);
+          debugError("Error fetching OpenSea contracts:", error);
           return [];
         }),
         getZapperNFTContracts(deployerAddress, chain).catch((error) => {
-          console.error("Error fetching Zapper deployer contracts:", error);
+          debugError("Error fetching Zapper deployer contracts:", error);
           return [];
         }),
         getZapperNFTCollectionsForOwners(deployerAddress, chain).catch(
           (error) => {
-            console.error("Error fetching Zapper owner contracts:", error);
+            debugError("Error fetching Zapper owner contracts:", error);
             return [];
           },
         ),
       ]);
 
-    console.log(
+    debugLog(
       `OpenSea returned ${openSeaContracts.length} NFT contracts for address ${deployerAddress}`,
     );
-    console.log(
+    debugLog(
       `Zapper deployer returned ${zapperContracts.length} NFT contracts for address ${deployerAddress}`,
     );
-    console.log(
+    debugLog(
       `Zapper owner returned ${zapperOwnerContracts.length} NFT contracts for address ${deployerAddress}`,
     );
 
@@ -157,15 +158,15 @@ export async function getNFTContracts(
       results = results.filter(
         (nft) => nft.imageUrl && nft.imageUrl.trim() !== "",
       );
-      console.log(
+      debugLog(
         `Filtered out ${contractMap.size - results.length} NFTs without images`,
       );
     }
 
-    console.log(`Total unique NFT contracts after merging: ${results.length}`);
+    debugLog(`Total unique NFT contracts after merging: ${results.length}`);
     return results;
   } catch (error) {
-    console.error("Error fetching NFT contracts:", error);
+    debugError("Error fetching NFT contracts:", error);
     throw error;
   }
 }

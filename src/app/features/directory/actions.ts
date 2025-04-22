@@ -224,6 +224,22 @@ export async function getCreator(
 }
 
 /**
+ * Internal function to refresh creators data and update cache
+ * @returns Promise<CreatorWithNFTData[]> Array of creators with their NFT data
+ */
+async function refreshCreatorsData(): Promise<CreatorWithNFTData[]> {
+  const freshData = await getCreatorsFromAPI();
+  await kv.set(
+    CREATORS_CACHE_KEY,
+    {
+      data: freshData,
+    },
+    { ex: CACHE_DURATION },
+  );
+  return freshData;
+}
+
+/**
  * Fetches all creators from the directory with caching
  * @returns Promise<Array<CreatorWithNFTData>> Array of creators with their NFT data and basename resolution
  */
@@ -250,15 +266,7 @@ export async function getCreators(): Promise<CreatorWithNFTData[]> {
           revalidateCreators().catch(console.error);
         } else {
           // If no cached data, revalidate immediately
-          const freshData = await getCreatorsFromAPI();
-          await kv.set(
-            CREATORS_CACHE_KEY,
-            {
-              data: freshData,
-            },
-            { ex: CACHE_DURATION },
-          );
-          return freshData;
+          return await refreshCreatorsData();
         }
       }
     }
@@ -269,15 +277,7 @@ export async function getCreators(): Promise<CreatorWithNFTData[]> {
     }
 
     // If we somehow have no cached data (first ever run), fetch and cache
-    const freshData = await getCreatorsFromAPI();
-    await kv.set(
-      CREATORS_CACHE_KEY,
-      {
-        data: freshData,
-      },
-      { ex: CACHE_DURATION },
-    );
-    return freshData;
+    return await refreshCreatorsData();
   } catch (error) {
     console.error("Error fetching creators:", error);
     // If there's an error but we have cached data, return it
@@ -294,15 +294,7 @@ export async function getCreators(): Promise<CreatorWithNFTData[]> {
  */
 export async function revalidateCreators(): Promise<void> {
   try {
-    const freshData = await getCreatorsFromAPI();
-
-    await kv.set(
-      CREATORS_CACHE_KEY,
-      {
-        data: freshData,
-      },
-      { ex: CACHE_DURATION },
-    );
+    await refreshCreatorsData();
   } catch (error) {
     console.error("Error revalidating creators:", error);
   } finally {
