@@ -6,7 +6,7 @@ import {
   CREATORS_CACHE_KEY,
   REVALIDATION_LOCK_KEY,
 } from "~/app/features/directory/constants";
-import { type CachedData } from "~/app/features/directory/actions";
+import { type CachedData } from "~/app/features/directory/creators-actions";
 
 export interface CacheDebugInfo {
   cacheExists: boolean;

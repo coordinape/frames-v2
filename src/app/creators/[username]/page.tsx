@@ -1,7 +1,8 @@
 import ContractGallery from "~/app/components/ContractGallery";
 import { Metadata } from "next";
 import { resolveBasenameOrAddress } from "~/app/hooks/useBasenameResolver";
-import { addressIsMember, getCreator } from "~/app/features/directory/actions";
+import { addressIsMember } from "~/app/features/directory/actions";
+import { getCreator } from "~/app/features/directory/creator-actions";
 import MembershipStatus from "~/app/creators/[username]/MembershipStatus";
 import Link from "next/link";
 import Header from "~/app/components/Header";

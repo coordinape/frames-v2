@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
-import { getCreator } from "~/app/features/directory/actions";
+import { getCreator } from "~/app/features/directory/creator-actions";
 import { resolveBasenameOrAddress } from "~/app/hooks/useBasenameResolver";
 import {
   baseBlue,

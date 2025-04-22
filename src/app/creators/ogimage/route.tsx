@@ -5,7 +5,7 @@ import {
   DEFAULT_FRAME_SIZE,
   IMAGE_URL_BASE,
 } from "~/app/ogimage/helpers";
-import { getCreators } from "~/app/features/directory/actions";
+import { getCreators } from "~/app/features/directory/creators-actions";
 
 export async function GET() {
   // Get all creators

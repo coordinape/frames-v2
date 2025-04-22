@@ -7,6 +7,10 @@ import {
   BasenameTextRecordKeys,
   textRecordsKeysEnabled,
 } from "~/app/creators/[username]/basenames";
+import {
+  getCachedBasenameResolution,
+  cacheBasenameResolution,
+} from "./basename-cache";
 
 const emptyTextRecords: Record<BasenameTextRecordKeys, string | undefined> = {
   [BasenameTextRecordKeys.Url]: undefined,
@@ -20,6 +24,19 @@ export async function resolveBasenameOrAddress(input: string) {
   if (!input) return null;
 
   try {
+    // Check cache first
+    const cached = await getCachedBasenameResolution(input);
+    if (cached) {
+      return {
+        basename: cached.basename,
+        address: cached.address,
+        textRecords: cached.textRecords,
+        isLoading: false,
+        error: null,
+      };
+    }
+
+    // If not in cache, resolve and cache the result
     if (isAddress(input)) {
       return await resolveAddress(input as Address);
     } else if (input.endsWith(".base.eth")) {
@@ -65,13 +82,22 @@ async function resolveBasename(name: Basename) {
         { ...emptyTextRecords },
       ) || emptyTextRecords;
 
-    return {
+    const resolution = {
       basename: name,
       address: resolvedAddress,
       textRecords: formattedRecords,
       isLoading: false,
       error: null,
     };
+
+    // Cache the resolution
+    await cacheBasenameResolution({
+      basename: name,
+      address: resolvedAddress,
+      textRecords: formattedRecords,
+    });
+
+    return resolution;
   } catch (err) {
     throw new Error(
       err instanceof Error ? err.message : "Error resolving Base name",
@@ -85,13 +111,22 @@ async function resolveAddress(addr: Address) {
     const name = await getBasename(formattedAddress);
 
     if (!name) {
-      return {
+      const resolution = {
         basename: "",
         address: formattedAddress,
         textRecords: emptyTextRecords,
         isLoading: false,
         error: null,
       };
+
+      // Cache even empty resolutions
+      await cacheBasenameResolution({
+        basename: "",
+        address: formattedAddress,
+        textRecords: emptyTextRecords,
+      });
+
+      return resolution;
     }
 
     const records = await getBasenameTextRecords(name);
@@ -106,13 +141,22 @@ async function resolveAddress(addr: Address) {
         { ...emptyTextRecords },
       ) || emptyTextRecords;
 
-    return {
+    const resolution = {
       basename: name,
       address: formattedAddress,
       textRecords: formattedRecords,
       isLoading: false,
       error: null,
     };
+
+    // Cache the resolution
+    await cacheBasenameResolution({
+      basename: name,
+      address: formattedAddress,
+      textRecords: formattedRecords,
+    });
+
+    return resolution;
   } catch (err) {
     if (err instanceof Error && err.message.includes("invalid address")) {
       throw new Error("Invalid Ethereum address");

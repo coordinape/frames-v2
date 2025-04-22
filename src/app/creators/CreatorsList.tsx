@@ -2,7 +2,7 @@
 
 import { useEffect, useState, Suspense } from "react";
 import sdk from "@farcaster/frame-sdk";
-import { getCreators } from "~/app/features/directory/actions";
+import { getCreators } from "~/app/features/directory/creators-actions";
 import { CreatorWithNFTData } from "~/app/features/directory/types";
 import Header from "../components/Header";
 import Link from "next/link";
