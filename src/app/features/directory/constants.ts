@@ -10,5 +10,5 @@ export const REVALIDATION_WINDOW = 60; // Start revalidating when less than 1 mi
 // Single creator cache constants
 export const SINGLE_CREATOR_CACHE_PREFIX = "creator:";
 export const SINGLE_CREATOR_LOCK_PREFIX = "creator_lock:";
-export const SINGLE_CREATOR_CACHE_DURATION = 86400; // 1 day in seconds
-export const SINGLE_CREATOR_REVALIDATION_WINDOW = 3600; // Start revalidating when less than 1 hour left
+export const SINGLE_CREATOR_CACHE_DURATION = 900; // 15 minutes in seconds
+export const SINGLE_CREATOR_REVALIDATION_WINDOW = 60; // Start revalidating when less than 1 minute left
