@@ -283,16 +283,23 @@ function CreatorsListInner() {
           {filteredCreators.length} creators
         </p>
         {topGiveSkills.length > 0 && (
-          <div className="flex flex-wrap gap-3 justify-center mb-5">
-            {topGiveSkills.map(({ skill }) => (
-              <Link
-                key={skill}
-                href={`/creators?search=${encodeURIComponent(skill)}&type=give`}
-                className="inline-flex items-center bg-white/10 hover:bg-white/15 rounded-full px-3 py-1 text-xs"
-              >
-                <span className="text-white/90 hover:text-white">{skill}</span>
-              </Link>
-            ))}
+          <div className="flex flex-col gap-2 items-center">
+            <h3 className="text-xl font-bold text-white base-pixel flex items-center flex-wrap gap-2 justify-between pb-1">
+              Top GIVE Skills
+            </h3>
+            <div className="flex flex-wrap gap-3 justify-center mb-5">
+              {topGiveSkills.map(({ skill }) => (
+                <Link
+                  key={skill}
+                  href={`/creators?search=${encodeURIComponent(skill)}&type=give`}
+                  className="inline-flex items-center bg-white/10 hover:bg-white/15 rounded-full px-3 py-1 text-xs"
+                >
+                  <span className="text-white/90 hover:text-white">
+                    {skill}
+                  </span>
+                </Link>
+              ))}
+            </div>
           </div>
         )}
       </Suspense>
