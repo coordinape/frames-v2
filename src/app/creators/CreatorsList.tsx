@@ -248,11 +248,11 @@ function CreatorsListInner() {
       </Suspense>
 
       <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2 bg-white/10 text-white rounded-full px-2 py-1 text-xs">
+        <div className="flex items-center gap-2 bg-white/10 text-white rounded-full pl-4 py-1 text-xs relative cursor-pointer">
           <select
             value={sortOption}
             onChange={(e) => setSortOption(e.target.value)}
-            className="focus:outline-none pr-1 bg-transparent"
+            className="focus:outline-none bg-transparent appearance-none pr-9"
           >
             <option value="recent">Newest</option>
             <option value="nfts">Most NFTs</option>
@@ -260,6 +260,19 @@ function CreatorsListInner() {
             <option value="alphabetical">A to Z</option>
             <option value="reverse-alphabetical">Z to A</option>
           </select>
+          <svg
+            width="16"
+            height="12"
+            viewBox="0 0 576 512"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="text-white pointer-events-none absolute right-3"
+          >
+            <path
+              d="M15 377l96 96c9.4 9.4 24.6 9.4 33.9 0l96-96c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-55 55L152 56c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 342.1L49 343c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9zM312 480l48 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-48 0c-13.3 0-24 10.7-24 24s10.7 24 24 24zm0-128l112 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-112 0c-13.3 0-24 10.7-24 24s10.7 24 24 24zm0-128l176 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-176 0c-13.3 0-24 10.7-24 24s10.7 24 24 24zm0-128l240 0c13.3 0 24-10.7 24-24s-10.7-24-24-24L312 48c-13.3 0-24 10.7-24 24s10.7 24 24 24z"
+              fill="currentColor"
+            />
+          </svg>
         </div>
         <ShareButton text="Share Directory" />
       </div>
