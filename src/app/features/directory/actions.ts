@@ -11,9 +11,20 @@ import {
   SortedGiveGroup,
 } from "~/app/features/directory/types";
 import { resolveBasenameOrAddress } from "~/app/hooks/useBasenameResolver";
+import { kv } from "@vercel/kv";
 
 const CIRCLE_ID = 31712;
 const ENTRANCE = "frames-be";
+
+const CREATORS_CACHE_KEY = "creators-directory-all";
+const REVALIDATION_LOCK_KEY = "creators-directory-revalidation-lock";
+const CACHE_DURATION = 300; // 5 minutes in seconds
+const LOCK_DURATION = 30; // 30 second lock to prevent multiple processes
+const REVALIDATION_WINDOW = 60; // Start revalidating when less than 1 minute left
+
+interface CachedData {
+  data: CreatorWithNFTData[];
+}
 
 /**
  * Checks if an address is a member of the hardcoded circle
@@ -213,126 +224,208 @@ export async function getCreator(
 }
 
 /**
- * Fetches all creators from the directory
+ * Fetches all creators from the directory with caching
  * @returns Promise<Array<CreatorWithNFTData>> Array of creators with their NFT data and basename resolution
  */
 export async function getCreators(): Promise<CreatorWithNFTData[]> {
   try {
-    const { data } = await getApolloClientAuthed().query({
-      query: gql`
-        query CreatorsDirGetAllCreators($circleId: bigint!) {
-          users(
-            where: {
-              circle_id: { _eq: $circleId }
-              profile: {
-                address: { _neq: "0x4fd59e958a4eaf440d761c41c73e40bffd069f4d" }
-              }
+    // Get both cached data and TTL in one atomic operation
+    const multi = kv.multi();
+    multi.get(CREATORS_CACHE_KEY);
+    multi.ttl(CREATORS_CACHE_KEY);
+    const [cached, ttl] = (await multi.exec()) as [CachedData | null, number];
+
+    // Revalidate if TTL is negative (expired) or less than revalidation window
+    if (ttl < REVALIDATION_WINDOW) {
+      // Try to acquire the revalidation lock
+      const acquired = await kv.set(REVALIDATION_LOCK_KEY, Date.now(), {
+        nx: true,
+        ex: LOCK_DURATION,
+      });
+
+      // If we got the lock, trigger revalidation
+      if (acquired) {
+        if (cached?.data) {
+          // If we have cached data, revalidate in background
+          revalidateCreators().catch(console.error);
+        } else {
+          // If no cached data, revalidate immediately
+          const freshData = await getCreatorsFromAPI();
+          await kv.set(
+            CREATORS_CACHE_KEY,
+            {
+              data: freshData,
+            },
+            { ex: CACHE_DURATION },
+          );
+          return freshData;
+        }
+      }
+    }
+
+    // Return cached data if we have it
+    if (cached?.data) {
+      return cached.data;
+    }
+
+    // If we somehow have no cached data (first ever run), fetch and cache
+    const freshData = await getCreatorsFromAPI();
+    await kv.set(
+      CREATORS_CACHE_KEY,
+      {
+        data: freshData,
+      },
+      { ex: CACHE_DURATION },
+    );
+    return freshData;
+  } catch (error) {
+    console.error("Error fetching creators:", error);
+    // If there's an error but we have cached data, return it
+    const cached = await kv.get<CachedData>(CREATORS_CACHE_KEY);
+    if (cached?.data) {
+      return cached.data;
+    }
+    return [];
+  }
+}
+
+/**
+ * Background revalidation function that updates the cache
+ */
+async function revalidateCreators(): Promise<void> {
+  try {
+    const freshData = await getCreatorsFromAPI();
+
+    await kv.set(
+      CREATORS_CACHE_KEY,
+      {
+        data: freshData,
+      },
+      { ex: CACHE_DURATION },
+    );
+  } catch (error) {
+    console.error("Error revalidating creators:", error);
+  } finally {
+    // Clean up the lock regardless of success/failure
+    await kv.del(REVALIDATION_LOCK_KEY);
+  }
+}
+
+/**
+ * Internal function to fetch creators from the API
+ */
+async function getCreatorsFromAPI(): Promise<CreatorWithNFTData[]> {
+  const { data } = await getApolloClientAuthed().query({
+    query: gql`
+      query CreatorsDirGetAllCreators($circleId: bigint!) {
+        users(
+          where: {
+            circle_id: { _eq: $circleId }
+            profile: {
+              address: { _neq: "0x4fd59e958a4eaf440d761c41c73e40bffd069f4d" }
             }
-            order_by: { created_at: desc }
-          ) {
+          }
+          order_by: { created_at: desc }
+        ) {
+          id
+          profile {
             id
-            profile {
-              id
-              address
-              name
-              avatar
-              description
-              farcaster_account {
-                username
-              }
+            address
+            name
+            avatar
+            description
+            farcaster_account {
+              username
             }
           }
         }
-      `,
-      variables: {
-        circleId: CIRCLE_ID,
-      },
-    });
+      }
+    `,
+    variables: {
+      circleId: CIRCLE_ID,
+    },
+  });
 
-    // Transform the data to a more convenient format
-    const creators: Creator[] = data.users.map(
-      (user: {
-        id: string;
-        profile?: {
-          address?: string;
-          name?: string;
-          avatar?: string;
-          description?: string;
-          farcaster_account?: {
-            username?: string;
-          };
+  // Transform the data to a more convenient format
+  const creators: Creator[] = data.users.map(
+    (user: {
+      id: string;
+      profile?: {
+        address?: string;
+        name?: string;
+        avatar?: string;
+        description?: string;
+        farcaster_account?: {
+          username?: string;
         };
-      }) => ({
-        id: user.id,
-        address: user.profile?.address || "",
-        name: user.profile?.name || "",
-        avatar: user.profile?.avatar
-          ? user.profile.avatar.startsWith("http")
-            ? user.profile.avatar
-            : `https://coordinape-prod.s3.amazonaws.com/${user.profile.avatar}`
-          : "",
-        description: user.profile?.description || "",
-        farcasterUsername: user.profile?.farcaster_account?.username || "",
-      }),
-    );
+      };
+    }) => ({
+      id: user.id,
+      address: user.profile?.address || "",
+      name: user.profile?.name || "",
+      avatar: user.profile?.avatar
+        ? user.profile.avatar.startsWith("http")
+          ? user.profile.avatar
+          : `https://coordinape-prod.s3.amazonaws.com/${user.profile.avatar}`
+        : "",
+      description: user.profile?.description || "",
+      farcasterUsername: user.profile?.farcaster_account?.username || "",
+    }),
+  );
 
-    // Fetch NFT data and resolve basenames for each creator on the server side
-    const creatorsWithNFTData: CreatorWithNFTData[] = await Promise.all(
-      creators.map(async (creator: Creator) => {
-        try {
-          // Get NFT contracts
-          const contracts = await getNFTContracts(creator.address);
+  // Fetch NFT data and resolve basenames for each creator on the server side
+  const creatorsWithNFTData: CreatorWithNFTData[] = await Promise.all(
+    creators.map(async (creator: Creator) => {
+      try {
+        // Get NFT contracts
+        const contracts = await getNFTContracts(creator.address);
 
-          // Resolve basename
-          const resolution = await resolveBasenameOrAddress(creator.address);
+        // Resolve basename
+        const resolution = await resolveBasenameOrAddress(creator.address);
 
-          // Get gives data
-          const gives = await getGivesForCreator(creator.address);
+        // Get gives data
+        const gives = await getGivesForCreator(creator.address);
 
-          // Transform the resolution to match the BasenameResolution interface
-          const formattedResolution = resolution
-            ? {
-                basename: resolution.basename,
-                address: resolution.address,
-                resolved: !!resolution.basename,
-                textRecords: resolution.textRecords,
-              }
-            : null;
+        // Transform the resolution to match the BasenameResolution interface
+        const formattedResolution = resolution
+          ? {
+              basename: resolution.basename,
+              address: resolution.address,
+              resolved: !!resolution.basename,
+              textRecords: resolution.textRecords,
+            }
+          : null;
 
-          return {
-            ...creator,
-            resolution: formattedResolution,
-            gives: gives,
-            nftData: {
-              collections: contracts.map((contract) => ({
-                id: contract.contractAddress,
-                name: contract.name,
-                description: contract.description,
-                imageUrl: contract.imageUrl,
-                bannerImageUrl: contract.bannerImageUrl,
-                openseaUrl: `https://opensea.io/assets/base/${contract.contractAddress}`,
-                projectUrl: contract.projectUrl || "",
-                contractAddress: contract.contractAddress,
-              })),
-            },
-          };
-        } catch (error) {
-          console.error(`Failed to fetch data for ${creator.address}:`, error);
-          // Return creator without NFT data if there's an error
-          return {
-            ...creator,
-            resolution: null,
-            gives: [],
-          };
-        }
-      }),
-    );
+        return {
+          ...creator,
+          resolution: formattedResolution,
+          gives: gives,
+          nftData: {
+            collections: contracts.map((contract) => ({
+              id: contract.contractAddress,
+              name: contract.name,
+              description: contract.description,
+              imageUrl: contract.imageUrl,
+              bannerImageUrl: contract.bannerImageUrl,
+              openseaUrl: `https://opensea.io/assets/base/${contract.contractAddress}`,
+              projectUrl: contract.projectUrl || "",
+              contractAddress: contract.contractAddress,
+            })),
+          },
+        };
+      } catch (error) {
+        console.error(`Failed to fetch data for ${creator.address}:`, error);
+        // Return creator without NFT data if there's an error
+        return {
+          ...creator,
+          resolution: null,
+          gives: [],
+        };
+      }
+    }),
+  );
 
-    return creatorsWithNFTData;
-  } catch (error) {
-    console.error("Error fetching creators:", error);
-    return [];
-  }
+  return creatorsWithNFTData;
 }
 
 const groupedGives = (gives: Give[]): GroupedGives => {
