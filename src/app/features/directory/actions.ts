@@ -229,11 +229,11 @@ export async function getCreator(
  */
 export async function getCreators(): Promise<CreatorWithNFTData[]> {
   try {
-    // Try to get cached data, even if expired
-    const cached = await kv.get<CachedData>(CREATORS_CACHE_KEY);
-
-    // Check if we need to revalidate by checking TTL
-    const ttl = await kv.ttl(CREATORS_CACHE_KEY);
+    // Get both cached data and TTL in one atomic operation
+    const multi = kv.multi();
+    multi.get(CREATORS_CACHE_KEY);
+    multi.ttl(CREATORS_CACHE_KEY);
+    const [cached, ttl] = (await multi.exec()) as [CachedData | null, number];
 
     // Revalidate if TTL is negative (expired) or less than revalidation window
     if (ttl < REVALIDATION_WINDOW) {
