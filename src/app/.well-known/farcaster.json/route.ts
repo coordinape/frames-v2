@@ -6,17 +6,17 @@ export async function GET() {
   const config = {
     accountAssociation: {
       header:
-        "eyJmaWQiOjM2MjEsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgyY2Q4NWEwOTMyNjFmNTkyNzA4MDRBNkVBNjk3Q2VBNENlQkVjYWZFIn0",
-      payload: "eyJkb21haW4iOiJmcmFtZXMtdjIudmVyY2VsLmFwcCJ9",
+        "eyJmaWQiOjM2NjgxMCwidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweDU2QTlEOWUwYkVCREQ1ZjlFNjBiY0Y1NjM5NzU0NTYyYzI2MEJFRkMifQ",
+      payload: "eyJkb21haW4iOiJkaXIuY29vcmRpbmFwZS5jb20ifQ",
       signature:
-        "MHhiNDIwMzQ1MGZkNzgzYTExZjRiOTllZTFlYjA3NmMwOTdjM2JkOTY1NGM2ODZjYjkyZTAyMzk2Y2Q0YjU2MWY1MjY5NjI5ZGQ5NTliYjU0YzEwOGI4OGVmNjdjMTVlZTdjZDc2YTRiMGU5NzkzNzA3YzkxYzFkOWFjNTg0YmQzNjFi",
+        "MHg3OTkxMDRiZDQ5ODYyZTUxMWZmMTdmZTQxYzBhYmY4OGNkY2JlYjY3NzM4MDZkN2VhY2UzMDI2ZTljOWIxNjQzMzFkNmMxMjYwMWZiMTg4NDA2YTczOTJmNjU0MGFlZjRhMDkyMThkNTI0MjM2MjY2Y2U1NDYxNDNmMWEwN2QxNjFj",
     },
     frame: {
       version: "1",
-      name: "CoCreator Frame",
+      name: "Creators Directory",
       iconUrl: `${appUrl}/favicon.png`,
       homeUrl: appUrl,
-      imageUrl: `${appUrl}/ogimage?title=CoCreator+Frames`,
+      imageUrl: `${appUrl}/ogimage?title=Creators+Directory`,
       buttonTitle: "Launch Frame",
       splashImageUrl: `${appUrl}/splash.png`,
       splashBackgroundColor: "#0053ff",
