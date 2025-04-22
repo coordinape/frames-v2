@@ -1,17 +1,24 @@
 "use client";
 import { refreshRequirementsCache } from "~/app/creators/join/actions";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useWalletOrFrameAddress } from "~/hooks/useWalletOrFrameAddress";
+import { refreshCreatorData } from "~/app/features/directory/creator-actions";
 
 export const RefreshButton = ({ address }: { address: string }) => {
   const router = useRouter();
   const [refreshError, setRefreshError] = useState<string | null>(null);
   const [refreshLoading, setRefreshLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const { address: myAddress } = useWalletOrFrameAddress();
 
-  const isMe = address.toLowerCase() === myAddress?.toLowerCase();
+  // Use useEffect to handle client-side-only operations
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isMe = mounted && address.toLowerCase() === myAddress?.toLowerCase();
 
   const [hide, setHidden] = useState(false);
   const handleRefresh = async () => {
@@ -22,20 +29,29 @@ export const RefreshButton = ({ address }: { address: string }) => {
 
     try {
       const result = await refreshRequirementsCache(address);
+
       if (!result.success) {
         setRefreshError(result.error ?? "An error occurred while refreshing");
         return;
       }
 
+      // Refresh creator data
+      await refreshCreatorData(address);
+
       setHidden(true);
       router.refresh();
     } catch (error) {
-      console.error("Error refreshing NFTs:", error);
+      console.error("Error refreshing data:", error);
       setRefreshError("An error occurred while refreshing");
     } finally {
       setRefreshLoading(false);
     }
   };
+
+  // Don't render anything until mounted to prevent hydration mismatch
+  if (!mounted) {
+    return null;
+  }
 
   if (!isMe) {
     return null;

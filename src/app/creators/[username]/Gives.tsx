@@ -1,4 +1,4 @@
-import { getGivesForCreator } from "~/app/features/directory/actions";
+import { getGivesForCreator } from "~/app/features/directory/creator-actions";
 import AboutGiveModal from "~/components/AboutGiveModal";
 import Link from "next/link";
 

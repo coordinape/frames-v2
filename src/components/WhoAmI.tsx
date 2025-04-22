@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { FrameOrWalletConnection } from "~/components/FrameOrWalletConnection";
-import { getCreators } from "~/app/features/directory/actions";
+import { getCreators } from "~/app/features/directory/creators-actions";
 import { CreatorWithNFTData } from "~/app/features/directory/types";
 import { truncateAddress } from "~/app/utils/address";
 import Link from "next/link";

@@ -1,7 +1,7 @@
 import { Address } from "viem";
 import { resolveBasenameOrAddress } from "~/app/hooks/useBasenameResolver";
 import { BasenameTextRecordKeys } from "./basenames";
-import { getCreator } from "~/app/features/directory/actions";
+import { getCreator } from "~/app/features/directory/creator-actions";
 import Link from "next/link";
 
 interface InfoCardProps {
@@ -21,8 +21,6 @@ export default async function InfoCard({ address }: InfoCardProps) {
   // Display raw CreativeMedium value
   const creativeMediumValue =
     resolution.textRecords[BasenameTextRecordKeys.CreativeMedium];
-
-  console.log("Creative Medium Value:", creativeMediumValue);
 
   const creativeMediumTags = creativeMediumValue
     ? creativeMediumValue

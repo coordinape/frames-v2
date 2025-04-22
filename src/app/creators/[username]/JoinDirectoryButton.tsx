@@ -1,10 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import {
-  joinDirectory,
-  revalidateCreators,
-} from "~/app/features/directory/actions";
+import { joinDirectory } from "~/app/features/directory/actions";
+import { revalidateCreators } from "~/app/features/directory/creators-actions";
 
 interface JoinDirectoryButtonProps {
   address: string;

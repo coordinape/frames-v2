@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getCacheInfo } from "./cache-actions";
-import { revalidateCreators } from "~/app/features/directory/actions";
+import { revalidateCreators } from "~/app/features/directory/creators-actions";
 import {
   CACHE_DURATION,
   LOCK_DURATION,
