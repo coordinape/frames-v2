@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { joinDirectory } from "~/app/features/directory/actions";
+import {
+  joinDirectory,
+  revalidateCreators,
+} from "~/app/features/directory/actions";
 
 interface JoinDirectoryButtonProps {
   address: string;
@@ -26,6 +29,8 @@ export default function JoinDirectoryButton({
 
       if (success) {
         setJoinStatus("success");
+        // Kick off background revalidation
+        revalidateCreators().catch(console.error);
         // Refresh the page after a short delay to show updated membership status
         setTimeout(() => {
           window.location.reload();

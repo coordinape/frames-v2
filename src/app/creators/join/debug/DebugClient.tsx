@@ -5,6 +5,7 @@ import { useDebugMode } from "../useDebugMode";
 import Header from "~/app/components/Header";
 import AddressResolver from "./AddressResolver";
 import NFTContractDebugger from "./NFTContractDebugger";
+import CreatorsListInfo from "./CreatorsListInfo";
 
 export default function DebugClient() {
   const [mounted, setMounted] = useState(false);
@@ -98,6 +99,14 @@ export default function DebugClient() {
 
         <AddressResolver />
 
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xs uppercase tracking-wider opacity-80">
+              Creators List Cache Info
+            </h2>
+          </div>
+          <CreatorsListInfo />
+        </div>
         <div className="fixed bottom-0 left-0 right-0 h-1 bg-white/20" />
       </div>
     </>

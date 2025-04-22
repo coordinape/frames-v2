@@ -12,15 +12,15 @@ import {
 } from "~/app/features/directory/types";
 import { resolveBasenameOrAddress } from "~/app/hooks/useBasenameResolver";
 import { kv } from "@vercel/kv";
-
-const CIRCLE_ID = 31712;
-const ENTRANCE = "frames-be";
-
-const CREATORS_CACHE_KEY = "creators-directory-all";
-const REVALIDATION_LOCK_KEY = "creators-directory-revalidation-lock";
-const CACHE_DURATION = 300; // 5 minutes in seconds
-const LOCK_DURATION = 30; // 30 second lock to prevent multiple processes
-const REVALIDATION_WINDOW = 60; // Start revalidating when less than 1 minute left
+import {
+  CIRCLE_ID,
+  ENTRANCE,
+  CREATORS_CACHE_KEY,
+  REVALIDATION_LOCK_KEY,
+  CACHE_DURATION,
+  LOCK_DURATION,
+  REVALIDATION_WINDOW,
+} from "./constants";
 
 interface CachedData {
   data: CreatorWithNFTData[];
@@ -292,7 +292,7 @@ export async function getCreators(): Promise<CreatorWithNFTData[]> {
 /**
  * Background revalidation function that updates the cache
  */
-async function revalidateCreators(): Promise<void> {
+export async function revalidateCreators(): Promise<void> {
   try {
     const freshData = await getCreatorsFromAPI();
 
