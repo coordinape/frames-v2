@@ -15,6 +15,8 @@ import { APP_BASE_URL } from "~/lib/constants";
 import { RefreshButton } from "~/app/creators/[username]/RefreshButton";
 import { BasenameTextRecordKeys } from "./basenames";
 import { GiveButton } from "~/app/creators/[username]/GiveButton";
+import { performance } from "perf_hooks";
+import { debugLog } from "~/lib/constants";
 
 interface Props {
   params: Promise<{
@@ -23,20 +25,33 @@ interface Props {
 }
 
 export default async function ProfilePage({ params }: Props) {
+  const startTime = performance.now();
   const { username } = await params;
 
   // Resolve the basename or address server-side
+  const resolveStart = performance.now();
   const resolution = await resolveBasenameOrAddress(username);
+  const resolveTime = performance.now() - resolveStart;
+  debugLog(`[Timing] Basename resolution took: ${resolveTime.toFixed(2)}ms`);
 
   // Check if the user is a member of the directory
+  const membershipStart = performance.now();
   const isMember = resolution?.address
     ? await addressIsMember(resolution.address)
     : false;
+  const membershipTime = performance.now() - membershipStart;
+  debugLog(`[Timing] Membership check took: ${membershipTime.toFixed(2)}ms`);
 
   // Fetch creator data using getCreator if we have an address
+  const creatorStart = performance.now();
   const creator = resolution?.address
     ? await getCreator(resolution.address)
     : null;
+  const creatorTime = performance.now() - creatorStart;
+  debugLog(`[Timing] Creator data fetch took: ${creatorTime.toFixed(2)}ms`);
+
+  const totalTime = performance.now() - startTime;
+  debugLog(`[Timing] Total page load took: ${totalTime.toFixed(2)}ms`);
 
   if (!creator) {
     return (

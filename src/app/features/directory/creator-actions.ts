@@ -179,7 +179,7 @@ async function getBasicCreatorData(
 /**
  * Internal function to refresh a single creator's data and update cache
  */
-async function refreshCreatorData(
+export async function refreshCreatorData(
   address: string,
 ): Promise<CreatorWithNFTData | null> {
   try {
