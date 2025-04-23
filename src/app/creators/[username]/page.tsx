@@ -207,7 +207,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const displayName = creator.resolution?.basename || creator.name;
-  const imageUrl = `${APP_BASE_URL}/creators/${username}/ogimage`;
+  const imageUrl = `${APP_BASE_URL}/creators/${username}/opengraph-image`;
 
   return {
     title: `${displayName} | Based Creator Directory`,

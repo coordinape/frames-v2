@@ -37,21 +37,21 @@ export async function generateMetadata(): Promise<Metadata> {
       description: "Discover and connect with creators",
       images: [
         {
-          url: `${appUrl}/creators/ogimage`,
+          url: `${appUrl}/creators/opengraph-image`,
           width: 1200,
           height: 630,
-          alt: "Base Base Creator Directory",
+          alt: "Base Creator Directory",
         },
       ],
       url: `${appUrl}/creators`,
       type: "website",
-      siteName: "Base Base Creator Directory",
+      siteName: "Base Creator Directory",
     },
     twitter: {
       card: "summary_large_image",
       title: "Base Creator Directory",
       description: "Discover and connect with creators",
-      images: [`${appUrl}/creators/ogimage`],
+      images: [`${appUrl}/creators/opengraph-image`],
     },
     other: {
       "fc:frame": JSON.stringify(frame),

@@ -33,7 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: "Join the Creator Directory and connect with the community",
       images: [
         {
-          url: `${appUrl}/ogimage?title=Join+Directory`,
+          url: `${appUrl}/creators/join/opengraph-image`,
           width: 1200,
           height: 630,
           alt: "Join Creator Directory",
@@ -47,7 +47,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title: "Join Creator Directory",
       description: "Join the Creator Directory and connect with the community",
-      images: [`${appUrl}/ogimage?title=Join+Directory`],
+      images: [`${appUrl}/creators/join/opengraph-image`],
     },
     other: {
       "fc:frame": JSON.stringify(frame),
