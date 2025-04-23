@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 import { resolveBasenameOrAddress } from "~/app/hooks/useBasenameResolver";
-import { getCreator } from "~/app/features/directory/creator-actions";
+import { getCreatorForOG } from "~/app/features/directory/og-creator-actions";
 
 export const runtime = "edge";
 
@@ -19,7 +19,7 @@ export default async function Image({
 }) {
   const resolution = await resolveBasenameOrAddress(params.username);
   const creator = resolution?.address
-    ? await getCreator(resolution.address)
+    ? await getCreatorForOG(resolution.address)
     : null;
   const displayName =
     creator?.resolution?.basename || creator?.name || "Creator";
