@@ -59,7 +59,9 @@ export async function GET(
   return new ImageResponse(
     (
       <div
-        tw="h-full w-full flex flex-col justify-between items-start p-5 text-white"
+        tw={`h-full w-full flex flex-col justify-between items-start p-5 text-white ${
+          isTwitter && "px-12"
+        }`}
         style={{
           backgroundColor: baseBlue,
           fontFamily: "Sans, Helvetica, Arial, sans-serif !important",
