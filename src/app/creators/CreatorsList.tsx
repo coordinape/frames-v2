@@ -40,6 +40,9 @@ function CreatorsListInner() {
   const [creators, setCreators] = useState<CreatorWithNFTData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [topGiveSkills, setTopGiveSkills] = useState<
+    Array<{ skill: string; uniqueReceivers: number; totalGives: number }>
+  >([]);
 
   useEffect(() => {
     const load = async () => {
@@ -82,6 +85,39 @@ function CreatorsListInner() {
         );
 
         logWithTime(`Retrieved ${creatorsWithData.length} creators`);
+
+        // Calculate top GIVE skills by unique receivers
+        const skillStats = new Map<
+          string,
+          { uniqueReceivers: Set<string>; totalGives: number }
+        >();
+        creatorsWithData.forEach((creator) => {
+          creator.gives?.forEach((giveGroup) => {
+            if (giveGroup.skill) {
+              if (!skillStats.has(giveGroup.skill)) {
+                skillStats.set(giveGroup.skill, {
+                  uniqueReceivers: new Set(),
+                  totalGives: 0,
+                });
+              }
+              const stats = skillStats.get(giveGroup.skill)!;
+              stats.uniqueReceivers.add(creator.address);
+              stats.totalGives += giveGroup.count;
+            }
+          });
+        });
+
+        // Sort and get top 5 skills by unique receivers
+        const sortedSkills = Array.from(skillStats.entries())
+          .sort((a, b) => b[1].uniqueReceivers.size - a[1].uniqueReceivers.size)
+          .slice(0, 5)
+          .map(([skill, stats]) => ({
+            skill,
+            uniqueReceivers: stats.uniqueReceivers.size,
+            totalGives: stats.totalGives,
+          }));
+
+        setTopGiveSkills(sortedSkills);
 
         // Sort creators - prioritize those with NFT images
         const sortStartTime = performance.now();
@@ -242,9 +278,30 @@ function CreatorsListInner() {
           onSearchChange={setSearchQuery}
           onSearchTypeChange={setSearchType}
         />
-        <p className="text-white/40 text-xs text-center mb-5 italic">
+
+        <p className="text-white/40 text-xs text-center mb-4 italic">
           {filteredCreators.length} creators
         </p>
+        {topGiveSkills.length > 0 && (
+          <div className="flex flex-col gap-2 items-center">
+            <h3 className="text-xl font-bold text-white base-pixel flex items-center flex-wrap gap-2 justify-between pb-1">
+              Top GIVE Skills
+            </h3>
+            <div className="flex flex-wrap gap-3 justify-center mb-5">
+              {topGiveSkills.map(({ skill }) => (
+                <Link
+                  key={skill}
+                  href={`/creators?search=${encodeURIComponent(skill)}&type=give`}
+                  className="inline-flex items-center bg-white/10 hover:bg-white/15 rounded-full px-3 py-1 text-xs"
+                >
+                  <span className="text-white/90 hover:text-white">
+                    {skill}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </Suspense>
 
       <div className="flex items-center justify-between mb-4">
