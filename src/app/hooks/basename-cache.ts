@@ -1,3 +1,5 @@
+"use server";
+
 import { kv } from "@vercel/kv";
 import { Address } from "viem";
 import { BasenameTextRecordKeys } from "~/app/creators/[username]/basenames";
