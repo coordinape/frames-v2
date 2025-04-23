@@ -194,12 +194,53 @@ export const revalidate = 300;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { username } = await params;
+  const resolution = await resolveBasenameOrAddress(username);
+  const creator = resolution?.address
+    ? await getCreator(resolution.address)
+    : null;
+
+  if (!creator) {
+    return {
+      title: "Creator Not Found",
+      description: "This creator could not be found in the directory.",
+    };
+  }
+
+  const displayName = creator.resolution?.basename || creator.name;
+  const imageUrl = `${APP_BASE_URL}/creators/${username}/ogimage`;
 
   return {
-    title: `Creators Profile for ${username}`,
+    title: `${displayName} | Based Creator Directory`,
+    description:
+      creator.description ||
+      `View ${displayName}'s profile on Based Creator Directory`,
     openGraph: {
-      title: `Creators Profile for ${username}`,
-      description: `Creators Directory Profile for ${username}.`,
+      title: `${displayName} | Based Creator Directory`,
+      description:
+        creator.description ||
+        `View ${displayName}'s profile on Based Creator Directory`,
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: `${displayName}'s profile`,
+        },
+      ],
+      url: `${APP_BASE_URL}/creators/${username}`,
+      type: "profile",
+      siteName: "Based Creator Directory",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${displayName} | Based Creator Directory`,
+      description:
+        creator.description ||
+        `View ${displayName}'s profile on Based Creator Directory`,
+      images: [imageUrl],
+      creator: creator.farcasterUsername
+        ? `@${creator.farcasterUsername}`
+        : undefined,
     },
     other: {
       "fc:frame": JSON.stringify(frame({ username })),

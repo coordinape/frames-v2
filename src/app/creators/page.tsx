@@ -30,11 +30,28 @@ export const revalidate = 300;
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "Creator Directory",
+    title: "Base Creator Directory",
+    description: "Discover and connect with creators",
     openGraph: {
-      title: "Creator Directory",
-      description: "The creator directory.",
-      images: `${appUrl}/creators/ogimage`,
+      title: "Base Creator Directory",
+      description: "Discover and connect with creators",
+      images: [
+        {
+          url: `${appUrl}/creators/ogimage`,
+          width: 1200,
+          height: 630,
+          alt: "Base Base Creator Directory",
+        },
+      ],
+      url: `${appUrl}/creators`,
+      type: "website",
+      siteName: "Base Base Creator Directory",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Base Creator Directory",
+      description: "Discover and connect with creators",
+      images: [`${appUrl}/creators/ogimage`],
     },
     other: {
       "fc:frame": JSON.stringify(frame),
