@@ -33,7 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title: "Creator Directory",
       description: `The Creator Directory`,
-      images: `${APP_BASE_URL}/creators/ogimage`,
+      images: `${APP_BASE_URL}/creators/ogimage?aspect_ratio=twitter`,
     },
     other: {
       "fc:frame": JSON.stringify(frame),

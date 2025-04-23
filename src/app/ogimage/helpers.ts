@@ -23,3 +23,8 @@ export const DEFAULT_FRAME_SIZE = {
   width: 960,
   height: 640,
 } as const;
+
+export const DEFAULT_FRAME_SIZE_2_1 = {
+  width: 960,
+  height: 480,
+} as const;
