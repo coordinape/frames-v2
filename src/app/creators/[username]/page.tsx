@@ -200,9 +200,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title: `Creators Profile for ${username}`,
       description: `Creators Directory Profile for ${username}.`,
+      images: `${APP_BASE_URL}/creators/${username}/ogimage`,
     },
     other: {
       "fc:frame": JSON.stringify(frame({ username })),
+    },
+    twitter: {
+      card: "summary_large_image",
     },
   };
 }

@@ -9,7 +9,6 @@ export default function DirectoryPage() {
 // const appUrl = process.env.NEXT_PUBLIC_URL;
 // const appUrl = process.env.VERCEL_URL;
 // const appUrl = APP_BASE_URL;
-const appUrl = `https://${APP_BASE_URL}`;
 
 const frame = {
   version: "next",
@@ -30,14 +29,17 @@ export const revalidate = 300;
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "Creator Directory",
+    title: `Creator Directory ${APP_BASE_URL}/creators/ogimage`,
     openGraph: {
       title: "Creator Directory",
-      description: "The creator directory.",
-      images: `${appUrl}/creators/ogimage`,
+      description: `The Creator Directory`,
+      images: `${APP_BASE_URL}/creators/ogimage`,
     },
     other: {
       "fc:frame": JSON.stringify(frame),
+    },
+    twitter: {
+      card: "summary_large_image",
     },
   };
 }

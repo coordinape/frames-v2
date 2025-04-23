@@ -29,9 +29,13 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title: "Join Creator Directory",
       description: "Join the creator directory.",
+      images: `${APP_BASE_URL}/ogimage?title=Join+Directory`,
     },
     other: {
       "fc:frame": JSON.stringify(frame),
+    },
+    twitter: {
+      card: "summary_large_image",
     },
   };
 }
