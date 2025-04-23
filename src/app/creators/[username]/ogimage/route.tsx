@@ -6,6 +6,7 @@ import {
   baseBlue,
   basePixelLow,
   DEFAULT_FRAME_SIZE,
+  DEFAULT_FRAME_SIZE_2_1,
   Denim,
   IMAGE_URL_BASE,
 } from "~/app/ogimage/helpers";
@@ -15,6 +16,12 @@ export async function GET(
   context: { params: Promise<{ username: string }> },
 ) {
   const { username } = await context.params;
+  // Get the URL from the request
+  const { searchParams } = new URL(request.url);
+
+  // Get a specific query parameter
+  const aspect_ratio = searchParams.get("aspect_ratio");
+  const isTwitter = aspect_ratio === "twitter";
 
   // Resolve the username and get creator data
   const resolution = await resolveBasenameOrAddress(username);
@@ -35,7 +42,7 @@ export async function GET(
         </div>
       ),
       {
-        ...DEFAULT_FRAME_SIZE,
+        ...(isTwitter ? DEFAULT_FRAME_SIZE_2_1 : DEFAULT_FRAME_SIZE),
         headers: {
           "Content-Type": "image/png",
         },
@@ -61,15 +68,19 @@ export async function GET(
         <div tw="flex items-center justify-center flex-1">
           <img
             src={IMAGE_URL_BASE + "Base_Symbol_White.png"}
-            tw="h-32 mr-5"
+            tw={`mr-5 ${isTwitter ? "h-22" : "h-32"}`}
             alt="BASE Logo"
           />
           <div
             tw="flex flex-col justify-start"
             style={{ fontFamily: "Inter, Helvetica" }}
           >
-            <p tw="text-6xl mt-0 mb-1">Based Creator</p>
-            <p tw="text-6xl mt-0 mb-1">Showcase</p>
+            <p tw={`mt-0 mb-1 ${isTwitter ? "text-4xl" : "text-6xl"}`}>
+              Based Creator
+            </p>
+            <p tw={`mt-0 mb-1 ${isTwitter ? "text-4xl" : "text-6xl"}`}>
+              Showcase
+            </p>
           </div>
         </div>
         <div tw="flex items-center justify-center flex-1">
@@ -150,7 +161,7 @@ export async function GET(
       </div>
     ),
     {
-      ...DEFAULT_FRAME_SIZE,
+      ...(isTwitter ? DEFAULT_FRAME_SIZE_2_1 : DEFAULT_FRAME_SIZE),
       headers: {
         "Content-Type": "image/png",
       },
