@@ -88,7 +88,9 @@ async function batchProcessCreators(
               description: contract.description,
               imageUrl: contract.imageUrl,
               bannerImageUrl: contract.bannerImageUrl,
-              openseaUrl: `https://opensea.io/assets/base/${contract.contractAddress}`,
+              openseaUrl:
+                contract.openseaUrl ??
+                `https://opensea.io/assets/base/${contract.contractAddress}`,
               projectUrl: contract.projectUrl || "",
               contractAddress: contract.contractAddress,
             })),
