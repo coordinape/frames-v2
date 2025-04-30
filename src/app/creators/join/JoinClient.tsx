@@ -22,6 +22,12 @@ import {
 } from "./useDebugMode";
 import { useWalletOrFrameAddress } from "~/hooks/useWalletOrFrameAddress";
 
+const isFrame = async () => {
+  const context = await sdk.context;
+  const isFrame = !!context?.user?.fid;
+  return isFrame;
+};
+
 export default function JoinClient() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
@@ -337,14 +343,25 @@ export default function JoinClient() {
               <div className="flex items-baseline justify-between w-full">
                 Own a basename
                 {!eligibility.hasBasename && (
-                  <Link
-                    href="https://base.org/names"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    onClick={async () => {
+                      const inFrame = await isFrame();
+                      const url = "https://base.org/names";
+                      if (inFrame) {
+                        try {
+                          await sdk.actions.openUrl(url);
+                        } catch (e) {
+                          console.error(e);
+                          window.open(url, "_blank");
+                        }
+                      } else {
+                        window.open(url, "_blank");
+                      }
+                    }}
                     className="text-xs text-white/80 hover:text-white ml-3"
                   >
                     Get your basename
-                  </Link>
+                  </button>
                 )}
               </div>
             </li>
