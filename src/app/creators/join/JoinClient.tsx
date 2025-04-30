@@ -339,6 +339,8 @@ export default function JoinClient() {
                 {!eligibility.hasBasename && (
                   <Link
                     href="https://base.org/names"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="text-xs text-white/80 hover:text-white ml-3"
                   >
                     Get your basename
