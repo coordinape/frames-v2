@@ -22,6 +22,7 @@ export async function GET(
   // Get a specific query parameter
   const aspect_ratio = searchParams.get("aspect_ratio");
   const isTwitter = aspect_ratio === "twitter";
+  const nftSquareSize = isTwitter ? 154 : 165;
 
   // Resolve the username and get creator data
   const resolution = await resolveBasenameOrAddress(username);
@@ -148,12 +149,15 @@ export async function GET(
                     <img
                       src={collection.imageUrl}
                       alt={collection.name}
-                      width="165"
-                      height="165"
+                      width={nftSquareSize}
+                      height={nftSquareSize}
                       tw="rounded-lg"
                     />
                   ) : (
-                    <div tw="flex w-[165px] h-[165px] bg-white/20 rounded-lg" />
+                    <div
+                      tw="flex bg-white/20 rounded-lg"
+                      style={{ width: nftSquareSize, height: nftSquareSize }}
+                    />
                   )}
                 </div>
               ))}
