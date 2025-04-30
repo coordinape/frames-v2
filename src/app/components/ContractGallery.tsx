@@ -1,4 +1,7 @@
+"use client";
+
 import { OpenSeaCollection } from "~/app/features/directory/types";
+import ExternalLinkButton from "./ExternalLinkButton";
 
 interface ContractGalleryProps {
   address: string;
@@ -35,17 +38,16 @@ export default function ContractGallery({
                 <div className="aspect-square overflow-hidden">
                   {collection.imageUrl ? (
                     showDetails ? (
-                      <a
-                        href={collection.openseaUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <ExternalLinkButton
+                        url={collection.openseaUrl || ""}
+                        className="w-full h-full cursor-pointer"
                       >
                         <img
                           src={collection.imageUrl}
                           alt={collection.name || "Collection"}
                           className="w-full h-full object-cover rounded-md aspect-square"
                         />
-                      </a>
+                      </ExternalLinkButton>
                     ) : (
                       <div className="cursor-default">
                         <img
@@ -65,39 +67,33 @@ export default function ContractGallery({
                   <div className="p-2 space-y-1">
                     <div className="flex text-sm">
                       {collection.openseaUrl && (
-                        <a
-                          href={collection.openseaUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-white/80 hover:text-white"
+                        <ExternalLinkButton
+                          url={collection.openseaUrl}
+                          className="text-white/80 hover:text-white cursor-pointer"
                         >
                           {collection.name || "OpenSea"}
-                        </a>
+                        </ExternalLinkButton>
                       )}
                       {collection.projectUrl && (
-                        <a
-                          href={collection.projectUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                        <ExternalLinkButton
+                          url={collection.projectUrl}
                           className="text-blue-400 hover:text-blue-300"
                         >
                           Project
-                        </a>
+                        </ExternalLinkButton>
                       )}
                     </div>
                     {collection.contractAddress && (
                       <div className="text-white/50 text-xs font-mono">
-                        <a
-                          href={`https://basescan.org/address/${collection.contractAddress}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                        <ExternalLinkButton
+                          url={`https://basescan.org/address/${collection.contractAddress}`}
                           className="hover:text-white"
                         >
                           {`${collection.contractAddress.slice(
                             0,
                             6,
                           )}...${collection.contractAddress.slice(-4)}`}
-                        </a>
+                        </ExternalLinkButton>
                       </div>
                     )}
                   </div>
