@@ -47,6 +47,7 @@ async function refreshSingleCreatorData(
               description
               farcaster_account {
                 username
+                fid
               }
             }
           }
@@ -74,6 +75,7 @@ async function refreshSingleCreatorData(
         : "",
       description: user.profile?.description || "",
       farcasterUsername: user.profile?.farcaster_account?.username || "",
+      farcasterFid: user.profile?.farcaster_account?.fid,
     };
 
     const contracts = await getNFTContracts(creator.address, "BASE_MAINNET", {
@@ -142,6 +144,7 @@ async function getBasicCreatorData(
               description
               farcaster_account {
                 username
+                fid
               }
             }
           }
@@ -169,6 +172,7 @@ async function getBasicCreatorData(
         : "",
       description: user.profile?.description || "",
       farcasterUsername: user.profile?.farcaster_account?.username || "",
+      farcasterFid: user.profile?.farcaster_account?.fid,
       resolution: null,
       nftData: { collections: [] },
     };
