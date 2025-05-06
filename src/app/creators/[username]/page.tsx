@@ -17,6 +17,7 @@ import { BasenameTextRecordKeys } from "./basenames";
 import { GiveButton } from "~/app/creators/[username]/GiveButton";
 import { performance } from "perf_hooks";
 import { debugLog } from "~/lib/constants";
+import FarcasterFollowButton from "~/app/components/FarcasterFollowButton";
 
 interface Props {
   params: Promise<{
@@ -155,6 +156,12 @@ export default async function ProfilePage({ params }: Props) {
           )}
           <p className="text-white/80 text-xs font-mono">{creator.address}</p>
         </div>
+        {farcasterUsername && (
+          <FarcasterFollowButton
+            username={farcasterUsername}
+            fid={creator.farcasterFid}
+          />
+        )}
         {resolution?.address && <InfoCard address={resolution.address} />}
         {resolution?.address && farcasterUsername && (
           <Gives address={resolution.address} />
