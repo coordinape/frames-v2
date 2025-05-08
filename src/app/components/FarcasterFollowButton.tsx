@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import sdk from "@farcaster/frame-sdk";
 
 interface FarcasterFollowButtonProps {
@@ -8,10 +8,97 @@ interface FarcasterFollowButtonProps {
   username?: string;
 }
 
-export default function FarcasterFollowButton({
+const FarcasterFollowButton: React.FC<FarcasterFollowButtonProps> = ({
   fid,
   username,
-}: FarcasterFollowButtonProps) {
+}) => {
+  const [isFollowing, setIsFollowing] = useState<boolean | null>(null);
+  const [isSDKReady, setIsSDKReady] = useState(false);
+
+  useEffect(() => {
+    const initializeSDK = async () => {
+      try {
+        await sdk.context;
+        console.log("Directory Frame: Calling ready");
+        await sdk.actions.ready({});
+        setIsSDKReady(true);
+      } catch (e) {
+        console.error("Error initializing SDK:", e);
+      }
+    };
+
+    initializeSDK();
+  }, []);
+
+  useEffect(() => {
+    const checkFollowingStatus = async () => {
+      if (!fid || !isSDKReady) return;
+
+      try {
+        const context = await sdk.context;
+        console.log("Frame context:", context);
+
+        if (!context?.user?.fid) {
+          console.log("No user FID in context");
+          setIsFollowing(false);
+          return;
+        }
+
+        // Use Neynar API to check following status
+        const apiKey = process.env.NEXT_PUBLIC_NEYNAR_API_KEY;
+        if (!apiKey) {
+          console.error("Neynar API key is missing");
+          setIsFollowing(false);
+          return;
+        }
+
+        console.log("Checking following status for FID:", fid);
+        console.log("Current user FID:", context.user.fid);
+
+        // Use the correct Neynar API endpoint for checking following status
+        const response = await fetch(
+          `https://api.neynar.com/v2/farcaster/user/followers?fid=${fid}&viewer_fid=${context.user.fid}`,
+          {
+            headers: {
+              api_key: apiKey,
+            },
+          },
+        );
+
+        if (!response.ok) {
+          console.error(
+            "Neynar API error:",
+            response.status,
+            await response.text(),
+          );
+          throw new Error("Failed to fetch following status");
+        }
+
+        const data = await response.json();
+        console.log("Neynar API response:", data);
+
+        // Check if the current user is in the followers list
+        const isFollowingUser = data.users.some((user: any) => {
+          console.log(
+            "Checking user:",
+            user.fid,
+            "against viewer:",
+            context.user.fid,
+          );
+          return user.fid === context.user.fid;
+        });
+
+        console.log("Is following:", isFollowingUser);
+        setIsFollowing(isFollowingUser);
+      } catch (e) {
+        console.error("Error checking following status:", e);
+        setIsFollowing(false);
+      }
+    };
+
+    checkFollowingStatus();
+  }, [fid, isSDKReady]);
+
   const handleClick = useCallback(async () => {
     const context = await sdk.context;
     const inFrame = !!context?.user?.fid;
@@ -25,6 +112,11 @@ export default function FarcasterFollowButton({
       window.open(`https://warpcast.com/${username}`, "_blank");
     }
   }, [fid, username]);
+
+  // Don't show the button if we're following or if we're still loading the following status
+  if (isFollowing === true) {
+    return null;
+  }
 
   return (
     <div className="text-white p-0 cursor-pointer" onClick={handleClick}>
@@ -84,4 +176,6 @@ export default function FarcasterFollowButton({
       </span>
     </div>
   );
-}
+};
+
+export default FarcasterFollowButton;
