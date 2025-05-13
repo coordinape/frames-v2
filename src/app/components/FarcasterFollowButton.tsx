@@ -127,17 +127,12 @@ export default function FarcasterFollowButton({
           </svg>
           <span className="text-sm">Farcaster</span>
         </div>
-        {isLoading ? (
-          <span className={`flex items-center py-1 text-xs text-white/60`}>
-            Checking follow...
-          </span>
-        ) : (
-          <span
-            className={`flex items-center px-4 py-1 text-xs rounded-full cursor-pointer transition-colors ${isFollowingUser ? "bg-white/10 text-white hover:bg-white/20" : " bg-white text-base-blue hover:bg-white/90"}`}
-          >
-            {isFollowingUser ? "Following" : "Follow"}
-          </span>
-        )}
+
+        <span
+          className={`flex items-center px-4 py-1 text-xs rounded-full cursor-pointer transition-colors ${isFollowingUser ? "bg-white/10 text-white hover:bg-white/20" : " bg-white text-base-blue hover:bg-white/90"}`}
+        >
+          {isFollowingUser ? "Following" : "Follow"}
+        </span>
       </div>
     </div>
   );
