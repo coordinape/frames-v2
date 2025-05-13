@@ -162,8 +162,6 @@ export async function isFollowing(
       fid: viewerFid,
     });
 
-    console.log("Neynar API response data:", result);
-
     // Check if the target FID is in the list of users being followed
     return result.users.some((user) => user.user.fid === targetFid);
   } catch (error) {
