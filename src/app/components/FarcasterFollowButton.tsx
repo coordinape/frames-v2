@@ -18,7 +18,6 @@ export default function FarcasterFollowButton({
   const { address } = useWalletOrFrameAddress();
   const [currentUserFid, setCurrentUserFid] = useState<number | null>(null);
   const [isFollowingUser, setIsFollowingUser] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchCurrentUserFid = async () => {
@@ -42,7 +41,7 @@ export default function FarcasterFollowButton({
         currentUserFid,
         targetFid: fid,
       });
-      setIsLoading(true);
+
       try {
         const following = await isFollowing(currentUserFid, fid);
         console.log("Follow status result:", following);
@@ -50,7 +49,6 @@ export default function FarcasterFollowButton({
       } catch (error) {
         console.error("Error checking follow status:", error);
       } finally {
-        setIsLoading(false);
       }
     };
     checkFollowStatus();
