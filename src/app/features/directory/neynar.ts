@@ -158,12 +158,11 @@ export async function isFollowing(
   }
 
   try {
-    const result = await client.fetchUserFollowing({
-      fid: viewerFid,
+    const result = await client.fetchBulkUsers({
+      fids: [targetFid],
+      viewerFid: viewerFid,
     });
-
-    // Check if the target FID is in the list of users being followed
-    return result.users.some((user) => user.user.fid === targetFid);
+    return result.users[0].viewer_context?.following ?? false;
   } catch (error) {
     console.error("Error checking follow status:", error);
     return false;
