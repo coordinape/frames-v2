@@ -1,6 +1,7 @@
 "use server";
 
 import { resolveBasenameOrAddress } from "~/app/hooks/useBasenameResolver";
+import { NeynarAPIClient, Configuration } from "@neynar/nodejs-sdk";
 
 interface NeynarVerifiedAddress {
   address: string;
@@ -14,7 +15,6 @@ interface NeynarVerifiedAccount {
 }
 
 interface NeynarUser {
-  object: string;
   fid: number;
   username: string;
   display_name: string;
@@ -40,12 +40,18 @@ interface NeynarUser {
   power_badge: boolean;
 }
 
-interface NeynarUserResponse {
+interface FollowingResponse {
   users: NeynarUser[];
   next: {
     cursor: string | null;
   };
 }
+
+// Initialize the Neynar client
+const config: Configuration = {
+  apiKey: process.env.NEYNAR_API_KEY || "",
+};
+const client = new NeynarAPIClient(config);
 
 /**
  * Gets verified addresses for a Farcaster user from Neynar API
@@ -71,7 +77,7 @@ async function getVerifiedAddressesFromNeynar(
     throw new Error(`Neynar API error: ${response.status}`);
   }
 
-  const data = (await response.json()) as NeynarUserResponse;
+  const data = (await response.json()) as FollowingResponse;
 
   if (!data.users || data.users.length === 0) {
     throw new Error(`No user found for FID: ${fid}`);
@@ -135,4 +141,30 @@ export async function getBestAddressForFid(fid: string): Promise<string> {
   }
 
   throw new Error(`No verified addresses found for FID: ${fid}`);
+}
+
+/**
+ * Checks if a user is following another user on Farcaster
+ * @param viewerFid The FID of the viewer (current user)
+ * @param targetFid The FID of the target user
+ * @returns Promise<boolean> True if the viewer is following the target, false otherwise
+ */
+export async function isFollowing(
+  viewerFid: number,
+  targetFid: number,
+): Promise<boolean> {
+  if (!process.env.NEYNAR_API_KEY) {
+    throw new Error("NEYNAR_API_KEY is not configured");
+  }
+
+  try {
+    const result = await client.fetchBulkUsers({
+      fids: [targetFid],
+      viewerFid: viewerFid,
+    });
+    return result.users[0].viewer_context?.following ?? false;
+  } catch (error) {
+    console.error("Error checking follow status:", error);
+    return false;
+  }
 }
