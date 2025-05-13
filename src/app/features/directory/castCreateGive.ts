@@ -16,6 +16,7 @@ export const castCreateGive = async (
   const inFrame = await isFrame();
 
   const text = `@givebot @${farcasterUsername
+    .toLowerCase()
     .replace("@", "")
     .replace(" ", "")
     .split("/")
